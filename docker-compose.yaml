@@ -19,9 +19,9 @@ services:
     depends_on:
       - kryptr_db
     environment:
-      - FLASK_ENV=production
+      - FLASK_ENV=development
       - FLASK_APP=wsgi
-      - FLASK_DEBUG=0
+      - FLASK_DEBUG=1
 
 volumes:
   db_data:

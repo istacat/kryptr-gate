@@ -23,6 +23,11 @@ def add_admin():
     db.session.commit()
 
 
+def _init_db():
+    db.create_all()
+    add_admin()
+
+
 # flask cli context setup
 @app.shell_context_processor
 def get_context():
@@ -33,7 +38,7 @@ def get_context():
 @app.cli.command()
 def create_db():
     """Create the configured database."""
-    db.create_all()
+    _init_db()
 
 
 @app.cli.command()

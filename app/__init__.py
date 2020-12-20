@@ -7,6 +7,8 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from werkzeug.exceptions import HTTPException
 
+from .logger import log
+
 # instantiate extensions
 login_manager = LoginManager()
 db = SQLAlchemy()
@@ -30,6 +32,7 @@ def create_app(environment='development'):
 
     # Set app config.
     env = os.environ.get('FLASK_ENV', environment)
+    log(log.INFO, env)
     app.config.from_object(config[env])
     config[env].configure(app)
 
@@ -59,6 +62,6 @@ def create_app(environment='development'):
     @app.before_request
     def before_request():
         session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=os.environ.get('SESSION_EXPIRY_TIME', 15))
+        app.permanent_session_lifetime = timedelta(minutes=int(os.environ.get('SESSION_EXPIRY_TIME', 15)))
 
     return app

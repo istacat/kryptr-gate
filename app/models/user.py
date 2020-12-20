@@ -15,7 +15,7 @@ class User(db.Model, UserMixin, ModelMixin):
     __tablename__ = 'users'
 
     class RoleType(enum.Enum):
-        """Utility class to support permissions"""
+        """Utility class to support"""
         support = 1
         sub_reseller = 2
         reseller = 3

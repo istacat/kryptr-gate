@@ -11,6 +11,7 @@ itsdangerous
 Jinja2
 MarkupSafe
 pytest
+psycopg2-binary
 python-dotenv
 SQLAlchemy
 Werkzeug
