@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  kryptr_db:
+    image: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: kryptr_db
+    ports:
+      - 5432:5432
+
+  app:
+    build: .
+    restart: always
+    container_name: app
+    expose:
+      - 5000
+    depends_on:
+      - kryptr_db
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=wsgi
+      - FLASK_DEBUG=0
+
+volumes:
+  db_data:

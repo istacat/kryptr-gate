@@ -1,0 +1,17 @@
+black
+click
+email-validator
+flake8
+Flask
+Flask-Login
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-WTF
+itsdangerous
+Jinja2
+MarkupSafe
+pytest
+python-dotenv
+SQLAlchemy
+Werkzeug
+WTForms
