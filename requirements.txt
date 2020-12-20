@@ -1,8 +1,0 @@
-django
-django-extensions
-django-environ
-pytest-django
-coverage
-
-flake8
-black
