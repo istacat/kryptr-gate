@@ -1,1 +1,1 @@
-// custom javascript
+'use strict'
