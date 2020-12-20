@@ -24,6 +24,7 @@ class User(db.Model, UserMixin, ModelMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(60), unique=True, nullable=False)
+    email = db.Column(db.String(256))
     password_hash = db.Column(db.String(255), nullable=False)
     activated = db.Column(db.Boolean, default=False)
     role = db.Column(Enum(RoleType), default=RoleType.support)

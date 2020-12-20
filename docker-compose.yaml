@@ -16,11 +16,13 @@ services:
     container_name: app
     expose:
       - 5000
+    ports:
+      - 5000:5000
     depends_on:
       - kryptr_db
     environment:
+      - FLASK_APP=wsgi:app
       - FLASK_ENV=development
-      - FLASK_APP=wsgi
       - FLASK_DEBUG=1
 
 volumes:

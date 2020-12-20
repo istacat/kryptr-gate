@@ -6,10 +6,10 @@ import click
 from app import create_app, db, models, forms
 from app.models import User
 
+app = create_app()
+
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
-
-app = create_app()
 
 
 def add_admin():
@@ -17,7 +17,8 @@ def add_admin():
         User(
             username=ADMIN_USERNAME,
             password=ADMIN_PASSWORD,
-            activated=True
+            activated=True,
+            role=User.RoleType.admin
         )
     )
     db.session.commit()
@@ -33,6 +34,14 @@ def _init_db():
 def get_context():
     """Objects exposed here will be automatically available from the shell."""
     return dict(app=app, db=db, models=models, forms=forms)
+
+
+@app.cli.command()
+@click.confirmation_option(prompt="Delete all data from database tables?")
+def reset_db():
+    """Reset the current database."""
+    db.drop_all()
+    _init_db()
 
 
 @app.cli.command()
