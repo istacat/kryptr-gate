@@ -83,6 +83,42 @@
   transform: rotate(-45deg);
 }
 
+.menu {
+  position: fixed;
+  top: 65px;
+  left: 0;
+  bottom: 0;
+  background-color: $accent;
+  padding: 30px;
+  min-width: 250px;
+  border-top: 1px solid #cccccc;
+  box-shadow: 0 0 10px 5px #11111115;
+  transform: translateX(-200%);
+  transition: transform 0.3s;
+  z-index: 10;
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  &__link {
+    display: block;
+    padding: 25px 0;
+    border-bottom: 1px solid rgba(204, 204, 204, 0.164);
+    color: $bg;
+
+    &:hover {
+      border-color: $bg;
+    }
+  }
+
+  &--active {
+    transform: translateX(0);
+  }
+}
+
 .logo {
   display: block;
   width: 45px;
@@ -94,6 +130,7 @@
   color: $bg;
   display: block;
   margin-left: auto;
+  outline: transparent;
 
   &::after {
     content: "";

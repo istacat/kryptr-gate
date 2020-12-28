@@ -5,7 +5,9 @@
 <div class="login">
   <div class="login__inner">
     <form class="login__form login__card" method="POST">
-      <img class="logo login__logo" src="../../static/images/icons/logo.svg" alt="Kryptr Logo" >
+      <a class="logo login__logo" href="#">
+        <img class="logo__img" src="{{ url_for('static', filename='images/icons/logo.svg') }}" alt="Kryptr Logo" />
+      </a>
       <span class="login__title">Log In</span>
       {{ form.hidden_tag() }}
       <div class="login__group">

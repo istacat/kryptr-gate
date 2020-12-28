@@ -5,13 +5,39 @@
       <button class="menu-btn" type="button">
         <span class="menu-btn-line"></span>
       </button>
+      <nav class="menu">
+        <ul class="menu__list">
+          <li class="menu__item">
+            <a class="menu__link" href="#">Dashboard</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Accounts</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Resellers</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Distributors</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Sub Resellers</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Products</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="overlay"></div>
       {% endif %}
-      <img class="logo" src="{{ url_for('static', filename='images/icons/logo.svg') }}" alt="Kryptr Logo" />
+      <a class="logo" href="#">
+        <img class="logo__img" src="{{ url_for('static', filename='images/icons/logo.svg') }}" alt="Kryptr Logo" />
+      </a>
       {% if current_user.is_authenticated %}
         <button class="account">{{ current_user.username }}</button>
       {% else %}
         <button class="account">Log in</button>
       {% endif %}
     </div>
+
   </div>
 </header>
