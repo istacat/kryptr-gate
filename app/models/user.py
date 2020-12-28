@@ -12,10 +12,17 @@ from app.models.utils import ModelMixin
 
 class User(db.Model, UserMixin, ModelMixin):
 
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     class RoleType(enum.Enum):
-        """Utility class to support"""
+        """Utility class to support
+        Support - maintain accounts (excluding creating/deleting)
+        Sub_reseller - can create and manage own accounts
+        Reseller - can manage sub_ressellers and manage own accounts + sub_resseler's
+        Distributor - can manage resellers
+        Admin - super user
+        """
+
         support = 1
         sub_reseller = 2
         reseller = 3
@@ -40,12 +47,14 @@ class User(db.Model, UserMixin, ModelMixin):
 
     @classmethod
     def authenticate(cls, user_id, password):
-        user = cls.query.filter(db.or_(cls.username == user_id, cls.email == user_id)).first()
+        user = cls.query.filter(
+            db.or_(cls.username == user_id, cls.email == user_id)
+        ).first()
         if user is not None and check_password_hash(user.password, password):
             return user
 
     def __str__(self):
-        return '<User: %s>' % self.username
+        return "<User: %s>" % self.username
 
 
 class AnonymousUser(AnonymousUserMixin):

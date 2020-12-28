@@ -1,0 +1,61 @@
+.button {
+  padding: 25px 20px 25px 30px;
+  @extend %rubik-500;
+  font-size: 15px;
+  line-height: 0.9;
+  color: #fff;
+  border: none;
+  background-color: $link;
+  cursor: pointer;
+  transition: all .3s;
+
+  @include r(570) {
+    padding: 20px;
+  }
+
+  &::after {
+    content: "";
+    display: inline-block;
+    background-image: url('../../images/icons/sprite.svg#arrow');
+    background-repeat: no-repeat;
+    background-size: 100%;
+    margin-left: 60px;
+    transition: transform .5s;
+    width: 18px;
+    height: 15px;
+    filter: invert(1);
+
+    @include r(1300) {
+      margin-left: 30px;
+    }
+  }
+
+  &:hover {
+    box-shadow: inset 0px 0px 10px #436372;
+
+    &::after {
+      transform: translateX(5px);
+    }
+  }
+
+  &--light {
+    color: #436372;
+    border: 1px solid rgba(67, 99, 114, .4);
+    border-radius: 5px;
+    background-color: transparent;
+
+    &:hover {
+      background-color: #436372;
+      color: #fff;
+      box-shadow: none;
+
+      &::after {
+        filter: invert(1);
+      }
+    }
+
+    &::after {
+      filter: invert(35%) sepia(23%) saturate(684%) hue-rotate(154deg) brightness(93%) contrast(84%);
+    }
+  }
+}
