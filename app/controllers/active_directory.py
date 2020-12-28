@@ -1,6 +1,6 @@
 import ldap
 
-# auth('161.97.148.123', 'Administrator@kryptr.li', 'x3Rfh7K9P86wa')
+# check env
 
 
 def auth(address, username, password):

@@ -97,10 +97,10 @@ const build = () => {
 };
 
 const watcher = () => {
-  watch(["scss/**/*.scss"], styles);
+  watch(["ui/scss/**/*.scss"], styles);
   watch(["app/static/js/**/*.js", "!app/js/main.min.js"], scripts);
   watch(["app/templates/**/*.html"]).on("change", browserSync.reload);
-  watch(["app/static/images/icons/*.svg", "!app/images/icons/sprite.svg"], svg);
+  watch(["ui/images/icons/*.svg", "!ui/icons/sprite.svg"], svg);
 };
 
 exports.styles = styles;

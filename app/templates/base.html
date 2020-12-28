@@ -1,24 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ config.APP_NAME }}</title>
+    <!-- meta -->
+    <meta name="description" content="" />
+    <meta name="author" content="Viktor Radchenko" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    {% block meta %}{% endblock %}
+    <!-- styles -->
+    <link href="{{ url_for('static', filename='css/style.min.css') }}" rel="stylesheet" media="screen" />
+    {% block links %}{% endblock %}
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <title>{{ config.APP_NAME }}</title>
-  <!-- meta -->
-  <meta name="description" content="">
-  <meta name="author" content="Viktor Radchenko">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  {% block meta %}{% endblock %}
-  <!-- styles -->
-  <link href="{{ url_for('static', filename='css/style.min.css') }}" rel="stylesheet" media="screen">
-  {% block links %}{% endblock %}
-</head>
+  <body>
+    {% block header %} 
+      {% include "components/_header.html" %}
+    {% endblock %} 
+      
+      
+    {% block content %}{% endblock %}
 
-<body>
-  {% block content %}{% endblock %}
-  <!-- scripts -->
-  <script src="{{ url_for('static', filename='js/main.min.js') }}" type="text/javascript"></script>
-  {% block scripts %}{% endblock %}
-</body>
-
+    <footer class="footer">
+      <div class="footer__copyright">©2020 {{ config.APP_NAME }}. All rights reserved.</div>
+    </footer>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.min.js') }}" type="text/javascript"></script>
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

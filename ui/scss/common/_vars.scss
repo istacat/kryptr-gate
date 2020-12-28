@@ -1,42 +1,16 @@
-$bg: #fcd7b6;
-$default: #7b7b7b;
-$link: #a3bbc8;
-$bg-light: #fef7f0;
-$title: #191919;
-$accent: #243f4d;
+$bg: #eed484;
+$accent: #202a44;
+$default: #111;
+$link: #e8e8e8;
 
-%dmsans-400 {
-  font-family: "DMSans", sans-serif;
-  font-weight: 400;
-}
-
-%dmsans-500 {
-  font-family: "DMSans", sans-serif;
-  font-weight: 500;
-}
-
-%dmsans-700 {
-  font-family: "DMSans", sans-serif;
-  font-weight: 700;
-}
-
-%rubik-300 {
-  font-family: "Rubik", sans-serif;
+%nunito-300 {
+  font-family: "Nunito Sans", sans-serif;
   font-weight: 300;
 }
-%rubik-400 {
-  font-family: "Rubik", sans-serif;
+
+%nunito-400 {
+  font-family: "Nunito Sans", sans-serif;
   font-weight: 400;
-}
-
-%rubik-500 {
-  font-family: "Rubik", sans-serif;
-  font-weight: 500;
-}
-
-%poppins-700 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
 }
 
 %checkbox-hidden {
@@ -63,12 +37,12 @@ $accent: #243f4d;
 
 @mixin r($width) {
   @media only screen and (max-width: $width+ "px") {
-    @content; 
-  } 
+    @content;
+  }
 }
 
 @mixin rmin($width) {
   @media only screen and (min-width: $width+ "px") {
-    @content; 
-  } 
+    @content;
+  }
 }
