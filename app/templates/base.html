@@ -18,8 +18,10 @@
       {% include "components/_header.html" %}
     {% endblock %} 
       
-      
-    {% block content %}{% endblock %}
+    <main class="main">
+      <div class="container container--lg"></div>
+      {% block content %}{% endblock %}
+    </main>  
 
     <footer class="footer">
       <div class="footer__copyright">©2020 {{ config.APP_NAME }}. All rights reserved.</div>

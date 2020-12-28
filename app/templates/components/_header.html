@@ -1,9 +1,17 @@
 <header class="header">
   <div class="container container--lg">
     <div class="header__inner">
-      <button class="menu-button">Menu</button>
-      <img src="" alt="" class="logo" />
-      <button class="account">Admin</button>
+      {% if current_user.is_authenticated %}
+      <button class="menu-btn" type="button">
+        <span class="menu-btn-line"></span>
+      </button>
+      {% endif %}
+      <img class="logo" src="{{ url_for('static', filename='images/icons/logo.svg') }}" alt="Kryptr Logo" />
+      {% if current_user.is_authenticated %}
+        <button class="account">{{ current_user.username }}</button>
+      {% else %}
+        <button class="account">Log in</button>
+      {% endif %}
     </div>
   </div>
 </header>

@@ -5,6 +5,108 @@
   &__inner {
     display: flex;
     padding: 10px;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.menu-btn {
+  margin-right: auto;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: none;
+  position: relative;
+  outline: transparent;
+  cursor: pointer;
+  display: block;
+  z-index: 2;
+
+  @include r(996) {
+    display: block;
+  }
+
+  @include r(440) {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.menu-btn-line,
+.menu-btn-line::before,
+.menu-btn-line::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -1px;
+  margin-left: -15px;
+  width: 30px;
+  height: 2px;
+  background-color: $bg;
+}
+
+.menu-btn-line::before,
+.menu-btn-line::after {
+  content: "";
+  transition: all 0.4s;
+}
+
+.menu-btn-line::before {
+  transform: translateY(-10px);
+
+  @include r(440) {
+    transform: translateY(-7px);
+  }
+}
+
+.menu-btn-line::after {
+  transform: translateY(10px);
+
+  @include r(440) {
+    transform: translateY(7px);
+  }
+}
+
+.menu-btn--active .menu-btn-line {
+  height: 0;
+  background-color: $bg;
+}
+
+.menu-btn--active .menu-btn-line::before {
+  background-color: $bg;
+  transform: rotate(45deg);
+}
+
+.menu-btn--active .menu-btn-line::after {
+  background-color: $bg;
+  transform: rotate(-45deg);
+}
+
+.logo {
+  display: block;
+  width: 45px;
+  height: 45px;
+  transition: all 0.3s;
+}
+
+.account {
+  color: $bg;
+  display: block;
+  margin-left: auto;
+
+  &::after {
+    content: "";
+    display: block;
+    border-bottom: 2px solid transparent;
+    transform: scale(0);
+    transition: all 0.3s;
+  }
+
+  &:hover {
+    &::after {
+      border-color: $bg;
+      transform: scale(1);
+    }
   }
 }

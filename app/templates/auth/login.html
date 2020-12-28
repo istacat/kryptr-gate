@@ -1,24 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container py-4">
-  <div class="card w-50 mx-auto">
-    <div class="card-header">
-      <h4 class="card-title">Login</h4>
-    </div>
-    <div class="card-body">
-      <form class="form" role="form" action="{{ url_for('auth.login') }}" method="post">
-        <div class="form-group">
-          {{form.user_id.label}}
-          {{form.user_id(class='form-control')}}
+
+<div class="login">
+  <div class="login__inner">
+    <form class="login__form login__card" method="POST">
+      <img class="logo login__logo" src="../../static/images/icons/logo.svg" alt="Kryptr Logo" >
+      <span class="login__title">Log In</span>
+      {{ form.hidden_tag() }}
+      <div class="login__group">
+        <label class="form__label">
+          {{ form.user_id(class="login__input", type="text", placeholder="Username or email")}}
+        </label>
+        <div class="login__feedback">
+          {% for error in form.user_id.errors %}
+            <span>{{ error }}</span>
+          {% endfor %}
         </div>
-        <div class="form-group">
-          {{form.password.label}}
-          {{form.password(class='form-control')}}
+      </div>
+      <div class="login__group">
+        <label class="form__label">
+          {{ form.password(class="login__input", type="password", placeholder="Password")}}
+        </label>
+        <div class="login__feedback">
+          {% for error in form.password.errors %}
+            <span>{{ error }}</span>
+          {% endfor %}
         </div>
-        {{form.submit(class='btn btn-primary')}}
-      </form>
-    </div>
+      </div>
+      {{ form.submit(class="login__submit") }}
+    </form>
   </div>
 </div>
 {% endblock %}

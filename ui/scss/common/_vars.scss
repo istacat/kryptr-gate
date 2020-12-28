@@ -1,7 +1,7 @@
 $bg: #eed484;
 $accent: #202a44;
 $default: #111;
-$link: #e8e8e8;
+$link: #cccccc;
 
 %nunito-300 {
   font-family: "Nunito Sans", sans-serif;
@@ -11,6 +11,11 @@ $link: #e8e8e8;
 %nunito-400 {
   font-family: "Nunito Sans", sans-serif;
   font-weight: 400;
+}
+
+%nunito-700 {
+  font-family: "Nunito Sans", sans-serif;
+  font-weight: 700;
 }
 
 %checkbox-hidden {
