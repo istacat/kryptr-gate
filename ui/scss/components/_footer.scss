@@ -1,7 +1,7 @@
 .footer {
   
   &__copyright {
-    position: fixed;
+    position: absolute;
     bottom: 10px;
     right: 20px;
     @extend %nunito-300;
