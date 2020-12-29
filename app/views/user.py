@@ -4,39 +4,44 @@ from flask_login import current_user, login_required
 from app.models import User
 from app.forms import UserForm
 
-user_blueprint = Blueprint('user', __name__)
+user_blueprint = Blueprint("user", __name__)
 
 
-@user_blueprint.route('/users')
+@user_blueprint.route("/users")
 @login_required
 def index():
-    return render_template('pages/users.html')
+    return render_template("pages/users.html")
 
 
-@user_blueprint.route('/add_user')
+@user_blueprint.route("/add_user", methods=["GET", "POST"])
 @login_required
 def add_user():
     form = UserForm()
     if form.validate_on_submit():
         user = User(
-            username=form.username,
-            email=form.email,
-            password=form.password,
-            activated=form.activated,
-            role=form.role.value,
+            username=form.username.data,
+            email=form.email.data,
+            password=form.password.data,
+            activated=form.activated.data,
+            role=form.role.data,
         )
         user.save()
-        return redirect(url_for('users.index'))
-    return render_template('pages/')
+        return redirect(url_for("user.index"))
+    return render_template(
+        "base_add_edit.html",
+        include_header="components/_user-edit.html",
+        form=form,
+        action_url=url_for("user.add_user"),
+    )
 
 
-@user_blueprint.route('/edit_user/<int:user_id>')
+@user_blueprint.route("/edit_user")
 @login_required
-def edit_user(user_id):
+def edit_user():
     pass
 
 
-@user_blueprint.route('/api/user_list')
+@user_blueprint.route("/api/user_list")
 @login_required
 def get_user_list():
     users = User.query.all()

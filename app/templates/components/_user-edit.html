@@ -1,0 +1,55 @@
+<form class="edit__form" action="{{ action_url }}" method="POST">
+  <span class="edit__title">Edit user</span>
+  {{ form.hidden_tag() }}
+  <div class="edit__group">
+    <label class="edit__label">
+      {{ form.username(class="edit__input", type="text", placeholder="Username")}}
+    </label>
+    <div class="edit__feedback">
+      {% for error in form.username.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="edit__group">
+    <label class="edit__label">
+      {{ form.email(class="edit__input", type="email", placeholder="Email")}}
+    </label>
+    <div class="edit__feedback">
+      {% for error in form.email.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="edit__group">
+    <label class="edit__label">
+      {{ form.password(class="edit__input", type="password", placeholder="Password")}}
+    </label>
+    <div class="edit__feedback">
+      {% for error in form.password.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="edit__group">
+    <label class="edit__label">
+      {{ form.activated(class="edit__input")}}
+    </label>
+    <div class="edit__feedback">
+      {% for error in form.activated.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="edit__group">
+    <label class="edit__label">
+      {{ form.role(class="edit__input")}}
+    </label>
+    <div class="edit__feedback">
+      {% for error in form.role.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {{ form.submit(class="edit__submit")}}
+</form>
