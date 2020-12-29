@@ -98,7 +98,7 @@ const build = () => {
 
 const watcher = () => {
   watch(["ui/scss/**/*.scss"], styles);
-  watch(["app/static/js/**/*.js", "!app/js/main.min.js"], scripts);
+  watch(["app/static/js/**/*.js", "!app/js/main.min.js", "!app/js/tabulator.min.js"], scripts);
   watch(["app/templates/**/*.html"]).on("change", browserSync.reload);
   watch(["ui/images/icons/*.svg", "!ui/icons/sprite.svg"], svg);
 };

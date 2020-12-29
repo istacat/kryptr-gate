@@ -29,13 +29,27 @@ class User(db.Model, UserMixin, ModelMixin):
         distributor = 4
         admin = 5
 
+    class StatusType(enum.Enum):
+        active = "Active"
+        not_active = "Not active"
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(60), unique=True, nullable=False)
     email = db.Column(db.String(256))
     password_hash = db.Column(db.String(255), nullable=False)
-    activated = db.Column(db.Boolean, default=False)
+    activated = db.Column(Enum(StatusType), default=StatusType.active)
     role = db.Column(Enum(RoleType), default=RoleType.support)
     created_at = db.Column(db.DateTime, default=datetime.now)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "activated": self.activated.name,
+            "role": self.role.name,
+            "created_at": self.created_at
+        }
 
     @hybrid_property
     def password(self):

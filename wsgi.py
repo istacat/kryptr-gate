@@ -17,7 +17,7 @@ def add_admin():
         User(
             username=ADMIN_USERNAME,
             password=ADMIN_PASSWORD,
-            activated=True,
+            activated=User.StatusType.active,
             role=User.RoleType.admin
         )
     )

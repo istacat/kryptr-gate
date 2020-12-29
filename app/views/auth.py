@@ -17,7 +17,7 @@ def login():
             flash('Login successful.', 'success')
             return redirect(url_for('main.index'))
         flash('Wrong user ID or password.', 'danger')
-    return render_template('auth/login.html', form=form)
+    return render_template('login.html', form=form)
 
 
 @auth_blueprint.route('/logout')

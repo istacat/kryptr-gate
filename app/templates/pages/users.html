@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block links %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tabulator.min.css') }}">
+{% endblock %}
+{% block content %}
+  <section class="users">
+    <div class="container">
+      <div class="users__inner">
+        <div class="users__header">
+          <span class="users__title">Users</span>
+          <a class="btn users__add" href="#" >Add user</a>
+        </div>
+
+        <div class="users__table">
+          {% for user in users %}
+            <span class="users__username">{{ user.username }}</span>
+          {% endfor %}
+          <div id="users-table"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/tabulator.min.js') }}"></script>
+{% endblock %}
