@@ -1,5 +1,5 @@
 from flask import render_template, Blueprint, flash, jsonify, redirect, url_for
-from flask_login import current_user, login_required
+from flask_login import login_required
 
 from app.models import User
 from app.forms import UserForm

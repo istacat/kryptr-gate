@@ -1,7 +1,5 @@
-from flask import render_template, Blueprint, flash
-from flask_login import current_user, login_required
-
-from app.models import Account
+from flask import render_template, Blueprint
+from flask_login import login_required
 
 account_blueprint = Blueprint('account', __name__)
 
