@@ -19,6 +19,8 @@ def create_app(environment='development'):
     from app.views import (
         main_blueprint,
         auth_blueprint,
+        account_blueprint,
+        user_blueprint,
     )
     from app.models import (
         User,
@@ -41,6 +43,8 @@ def create_app(environment='development'):
     # Register blueprints.
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
+    app.register_blueprint(account_blueprint)
+    app.register_blueprint(user_blueprint)
 
     # Set up flask login.
     @login_manager.user_loader

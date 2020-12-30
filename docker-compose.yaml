@@ -20,6 +20,8 @@ services:
       - 5000:5000
     depends_on:
       - kryptr_db
+    volumes:
+      - ./:/usr/src/app
     environment:
       - FLASK_APP=wsgi:app
       - FLASK_ENV=development

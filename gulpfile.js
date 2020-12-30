@@ -20,7 +20,7 @@ const browsersync = () => {
 };
 
 const styles = () => {
-  return src("scss/style.scss")
+  return src("ui/scss/style.scss")
     .pipe(scss({ outputStyle: "compressed" }))
     .pipe(concat("style.min.css"))
     .pipe(
@@ -34,7 +34,7 @@ const styles = () => {
 };
 
 const images = () => {
-  return src("design/images/**/*.*")
+  return src("ui/images/**/*.*")
     .pipe(
       imagemin([
         imagemin.gifsicle({ interlaced: true }),
@@ -49,7 +49,7 @@ const images = () => {
 };
 
 const svg = () => {
-  return src(["app/static/images/icons/*.svg", "!app/static/images/icons/sprite.svg"])
+  return src(["ui/images/icons/*.svg", "!ui/images/icons/sprite.svg"])
     .pipe(
       svgmin({
         js2svg: {
@@ -81,9 +81,7 @@ const svg = () => {
 };
 
 const scripts = () => {
-  return src([
-    "app/static/js/main.js",
-  ])
+  return src(["app/static/js/main.js"])
     .pipe(concat("main.min.js"))
     .pipe(uglify())
     .pipe(dest("app/static/js"))
@@ -99,10 +97,10 @@ const build = () => {
 };
 
 const watcher = () => {
-  watch(["scss/**/*.scss"], styles);
-  watch(["app/static/js/**/*.js", "!app/js/main.min.js"], scripts);
+  watch(["ui/scss/**/*.scss"], styles);
+  watch(["app/static/js/**/*.js", "!app/js/main.min.js", "!app/js/tabulator.min.js"], scripts);
   watch(["app/templates/**/*.html"]).on("change", browserSync.reload);
-  watch(["app/static/images/icons/*.svg", "!app/images/icons/sprite.svg"], svg);
+  watch(["ui/images/icons/*.svg", "!ui/icons/sprite.svg"], svg);
 };
 
 exports.styles = styles;

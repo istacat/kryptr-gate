@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="login">
+  <div class="login__inner">
+    <form class="login__form login__card" method="POST">
+      <a class="logo login__logo" href="#">
+        <img class="logo__img" src="{{ url_for('static', filename='images/icons/logo.svg') }}" alt="Kryptr Logo" />
+      </a>
+      <span class="login__title">Log In</span>
+      {{ form.hidden_tag() }}
+      <div class="login__group">
+        <label class="form__label">
+          {{ form.user_id(class="login__input", type="text", placeholder="Username or email")}}
+        </label>
+        <div class="login__feedback">
+          {% for error in form.user_id.errors %}
+            <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="login__group">
+        <label class="form__label">
+          {{ form.password(class="login__input", type="password", placeholder="Password")}}
+        </label>
+        <div class="login__feedback">
+          {% for error in form.password.errors %}
+            <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {{ form.submit(class="login__submit") }}
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+<header class="header">
+  <div class="container container--lg">
+    <div class="header__inner">
+      {% if current_user.is_authenticated %}
+      <button class="menu-btn" type="button">
+        <span class="menu-btn-line"></span>
+      </button>
+      <nav class="menu">
+        <ul class="menu__list">
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('main.index') }}">Dashboard</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('user.index') }}">Users</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Accounts</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Resellers</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Distributors</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Sub Resellers</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Products</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="overlay"></div>
+      {% endif %}
+      <a class="logo" href="#">
+        <img class="logo__img" src="{{ url_for('static', filename='images/icons/logo.svg') }}" alt="Kryptr Logo" />
+      </a>
+      {% if current_user.is_authenticated %}
+        <button class="account">{{ current_user.username }}</button>
+      {% else %}
+        <button class="account">Log in</button>
+      {% endif %}
+    </div>
+
+  </div>
+</header>
