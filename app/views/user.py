@@ -26,6 +26,7 @@ def add_user():
             role=form.role.data,
         )
         user.save()
+        flash('User creation successful.', 'success')
         return redirect(url_for("user.index"))
     return render_template(
         "base_add_edit.html",

@@ -14,14 +14,14 @@
   </head>
 
   <body>
-    {% block header %} 
+    {% block header %}
       {% include "components/_header.html" %}
-    {% endblock %} 
-      
+    {% endblock %}
+
     <main class="main">
       <div class="container container--lg"></div>
       {% block content %}{% endblock %}
-    </main>  
+    </main>
 
     <footer class="footer">
       <!-- Flash Messages -->
