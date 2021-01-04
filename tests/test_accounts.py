@@ -53,5 +53,5 @@ def test_add_account(client):
     ), follow_redirects=True)
 
     assert b'Account creation successful' in response.data
-    acc = Account.query.filter(Account.name == "TEST_ACC_NAME").first()
+    acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
     assert acc
