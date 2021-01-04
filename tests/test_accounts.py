@@ -4,6 +4,8 @@ from app import db, create_app
 from app.models import Account
 from tests.utils import register, login, logout
 
+TEST_ACC_NAME = "Test Account 01"
+
 
 @pytest.fixture
 def client():
@@ -39,7 +41,7 @@ def test_add_account(client):
     response = client.get('/add_account')
     assert response.status_code == 200
     response = client.post('/add_account', data=dict(
-        name="Test Account 01",
+        name=TEST_ACC_NAME,
         ecc_id="ECC001",
         ad_login="test01@kryptr.li",
         ad_password="password",
@@ -51,3 +53,5 @@ def test_add_account(client):
     ), follow_redirects=True)
 
     assert b'Account creation successful' in response.data
+    acc = Account.query.filter(Account.name == "TEST_ACC_NAME").first()
+    assert acc
