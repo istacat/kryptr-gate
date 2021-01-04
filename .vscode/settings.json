@@ -4,5 +4,8 @@
     "python.linting.enabled": true,
     "python.formatting.provider": "black",
     "python.terminal.activateEnvironment": true,
-    "files.autoSave": "onFocusChange"
+    "files.autoSave": "onFocusChange",
+    "cSpell.words": [
+        "imei"
+    ]
 }
