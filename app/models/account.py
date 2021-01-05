@@ -18,7 +18,7 @@ class Account(db.Model, ModelMixin):
     email = db.Column(
         db.String(32), nullable=False, unique=True
     )  # automatically generated
-    reseller_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    reseller_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     reseller = relationship("User")
     subscriptions = relationship("Subscription")
     sim = db.Column(db.String(20))

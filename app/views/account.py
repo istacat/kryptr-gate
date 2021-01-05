@@ -1,15 +1,16 @@
 from flask import render_template, Blueprint, jsonify, flash, redirect, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app.models import Account
 from app.forms import AccountForm
+from app.logger import log
 
-account_blueprint = Blueprint('account', __name__)
+account_blueprint = Blueprint("account", __name__)
 
 
-@account_blueprint.route('/accounts')
+@account_blueprint.route("/accounts")
 @login_required
 def index():
-    return render_template('pages/accounts.html')
+    return render_template("pages/accounts.html")
 
 
 @account_blueprint.route("/add_account", methods=["GET", "POST"])
@@ -27,10 +28,14 @@ def add_account():
             sim=form.sim.data,
             imei=form.imei.data,
             comment=form.comment.data,
+            reseller_id=current_user.id
         )
         acc.save()
-        flash('Account creation successful.', 'success')
+        log(log.INFO, "Account creation successful. [%s]", acc)
+        flash("Account creation successful.", "success")
         return redirect(url_for("account.index"))
+    elif form.is_submitted():
+        log(log.ERROR, "Submit failed: %s", form.errors)
     return render_template(
         "base_add_edit.html",
         include_header="components/_account-edit.html",

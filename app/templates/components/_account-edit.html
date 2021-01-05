@@ -1,5 +1,5 @@
 <form class="edit__form" action="{{ action_url }}" method="POST">
-  <span class="edit__title">Edit user</span>
+  <span class="edit__title">Edit account</span>
   {{ form.hidden_tag() }}
   <div class="edit__group">
     <label class="edit__label">
@@ -7,6 +7,16 @@
     </label>
     <div class="edit__feedback">
       {% for error in form.name.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="edit__group">
+    <label class="edit__label">
+      {{ form.ecc_id(class="edit__input", type="text", placeholder="ecc_id")}}
+    </label>
+    <div class="edit__feedback">
+      {% for error in form.ecc_id.errors %}
       <span>{{ error }}</span>
       {% endfor %}
     </div>

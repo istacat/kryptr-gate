@@ -15,8 +15,6 @@ overlay && overlay.addEventListener('click', function () {
   overlay.classList.toggle('overlay--active');
 })
 
-let tabel;
-
 if (document.getElementById('users-table')) {
   table = new Tabulator("#users-table", {
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
