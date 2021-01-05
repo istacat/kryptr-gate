@@ -99,9 +99,13 @@ const build = () => {
   return src(["app/**/*.html", "app/css/styles.min.css", "app/js/main.min.js"], { base: "app" }).pipe(dest("dist"));
 };
 
+const jsSrcFiles = [
+  "app/static/js/main.js"
+];
+
 const watcher = () => {
   watch(["ui/scss/**/*.scss"], styles);
-  watch(["app/static/js/**/*.js", "!app/js/main.min.js", "!app/js/tabulator.min.js"], scripts);
+  watch(jsSrcFiles, scripts);
   watch(["app/templates/**/*.html"]).on("change", browserSync.reload);
   watch(["ui/images/icons/*.svg", "!ui/icons/sprite.svg"], svg);
 };
