@@ -36,7 +36,6 @@ if (document.getElementById('users-table')) {
 
 if (document.getElementById('accounts-table')) {
   table = new Tabulator("#accounts-table", {
-    // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
     layout: "fitColumns", //fit columns to width of table (optional)
     ajaxURL: window.location.origin + '/api/account_list',
     columns: [ //Define Table Columns
