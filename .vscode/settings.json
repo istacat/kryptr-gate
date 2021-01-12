@@ -6,6 +6,8 @@
     "python.terminal.activateEnvironment": true,
     "files.autoSave": "onFocusChange",
     "cSpell.words": [
+        "LDAP",
+        "dotenv",
         "imei"
     ]
 }
