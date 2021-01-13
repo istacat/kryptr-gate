@@ -1,7 +1,9 @@
+import pytest
 import ldap3
 from config import BaseConfig as config
 
 
+@pytest.mark.skipif(not config.LDAP_SERVER, reason="LDAP not configured")
 def test_ldap_search():
     ad_name = 'DC=KRYPTR,DC=li'
     server_win_uri = config.LDAP_SERVER

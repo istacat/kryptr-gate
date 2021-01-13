@@ -8,6 +8,7 @@
     "cSpell.words": [
         "LDAP",
         "dotenv",
-        "imei"
+        "imei",
+        "skipif"
     ]
 }
