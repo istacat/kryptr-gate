@@ -33,7 +33,7 @@ def _init_db():
 @app.shell_context_processor
 def get_context():
     """Objects exposed here will be automatically available from the shell."""
-    return dict(app=app, db=db, models=models, forms=forms)
+    return dict(app=app, db=db, m=models, forms=forms)
 
 
 @app.cli.command()

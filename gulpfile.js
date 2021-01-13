@@ -10,6 +10,7 @@ const cheerio = require("gulp-cheerio");
 const replace = require("gulp-replace");
 const del = require("del");
 const browserSync = require("browser-sync").create();
+const sourcemaps = require('gulp-sourcemaps');
 
 const browsersync = () => {
   browserSync.init({
@@ -82,8 +83,10 @@ const svg = () => {
 
 const scripts = () => {
   return src(["app/static/js/main.js"])
+    .pipe(sourcemaps.init())
     .pipe(concat("main.min.js"))
     .pipe(uglify())
+    .pipe(sourcemaps.write())
     .pipe(dest("app/static/js"))
     .pipe(browserSync.stream());
 };
@@ -96,9 +99,13 @@ const build = () => {
   return src(["app/**/*.html", "app/css/styles.min.css", "app/js/main.min.js"], { base: "app" }).pipe(dest("dist"));
 };
 
+const jsSrcFiles = [
+  "app/static/js/main.js"
+];
+
 const watcher = () => {
   watch(["ui/scss/**/*.scss"], styles);
-  watch(["app/static/js/**/*.js", "!app/js/main.min.js", "!app/js/tabulator.min.js"], scripts);
+  watch(jsSrcFiles, scripts);
   watch(["app/templates/**/*.html"]).on("change", browserSync.reload);
   watch(["ui/images/icons/*.svg", "!ui/icons/sprite.svg"], svg);
 };
