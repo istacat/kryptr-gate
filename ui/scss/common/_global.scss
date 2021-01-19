@@ -17,12 +17,16 @@ body {
 
 .main {
   flex-grow: 1;
+background: rgb(127,168,230);
+background: linear-gradient(144deg, rgba(127,168,230,1) 0%, rgba(64,137,193,1) 46%, rgba(49,198,218,1) 100%);
 }
 
 .card {
   padding: 15px;
-  border-radius: 5px;
+  border-radius: 0 0 5px 5px;
   box-shadow: 0 0 20px 5px #1111110a;
+  background-color: $accent;
+
 }
 
 .overlay {
@@ -41,7 +45,7 @@ body {
     display: block;
   }
 }
-  
+
 .container {
   max-width: 1200px;
   width: 100%;

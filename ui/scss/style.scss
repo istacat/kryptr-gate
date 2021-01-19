@@ -9,6 +9,12 @@
 @import "components/footer";
 @import "components/login";
 @import "components/dashboard";
+@import "components/user-edit";
+@import "components/tabulator";
 
 @import "pages/users.scss";
-@import "pages/resellers.scss"
+@import "pages/resellers.scss";
+@import "pages/distributors.scss";
+@import "pages/sub_resellers.scss";
+@import "pages/accounts.scss";
+@import "pages/products.scss";

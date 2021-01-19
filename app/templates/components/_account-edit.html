@@ -1,10 +1,15 @@
 <form class="edit__form" action="{{ action_url }}" method="POST">
   <span class="edit__title">Edit account</span>
+  <div class="edit__container">
   {{ form.hidden_tag() }}
+
   <div class="edit__group">
-    <label class="edit__label">
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Account Name
+      </label>
       {{ form.name(class="edit__input", type="text", placeholder="Name")}}
-    </label>
+    </div>
     <div class="edit__feedback">
       {% for error in form.name.errors %}
       <span>{{ error }}</span>
@@ -12,9 +17,12 @@
     </div>
   </div>
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.ecc_id(class="edit__input", type="text", placeholder="ecc_id")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Ecc_id
+        </label>
+      {{ form.ecc_id(class="edit__input", type="text", readonly='true')}}
+      </div>
     <div class="edit__feedback">
       {% for error in form.ecc_id.errors %}
       <span>{{ error }}</span>
@@ -22,9 +30,12 @@
     </div>
   </div>
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.email(class="edit__input", type="email", placeholder="Email")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Email
+        </label>
+      {{ form.email(class="edit__input", type="email", readonly='true')}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.email.errors %}
       <span>{{ error }}</span>
@@ -32,9 +43,12 @@
     </div>
   </div>
   <div class="edit__group">
-    <label class="edit__label">
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Login
+      </label>
       {{ form.ad_login(class="edit__input", type="text", placeholder="Login")}}
-    </label>
+    </div>
     <div class="edit__feedback">
       {% for error in form.ad_login.errors %}
       <span>{{ error }}</span>
@@ -42,9 +56,12 @@
     </div>
   </div>
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.ad_password(class="edit__input", type="password", placeholder="Password")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Password
+        </label>
+      {{ form.ad_password(class="edit__input", type="text", placeholder="Password")}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.ad_password.errors %}
       <span>{{ error }}</span>
@@ -53,9 +70,12 @@
   </div>
 
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.license_key(class="edit__input", type="text", placeholder="License")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+        License
+        </label>
+      {{ form.license_key(class="edit__input", type="text",)}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.license_key.errors %}
       <span>{{ error }}</span>
@@ -64,9 +84,12 @@
   </div>
 
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.sim(class="edit__input", type="text", placeholder="Sim")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Sim
+        </label>
+      {{ form.sim(class="edit__input", type="text", )}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.sim.errors %}
       <span>{{ error }}</span>
@@ -75,9 +98,12 @@
   </div>
 
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.imei(class="edit__input", type="text", placeholder="IMEI")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+        IMEI
+        </label>
+      {{ form.imei(class="edit__input", type="text", )}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.imei.errors %}
       <span>{{ error }}</span>
@@ -86,15 +112,22 @@
   </div>
 
   <div class="edit__group">
-    <label class="edit__label">
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Comments
+      </label>
       {{ form.comment(class="edit__input", placeholder="Comments")}}
-    </label>
+    </div>
     <div class="edit__feedback">
       {% for error in form.comment.errors %}
       <span>{{ error }}</span>
       {% endfor %}
     </div>
   </div>
-
-  {{ form.submit(class="edit__submit")}}
+  <div class="edit__group">
+    <div class="edit__submit-btn">
+    {{ form.submit(class="edit__submit")}}
+  </div>
+    </div>
+  </div>
 </form>

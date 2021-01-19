@@ -1,10 +1,22 @@
 <form class="edit__form" action="{{ action_url }}" method="POST">
-  <span class="edit__title">Edit user</span>
+  <span class="edit__form-title">
+    {% if user %}
+    Edit user
+    {% elif reseller%}
+    Edit reseller
+    {% endif %}
+      User edit
+  </span>
+  <div class="edit__container">
+
   {{ form.hidden_tag() }}
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.username(class="edit__input", type="text", placeholder="Username")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+      Username
+      </label>
+      {{ form.username(class="edit__input", type="text", placeholder="")}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.username.errors %}
       <span>{{ error }}</span>
@@ -12,9 +24,12 @@
     </div>
   </div>
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.email(class="edit__input", type="email", placeholder="Email")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Email
+      </label>
+      {{ form.email(class="edit__input", type="email", placeholder="")}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.email.errors %}
       <span>{{ error }}</span>
@@ -22,9 +37,12 @@
     </div>
   </div>
   <div class="edit__group">
-    <label class="edit__label">
-      {{ form.password(class="edit__input", type="password", placeholder="Password")}}
-    </label>
+    <div class="input__wrapper">
+      <label class="edit__label">
+        Password
+      </label>
+      {{ form.password(class="edit__input", type="text", placeholder="")}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.password.errors %}
       <span>{{ error }}</span>
@@ -32,9 +50,12 @@
     </div>
   </div>
   <div class="edit__group">
+    <div class="input__wrapper">
     <label class="edit__label">
-      {{ form.activated(class="edit__input")}}
+      Activated
     </label>
+      {{ form.activated(class="edit__input")}}
+    </div>
     <div class="edit__feedback">
       {% for error in form.activated.errors %}
       <span>{{ error }}</span>
@@ -42,14 +63,22 @@
     </div>
   </div>
   <div class="edit__group">
+    <div class="input__wrapper">
     <label class="edit__label">
+      Users role
+      </label>
       {{ form.role(class="edit__input")}}
-    </label>
+    </div>
     <div class="edit__feedback">
       {% for error in form.role.errors %}
       <span>{{ error }}</span>
       {% endfor %}
     </div>
   </div>
+  <div class="edit__group">
+  <div class="edit__submit-btn">
   {{ form.submit(class="edit__submit")}}
+</div>
+  </div>
+</div>
 </form>

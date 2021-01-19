@@ -4,12 +4,18 @@
   <section class="edit">
     <div class="container">
       <div class="edit__inner">
+        <div class='edit__header'>
           <span class="edit__title">
             Edit
           </span>
+          <div class='edit__cancel-btn'>
+            <a href="{{ cancel_link }}">
+            &#10006
+          </a>
+          </div>
+        </div>
         <div class="card">
           {% include include_header %}
-          <form class="edit__form" action="#" method="POST"></form>
         </div>
       </div>
     </div>
