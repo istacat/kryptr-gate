@@ -1,20 +1,20 @@
-from app.forms import ResellerForm
+from app.forms import DistributorForm
 from flask import render_template, Blueprint, flash, redirect, url_for, jsonify
 from flask_login import login_required
 from app.models import User
-reseller_blueprint = Blueprint('reseller', __name__)
+distributor_blueprint = Blueprint('distributor', __name__)
 
 
-@reseller_blueprint.route("/resellers")
+@distributor_blueprint.route("/distributors")
 @login_required
 def index():
-    return render_template("pages/resellers.html")
+    return render_template("pages/distributors.html")
 
 
-@reseller_blueprint.route("/add_reseller", methods=["GET", "POST"])
+@distributor_blueprint.route("/add_distributor", methods=["GET", "POST"])
 @login_required
-def add_reseller():
-    form = ResellerForm()
+def add_distributor():
+    form = DistributorForm()
     if form.validate_on_submit():
         res = User(
             username=form.username.data,
@@ -26,20 +26,20 @@ def add_reseller():
         res.save()
         flash('User creation successful.', 'success')
         flash("Account creation successful.", "success")
-        return redirect(url_for("reseller.index"))
+        return redirect(url_for("distributor.index"))
     return render_template(
         "base_add_edit.html",
         include_header="components/_user-edit.html",
         form=form,
-        cancel_link=url_for("reseller.index"),
-        action_url=url_for("reseller.add_reseller"),
+        cancel_link=url_for("distributor.index"),
+        action_url=url_for("distributor.add_distributor"),
     )
 
 
-@reseller_blueprint.route("/api/reseller_list")
+@distributor_blueprint.route("/api/distributor_list")
 @login_required
-def get_reseller_list():
-    resellers = User.query.filter(User.role == 'reseller')
-    res = [reseller.to_json() for reseller in resellers]
+def get_distributor_list():
+    distributors = User.query.filter(User.role == 'distributor')
+    res = [distributor.to_json() for distributor in distributors]
     print(res)
     return jsonify(res)

@@ -1,20 +1,20 @@
-from app.forms import ResellerForm
+from app.forms import SubResellerForm
 from flask import render_template, Blueprint, flash, redirect, url_for, jsonify
 from flask_login import login_required
 from app.models import User
-reseller_blueprint = Blueprint('reseller', __name__)
+sub_reseller_blueprint = Blueprint('sub_reseller', __name__)
 
 
-@reseller_blueprint.route("/resellers")
+@sub_reseller_blueprint.route("/sub_resellers")
 @login_required
 def index():
-    return render_template("pages/resellers.html")
+    return render_template("pages/sub_resellers.html")
 
 
-@reseller_blueprint.route("/add_reseller", methods=["GET", "POST"])
+@sub_reseller_blueprint.route("/add_sub_reseller", methods=["GET", "POST"])
 @login_required
-def add_reseller():
-    form = ResellerForm()
+def add_sub_reseller():
+    form = SubResellerForm()
     if form.validate_on_submit():
         res = User(
             username=form.username.data,
@@ -26,20 +26,20 @@ def add_reseller():
         res.save()
         flash('User creation successful.', 'success')
         flash("Account creation successful.", "success")
-        return redirect(url_for("reseller.index"))
+        return redirect(url_for("sub_reseller.index"))
     return render_template(
         "base_add_edit.html",
         include_header="components/_user-edit.html",
         form=form,
-        cancel_link=url_for("reseller.index"),
-        action_url=url_for("reseller.add_reseller"),
+        cancel_link=url_for("sub_reseller.index"),
+        action_url=url_for("sub_reseller.add_sub_reseller"),
     )
 
 
-@reseller_blueprint.route("/api/reseller_list")
+@sub_reseller_blueprint.route("/api/sub_reseller_list")
 @login_required
 def get_reseller_list():
-    resellers = User.query.filter(User.role == 'reseller')
-    res = [reseller.to_json() for reseller in resellers]
+    sub_resellers = User.query.filter(User.role == 'sub_reseller')
+    res = [sub_reseller.to_json() for sub_reseller in sub_resellers]
     print(res)
     return jsonify(res)

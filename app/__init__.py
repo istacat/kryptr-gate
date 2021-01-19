@@ -22,6 +22,9 @@ def create_app(environment='development'):
         account_blueprint,
         user_blueprint,
         reseller_blueprint,
+        distributor_blueprint,
+        sub_reseller_blueprint,
+        product_blueprint,
     )
     from app.models import (
         User,
@@ -34,6 +37,7 @@ def create_app(environment='development'):
     # Set app config.
     env = os.environ.get('FLASK_ENV', environment)
     app.config.from_object(config[env])
+    app.config['JSON_SORT_KEYS'] = False
     config[env].configure(app)
 
     # Set up extensions.
@@ -47,6 +51,9 @@ def create_app(environment='development'):
     app.register_blueprint(account_blueprint)
     app.register_blueprint(user_blueprint)
     app.register_blueprint(reseller_blueprint)
+    app.register_blueprint(distributor_blueprint)
+    app.register_blueprint(sub_reseller_blueprint)
+    app.register_blueprint(product_blueprint)
 
     # Set up flask login.
     @login_manager.user_loader

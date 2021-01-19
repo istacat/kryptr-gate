@@ -40,6 +40,7 @@ def add_account():
         "base_add_edit.html",
         include_header="components/_account-edit.html",
         form=form,
+        cancel_link=url_for("account.index"),
         action_url=url_for("account.add_account"),
     )
 

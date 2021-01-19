@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, SubmitField, RadioField
+from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 
 
-class UserForm(FlaskForm):
+class DistributorForm(FlaskForm):
     username = StringField("Username", [DataRequired()])
     email = StringField("Email", [DataRequired()])
     password = PasswordField("Password", [DataRequired()])
@@ -14,7 +14,7 @@ class UserForm(FlaskForm):
     )
     role = SelectField(
         "User type",
-        default="support",
+        default="distributor",
         choices=[
             ("admin", "Admin"),
             ("distributor", "Distributor"),
