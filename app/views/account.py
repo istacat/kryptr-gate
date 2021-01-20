@@ -36,7 +36,6 @@ def add_account():
             email=form.email.data,
             ad_login=form.ad_login.data,
             ad_password=form.ad_password.data,
-            license_key=form.license_key.data,
             sim=form.sim.data,
             imei=form.imei.data,
             comment=form.comment.data,

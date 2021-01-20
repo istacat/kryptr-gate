@@ -9,7 +9,6 @@ class AccountForm(FlaskForm):
     email = StringField("Email", [DataRequired(), Email(3, 45)])
     ad_login = StringField("Login", [DataRequired()])
     ad_password = StringField("Password", [DataRequired()])
-    license_key = StringField("License", [DataRequired()])
     sim = StringField("Sim")
     imei = StringField("IMEI")
     comment = TextAreaField("Comments")

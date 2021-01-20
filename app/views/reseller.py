@@ -2,6 +2,7 @@ from app.forms import ResellerForm
 from flask import render_template, Blueprint, flash, redirect, url_for, jsonify
 from flask_login import login_required
 from app.models import User
+from app.logger import log
 reseller_blueprint = Blueprint('reseller', __name__)
 
 
@@ -24,9 +25,10 @@ def add_reseller():
             role=form.role.data,
         )
         res.save()
-        flash('User creation successful.', 'success')
-        flash("Account creation successful.", "success")
+        flash("Reseller creation successful.", "success")
         return redirect(url_for("reseller.index"))
+    elif form.is_submitted():
+        log(log.ERROR, "Submit failed: %s", form.errors)
     return render_template(
         "base_add_edit.html",
         include_header="components/_user-edit.html",

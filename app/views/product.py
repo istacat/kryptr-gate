@@ -25,8 +25,8 @@ def add_product():
 
         )
         prod.save()
-        log(log.INFO, "Account creation successful. [%s]", prod)
-        flash("Account creation successful.", "success")
+        log(log.INFO, "Product creation successful. [%s]", prod)
+        flash("Product creation successful.", "success")
         return redirect(url_for("product.index"))
     elif form.is_submitted():
         log(log.ERROR, "Submit failed: %s", form.errors)

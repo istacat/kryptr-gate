@@ -68,21 +68,6 @@
       {% endfor %}
     </div>
   </div>
-
-  <div class="edit__group">
-    <div class="input__wrapper">
-      <label class="edit__label">
-        License
-        </label>
-      {{ form.license_key(class="edit__input", type="text",)}}
-    </div>
-    <div class="edit__feedback">
-      {% for error in form.license_key.errors %}
-      <span>{{ error }}</span>
-      {% endfor %}
-    </div>
-  </div>
-
   <div class="edit__group">
     <div class="input__wrapper">
       <label class="edit__label">

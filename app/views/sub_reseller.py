@@ -2,6 +2,7 @@ from app.forms import SubResellerForm
 from flask import render_template, Blueprint, flash, redirect, url_for, jsonify
 from flask_login import login_required
 from app.models import User
+from app.logger import log
 sub_reseller_blueprint = Blueprint('sub_reseller', __name__)
 
 
@@ -24,9 +25,10 @@ def add_sub_reseller():
             role=form.role.data,
         )
         res.save()
-        flash('User creation successful.', 'success')
-        flash("Account creation successful.", "success")
+        flash("Sub reseller creation successful.", "success")
         return redirect(url_for("sub_reseller.index"))
+    elif form.is_submitted():
+        log(log.ERROR, "Submit failed: %s", form.errors)
     return render_template(
         "base_add_edit.html",
         include_header="components/_user-edit.html",
