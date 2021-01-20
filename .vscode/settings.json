@@ -9,6 +9,7 @@
         "LDAP",
         "dotenv",
         "imei",
+        "kryptr",
         "skipif"
     ],
     "files.watcherExclude": {

@@ -1,23 +1,16 @@
 import pytest
-import ldap3
 from config import BaseConfig as config
+from app.controllers.ldap import LDAP
 
 
 @pytest.mark.skipif(not config.LDAP_SERVER, reason="LDAP not configured")
-def test_ldap_search():
-    ad_name = 'DC=kryptr,DC=li'
-    server_win_uri = config.LDAP_SERVER
-    # search_filter = "(&(objectClass=person)(sAMAccountName=*)(sn=*))"
-    search_filter = "(&(objectClass=*)(sAMAccountName=*)(sn=*))"
-    win_bind_name = config.LDAP_USER
-    win_bind_passwd = config.LDAP_PASS
-    attrs = ['*']
-
-    def get_users_win_data(ip, search_base, search_filter, attrs, win_bind_name, win_bind_passwd):
-        server = ldap3.Server('ldap://{}'.format(ip))
-        with ldap3.Connection(server, user=win_bind_name, password=win_bind_passwd) as conn:
-            conn.search(search_base, search_filter, attributes=attrs)
-            return(conn.entries)
-
-    ad_data = get_users_win_data(server_win_uri, ad_name, search_filter, attrs, win_bind_name, win_bind_passwd)
-    assert ad_data
+def test_ldap_add_delete_user():
+    ldap = LDAP()
+    TEST_USER_NAME = "TEST001"
+    ldap.delete_user(TEST_USER_NAME)
+    user = ldap.add_user(TEST_USER_NAME, "ZAQ!xsw2")
+    assert user
+    res = ldap.delete_user(TEST_USER_NAME)
+    assert res
+    users = ldap.users
+    assert users
