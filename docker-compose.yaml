@@ -14,10 +14,8 @@ services:
     build: .
     restart: always
     container_name: app
-    expose:
-      - 5000
     ports:
-      - 5000:5000
+      - 127.0.0.1:5000:5000
     depends_on:
       - kryptr_db
     volumes:
