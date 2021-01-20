@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block links %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tabulator.min.css') }}">
+{% endblock %}
+{% block content %}
+  <section class="products">
+    <div class="container">
+      <div class="products__inner">
+        <div class="products__header">
+          <span class="products__title">Products</span>
+          <a class="btn products__add" href="{{ url_for('product.add_product') }}" >New product</a>
+        </div>
+
+        <div class="products__table">
+          <div id="products-table"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/tabulator.min.js') }}"></script>
+{% endblock %}

@@ -1,12 +1,6 @@
 <form class="edit__form" action="{{ action_url }}" method="POST">
-  <span class="edit__form-title">
-    {% if user %}
-    Edit user
-    {% elif reseller%}
-    Edit reseller
-    {% endif %}
-      User edit
-  </span>
+  <span class="edit__title">
+    Edit reseller</span>
   <div class="edit__container">
 
   {{ form.hidden_tag() }}
@@ -75,10 +69,8 @@
       {% endfor %}
     </div>
   </div>
-  <div class="edit__group">
-  <div class="edit__submit-btn">
+  <div class="edit__group submit-btn">
   {{ form.submit(class="edit__submit")}}
-</div>
   </div>
 </div>
 </form>

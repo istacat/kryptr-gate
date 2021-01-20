@@ -11,3 +11,10 @@ class Product(db.Model):
     name = db.Column(db.String(64), nullable=False, unique=True)
     subscriptions = relationship("Subscription")
     comment = db.Column(db.String(200))
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "comment": self.comment
+        }

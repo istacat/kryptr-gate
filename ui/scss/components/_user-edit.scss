@@ -1,0 +1,148 @@
+.edit{
+    &__container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-flow:row;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    &__group{
+        display: flex;
+        flex-basis: 47%;
+        margin: 0  5px ;
+        min-height: 75px;
+    }
+
+    &__label{
+        font-size: 1em;
+        display: block;
+        color: white;
+        margin-bottom: 2px;
+    }
+    &__form-title{
+            display: block;
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+    }
+
+    &__radio-input {
+        li label {
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+            padding-left: 25px;
+            margin-right: 0;
+            line-height: 18px;
+            user-select: none;
+            color: white;
+        }
+        // li label ::before {
+        //     content: "";
+        //     display: inline-block;
+        //     width: 17px;
+        //     height: 18px;
+        //     position: absolute;
+        //     left: 0;
+        //     bottom: 1px;
+        //     background: url('../images/icons/radio-unchecked.svg') 0 0 no-repeat;
+
+        // }
+        // li:nth-child(1) input[type=radio]{
+        //     display: none;
+        // }
+        // li:nth-child(2) input[type=radio]{
+        //     display: none;
+        // }
+    }
+    &__input{
+        padding: 7px 15px;
+        width: 22vw;
+        border: 1px solid $accent;
+        border-radius: 2px;
+        outline-color: $bg;
+        font-size: 1.1em;
+        min-width: 250px;
+    }
+
+    .input__wrapper{
+        margin-bottom: 10px;
+    }
+    &__submit{
+        width: 15vw;
+        min-width: 250px;
+        height: 42px;
+        background-color: $bg;
+        border: none;
+        border-radius: 40px;
+        font-size: 1.1em;
+        cursor: pointer;
+        &:hover{
+
+            font-weight: bold;
+            background-color:#facd51 ;
+            transition: background-color 0.3s;
+            // border: 1px solid rgb(29, 26, 73)
+            //0px -5px 10px  #dbdac3,
+        }
+
+    }
+    &__submit-btn{
+
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        min-width: 250px;
+        width: 22vw;
+        justify-content: center;
+    }
+
+    &__header{
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2vh;
+
+        height: 35px;
+    }
+
+    &__title{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        background-color: $accent;
+        color: $bg;
+        width: 55px;
+        border-radius: 7px 7px 0 0;
+
+    }
+    &__cancel-btn{
+        border-radius: 7px 7px 0 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: $accent;
+        color: $bg;
+        font-size: 1.4em;
+        width: 40px;
+
+        & a:hover{
+            -webkit-animation: neon3 1.5s ease-in-out infinite alternate;
+            -moz-animation: neon3 1.5s ease-in-out infinite alternate;
+            animation: neon3 1.5s ease-in-out infinite alternate;
+        }
+
+    }
+
+}
+
+@keyframes neon3 {
+    from {
+      text-shadow: 0 0 5px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 20px #FFDD1B, 0 0 30px #FFDD1B, 0 0 45px #FFDD1B, 0 0 40px #FFDD1B, 0 0 50px #FFDD1B;
+    }
+    to {
+      text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #FFDD1B, 0 0 35px #FFDD1B, 0 0 40px #FFDD1B, 0 0 40px #FFDD1B, 0 0 55px #FFDD1B;
+    }
+  }

@@ -1,7 +1,7 @@
 import pytest
 
 from app import db, create_app
-from app.models import Account
+from app.models import Account, EccKey
 from tests.utils import register, login, logout
 
 TEST_ACC_NAME = "Test Account 01"
@@ -40,18 +40,20 @@ def test_add_account(client):
     login(client, "sam")
     response = client.get('/add_account')
     assert response.status_code == 200
-    response = client.post('/add_account', data=dict(
+    assert EccKey.query.get(1)
+    response = client.post('/add_account?ecc_id=1', data=dict(
         name=TEST_ACC_NAME,
-        ecc_id="ECC001",
-        ad_login="test01@kryptr.li",
         ad_password="password",
         license_key="lis_key_value",
-        email="test01@kryptr.li",
         sim="12345678901",
         imei="",
+        ad_login='AAA001@kryptr.li',
+        email='AAA001@kryptr.li',
+        ecc_id='AAA001',
         comment=""
-    ), follow_redirects=True)
-
+    ), follow_redirects=True
+    )
+    assert EccKey.query.get(1).account_id == 1
     assert b'Account creation successful' in response.data
     acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
     assert acc

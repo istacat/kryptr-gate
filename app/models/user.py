@@ -40,6 +40,7 @@ class User(db.Model, UserMixin, ModelMixin):
     activated = db.Column(Enum(StatusType), default=StatusType.active)
     role = db.Column(Enum(RoleType), default=RoleType.support)
     created_at = db.Column(db.DateTime, default=datetime.now)
+    deleted = db.Column(db.Boolean, default=False)
 
     def to_json(self):
         return {

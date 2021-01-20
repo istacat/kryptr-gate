@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, flash, jsonify, redirect, url_for
+from flask import render_template, Blueprint, flash, jsonify, redirect, url_for, request
 from flask_login import login_required
 
 from app.models import User
@@ -32,6 +32,7 @@ def add_user():
         "base_add_edit.html",
         include_header="components/_user-edit.html",
         form=form,
+        cancel_link=url_for("user.index"),
         action_url=url_for("user.add_user"),
     )
 
@@ -45,6 +46,10 @@ def edit_user():
 @user_blueprint.route("/api/user_list")
 @login_required
 def get_user_list():
-    users = User.query.all()
-    res = [user.to_json() for user in users]
+    users = User.query
+    page = request.args.get('page', 1)
+    page_size = request.args.get('size', 5)
+    paginated_users = users.order_by(User.id.asc()).paginate(int(page), int(page_size), False)
+    res = {'max_pages': paginated_users.pages, 'data': [acc.to_json() for acc in paginated_users.items]}
+    print(res)
     return jsonify(res)
