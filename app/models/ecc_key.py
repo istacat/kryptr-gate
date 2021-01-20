@@ -6,7 +6,7 @@ from app.models.utils import ModelMixin
 
 class EccKey(db.Model, ModelMixin):
     """
-    Table is used for counting, never delete columns
+    Table is used for counting, never delete rows
     """
 
     __tablename__ = "ecc_keys"
