@@ -7,6 +7,7 @@ class BaseConfig(object):
     """Base configuration."""
 
     APP_NAME = os.environ.get('APP_NAME', 'Flask App')
+    JSON_SORT_KEYS = False
     DEBUG_TB_ENABLED = False
     SECRET_KEY = os.environ.get('SECRET_KEY', 'Ensure you set a secret key, this is important!')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

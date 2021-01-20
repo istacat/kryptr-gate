@@ -1,0 +1,16 @@
+.tabulator-headers{
+ background-color: $accent;
+ color: white;
+}
+.tabulator-col-content{
+    background-color: $accent;
+}
+
+.users{
+    &__table .tabulator{
+        border: none;
+    }
+}
+.tabulator-row-odd{
+    // background-color:rgb(119, 119, 241) !important ;
+}

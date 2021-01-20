@@ -14,7 +14,7 @@ class Account(db.Model, ModelMixin):
     ecc_id = db.Column(db.String(6), nullable=False, unique=True)
     ad_login = db.Column(db.String(32), nullable=False)
     ad_password = db.Column(db.String(32), nullable=False)
-    license_key = db.Column(db.String(64), nullable=False, unique=True)
+    license_key = db.Column(db.String(64), nullable=True)
     email = db.Column(
         db.String(32), nullable=False, unique=True
     )  # automatically generated
@@ -25,6 +25,7 @@ class Account(db.Model, ModelMixin):
     imei = db.Column(db.String(60))
     comment = db.Column(db.String(200))
     created_at = db.Column(db.DateTime, default=datetime.now)
+    deleted = db.Column(db.Boolean, default=False)
 
     def to_json(self):
         return {
