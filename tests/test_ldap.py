@@ -5,9 +5,10 @@ from config import BaseConfig as config
 
 @pytest.mark.skipif(not config.LDAP_SERVER, reason="LDAP not configured")
 def test_ldap_search():
-    ad_name = 'DC=KRYPTR,DC=li'
+    ad_name = 'DC=kryptr,DC=li'
     server_win_uri = config.LDAP_SERVER
-    search_filter = "(&(objectClass=person)(sAMAccountName=*)(sn=*))"
+    # search_filter = "(&(objectClass=person)(sAMAccountName=*)(sn=*))"
+    search_filter = "(&(objectClass=*)(sAMAccountName=*)(sn=*))"
     win_bind_name = config.LDAP_USER
     win_bind_passwd = config.LDAP_PASS
     attrs = ['*']
