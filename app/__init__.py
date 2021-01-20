@@ -37,7 +37,6 @@ def create_app(environment='development'):
     # Set app config.
     env = os.environ.get('FLASK_ENV', environment)
     app.config.from_object(config[env])
-    app.config['JSON_SORT_KEYS'] = False
     config[env].configure(app)
 
     # Set up extensions.

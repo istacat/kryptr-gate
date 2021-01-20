@@ -13,6 +13,7 @@ def index():
     flash('Welcome to Machine', 'success')
     return render_template('pages/products.html')
 
+
 @product_blueprint.route("/add_product", methods=["GET", "POST"])
 @login_required
 def add_product():
@@ -36,6 +37,7 @@ def add_product():
         cancel_link=url_for("product.index"),
         action_url=url_for("product.add_product"),
     )
+
 
 @product_blueprint.route('/api/product_list')
 @login_required
