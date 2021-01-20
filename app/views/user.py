@@ -51,10 +51,5 @@ def get_user_list():
     page_size = request.args.get('size', 5)
     paginated_users = users.order_by(User.id.asc()).paginate(int(page), int(page_size), False)
     res = {'max_pages': paginated_users.pages, 'data': [acc.to_json() for acc in paginated_users.items]}
-
-    # last_page = {'last_page': paginated_users.pages}
-
-    # res = [user.to_json() for user in users]
-    # res += last_page
     print(res)
     return jsonify(res)

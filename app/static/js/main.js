@@ -112,14 +112,15 @@ if (document.getElementById('distributors-table')) {
 
 if (document.getElementById('accounts-table')) {
   table = new Tabulator("#accounts-table", {
-    pagination:"local", //enable remote pagination
+    pagination:"remote", //enable remote pagination
     layout: "fitColumns", //fit columns to width of table (optional)
     ajaxURL: window.location.origin + '/api/account_list',
-    paginationSize:30, //optional parameter to request a certain number of rows per page
-    paginationInitialPage:20, //optional parameter to set the initial page to load
+    paginationSize:20, //optional parameter to request a certain number of rows per page
+    paginationInitialPage:1, //optional parameter to set the initial page to load
     columns: [ //Define Table Columns
       { title: "Id", field: "id" },
-      { title: "name", field: "username", hozAlign: "left" },
+      { title: "name", field: "name", hozAlign: "left" },
+      { title: "Ecc id", field: "ecc_id" },
       { title: "Email", field: "email" },
       { title: "Reseller", field: "reseller" },
       { title: "Created", field: "created_at", sorter: "date", hozAlign: "center" },
