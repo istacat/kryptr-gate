@@ -28,9 +28,9 @@ class LDAP(object):
             connection.search(config.AD_NAME, self.search_filter, attributes=self.attrs)
             return [User(entry) for entry in connection.entries]
 
-    def add_user(self, name, passwd):
+    def add_user(self, name, passwd, product="Gold"):
         user_dn = self.FORMAT_USER_DN.format(name)
-        group_dn = "CN=Kryptr_Gold,DC=kryptr,DC=li"
+        group_dn = f"CN=Kryptr_{product},DC=kryptr,DC=li"
         with ldap3.Connection(self.server, user=config.LDAP_USER, password=config.LDAP_PASS) as connection:
             # perform the Add operation
             success = connection.add(
@@ -76,16 +76,6 @@ class LDAP(object):
                 log(log.ERROR, "%s", connection.result)
                 return None
 
-            # set userAccountControl
-            # changes = {
-            #     'userAccountControl': [(MODIFY_REPLACE, '66080')]
-            # }
-            # success = connection.modify(user_dn, changes=changes)
-            # if not success:
-            #     log(log.ERROR, 'Unable to change password for [%s]', user_dn)
-            #     log(log.ERROR, "%s", connection.result)
-            #     return None
-
             success = addUsersInGroups(connection, user_dn, group_dn)
             if not success:
                 log(log.ERROR, 'Cannot add user [%s] into group [%s]', user_dn, group_dn)
@@ -93,7 +83,7 @@ class LDAP(object):
                 return None
 
         for user in self.users:
-            if user.entry_dn == user_dn:
+            if user.dn == user_dn:
                 return user
         log(log.ERROR, 'Non found [%s]', user_dn)
         return None

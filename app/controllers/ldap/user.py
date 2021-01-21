@@ -10,7 +10,7 @@ class User(object):
         pass
 
     @property
-    def entry_dn(self):
+    def dn(self):
         return self.ldap_entry.entry_dn
 
     @property
@@ -24,7 +24,7 @@ class User(object):
         """ delete the AD user"""
         self.server = ldap3.Server(self.LDAP_URI, get_info=ldap3.ALL)
         with ldap3.Connection(self.server, user=config.LDAP_USER, password=config.LDAP_PASS) as connection:
-            connection.delete(self.entry_dn)
+            connection.delete(self.dn)
 
     def to_json(self):
         return self.ldap_entry.entry_to_json()
