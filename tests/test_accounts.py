@@ -4,6 +4,7 @@ from app import db, create_app
 from app.models import Account
 from tests.utils import register, login, logout
 from config import BaseConfig as config
+from app.controllers.ldap import LDAP
 
 
 TEST_ACC_NAME = "Test Account 01"
@@ -43,20 +44,38 @@ def test_add_delete_account(client):
     login(client, "sam")
     response = client.get('/add_account')
     assert response.status_code == 200
+
     response = client.post('/add_account', data=dict(
         name=TEST_ACC_NAME,
         ad_password="password",
         license_key="lis_key_value",
         sim="12345678901",
         imei="",
-        ad_login='AAC801@kryptr.li',
-        email='AAC801@kryptr.li',
-        ecc_id='AAC801',
+        ad_login=' TEST345@kryptr.li',
+        email='TEST345@kryptr.li',
+        ecc_id='TEST345',
         comment=""
     ), follow_redirects=True
     )
     assert b'Account creation successful' in response.data
+    ldap = LDAP()
+    users = ldap.users
     acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
     assert acc
+    acc_mail = acc.ecc_id + "@kryptr.li"
+    ldap_account = None
+    for user in users:
+        if user.mail == (acc_mail):
+            ldap_account = user.mail
+    assert ldap_account
     response = client.get("/delete_account?id=1", follow_redirects=True)
+    acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
+    ldap_account = None
+    ldap = LDAP()
+    users = ldap.users
+    for user in users:
+        if user.mail == (acc_mail):
+            ldap_account = user.mail
+    assert not ldap_account
+    assert not acc
     assert b'Account deletion successful' in response.data
