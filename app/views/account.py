@@ -92,7 +92,7 @@ def get_account_list():
     page = request.args.get("page", 1)
     page_size = request.args.get("size", 20)
     paginated_accounts = (
-        account.filter(Account.deleted == False)
+        account.filter(Account.deleted == False) # noqa e701
         .order_by(Account.id.asc())
         .paginate(int(page), int(page_size), False)
     )
