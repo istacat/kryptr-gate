@@ -1,11 +1,23 @@
-.tabulator-headers{
+.tabulator-header{
  background-color: $accent;
  color: white;
+}
+.tabulator-headers{
+    background-color: $accent;
+    color: white;
+   }
+
+ .tabulator-headers div:nth-child(3) {
+    .tabulator-arrow{
+        display: none !important;
+    }
 }
 .tabulator-col-content{
     background-color: $accent;
 }
-
+.tabulator{
+    background: $accent !important;
+}
 .users{
     &__table .tabulator{
         border: none;
@@ -14,3 +26,17 @@
 .tabulator-row-odd{
     // background-color:rgb(119, 119, 241) !important ;
 }
+.icon__delete{
+    font-size: 1.2em;
+}
+.tabulator-cell{
+    &:hover{
+        background-color:rgb(177, 175, 175) ;
+        .icon{
+            &__delete {
+                 color: rgb(253, 0, 0) !important;
+            }
+        }
+    }
+}
+

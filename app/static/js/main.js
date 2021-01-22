@@ -111,26 +111,47 @@ if (document.getElementById('distributors-table')) {
 }
 
 if (document.getElementById('accounts-table')) {
+  const printIcon = function(cell, formatterParams, onRendered){ //plain text value
+    return  "<div class='icon__delete' >&#10008</div>"
+};
+const deleteIcon = document.querySelector(".icon__delete");
   table = new Tabulator("#accounts-table", {
+    resizableColumns:false,
+    responsiveLayout:'collapse',
     pagination:"remote", //enable remote pagination
-    layout: "fitColumns", //fit columns to width of table (optional)
+    layout:"fitColumns",
     ajaxURL: window.location.origin + '/api/account_list',
     paginationSize:20, //optional parameter to request a certain number of rows per page
     paginationInitialPage:1, //optional parameter to set the initial page to load
     columns: [ //Define Table Columns
-      { title: "Id", field: "id" },
-      { title: "name", field: "name", hozAlign: "left" },
-      { title: "Ecc id", field: "ecc_id" },
-      { title: "Email", field: "email" },
-      { title: "Reseller", field: "reseller" },
-      { title: "Created", field: "created_at", sorter: "date", hozAlign: "center" },
-      { title: "Comment", field: "comment" },
+      {formatter:"responsiveCollapse", width:30, minWidth:30, align:"center", resizable:false, headerSort:false},
+      { title: "Id", field: "id", },
+
+
+      {  field:"actions",minWidth:50,formatter:printIcon,
+      width:20, hozAlign:"center", cellClick:function(e, cell){
+        console.log("Printing row data for: " + cell.getRow().getData().id)
+
+        if (confirm("Are you sure you want to delete " + cell.getRow().getData().name)){
+          window.location.href = window.location.origin+"/delete_account?id="+cell.getRow().getData().id       }
+        else return;
+      },
+      },
+      // { field:"actions",minWidth:50,formatter:printIcon,
+      //   width:20, hozAlign:"center", cellClick:function(e, cell){console.log("Printing row data for: " + cell.getRow().getData().name)},
+      //  },
+
+
+
+      { title: "Name", field: "name", hozAlign: "left" ,minWidth:166},
+      { title: "Ecc id", field: "ecc_id" ,minWidth:166},
+      { title: "Email", field: "email",minWidth:166 },
+      { title: "Reseller", field: "reseller" ,minWidth:166},
+      { title: "Created", field: "created_at", sorter: "date", hozAlign: "center",minWidth:166 },
+      { title: "Comment", field: "comment" ,minWidth:166},
+
+
+
     ],
-    rowClick: function (e, row) { //trigger an alert message when the row is clicked
-      alert("Row " + row.getData().id + " Clicked!!!!");
-    },
-  });
-//   table.setFilter([
-//     {field:"id", type:">", value:260}, //filter by age greater than 52
-// ]);
-}
+
+  });}

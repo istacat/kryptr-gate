@@ -1,8 +1,11 @@
 import pytest
 
 from app import db, create_app
-from app.models import Account, EccKey
+from app.models import Account
 from tests.utils import register, login, logout
+from config import BaseConfig as config
+from app.controllers.ldap import LDAP
+
 
 TEST_ACC_NAME = "Test Account 01"
 
@@ -32,7 +35,8 @@ def test_accounts(client):
     assert response.status_code == 200
 
 
-def test_add_account(client):
+@pytest.mark.skipif(not config.LDAP_SERVER, reason="LDAP not configured")
+def test_add_delete_account(client):
     # test login required
     logout(client)
     response = client.get('/add_account')
@@ -40,20 +44,38 @@ def test_add_account(client):
     login(client, "sam")
     response = client.get('/add_account')
     assert response.status_code == 200
-    assert EccKey.query.get(1)
-    response = client.post('/add_account?ecc_id=1', data=dict(
+
+    response = client.post('/add_account', data=dict(
         name=TEST_ACC_NAME,
         ad_password="password",
         license_key="lis_key_value",
         sim="12345678901",
         imei="",
-        ad_login='AAA001@kryptr.li',
-        email='AAA001@kryptr.li',
-        ecc_id='AAA001',
+        ad_login=' TEST345@kryptr.li',
+        email='TEST345@kryptr.li',
+        ecc_id='TEST345',
         comment=""
     ), follow_redirects=True
     )
-    assert EccKey.query.get(1).account_id == 1
     assert b'Account creation successful' in response.data
+    ldap = LDAP()
+    users = ldap.users
     acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
     assert acc
+    acc_mail = acc.ecc_id + "@kryptr.li"
+    ldap_account = None
+    for user in users:
+        if user.mail == (acc_mail):
+            ldap_account = user.mail
+    assert ldap_account
+    response = client.get("/delete_account?id=1", follow_redirects=True)
+    acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
+    ldap_account = None
+    ldap = LDAP()
+    users = ldap.users
+    for user in users:
+        if user.mail == (acc_mail):
+            ldap_account = user.mail
+    assert not ldap_account
+    assert not acc
+    assert b'Account deletion successful' in response.data
