@@ -3,6 +3,8 @@ import pytest
 from app import db, create_app
 from app.models import Account
 from tests.utils import register, login, logout
+from config import BaseConfig as config
+
 
 TEST_ACC_NAME = "Test Account 01"
 
@@ -32,6 +34,7 @@ def test_accounts(client):
     assert response.status_code == 200
 
 
+@pytest.mark.skipif(not config.LDAP_SERVER, reason="LDAP not configured")
 def test_add_delete_account(client):
     # test login required
     logout(client)
