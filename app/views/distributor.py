@@ -33,6 +33,7 @@ def add_distributor():
         "base_add_edit.html",
         include_header="components/_user-edit.html",
         form=form,
+        description_header=("Add distributor", "Edit distributor"),
         cancel_link=url_for("distributor.index"),
         action_url=url_for("distributor.add_distributor"),
     )

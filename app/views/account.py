@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from app.models import Account
 from app.forms import AccountForm
 from app.logger import log
+from datetime import datetime
 from app.controllers import account
 from app.controllers.ldap import LDAP
 import secrets
@@ -20,12 +21,13 @@ def index():
 @login_required
 def add_account():
     form = AccountForm()
-    rand_int = secrets.randbelow(10000000)
-    ecc_id = account.ecc_encode(rand_int)
-    form.ecc_id.data = ecc_id
-    form.email.data = f"{ecc_id}@kryptr.li"
-    form.ad_login.data = f"{ecc_id}@kryptr.li"
-    form.ad_password.data = f"{secrets.token_urlsafe(16)}"
+    if request.method == "GET":
+        rand_int = secrets.randbelow(10000000)
+        ecc_id = account.ecc_encode(rand_int)
+        form.ecc_id.data = ecc_id
+        form.email.data = f"{ecc_id}@kryptr.li"
+        form.ad_login.data = f"{ecc_id}@kryptr.li"
+        form.ad_password.data = f"{secrets.token_urlsafe(16)}"
     if form.validate_on_submit():
 
         acc = Account(
@@ -57,9 +59,53 @@ def add_account():
         "base_add_edit.html",
         include_header="components/_account-edit.html",
         form=form,
+        description_header=("Add account"),
         cancel_link=url_for("account.index"),
         action_url=url_for("account.add_account"),
     )
+
+
+@account_blueprint.route("/edit_account", methods=["GET", "POST"])
+@login_required
+def edit_account():
+    print(request.method)
+    id = request.args.get('id')
+    form = AccountForm()
+    acc = Account.query.filter(Account.deleted == False).filter(Account.id == int(id)).first() # noqa e712
+    if acc:
+        if request.method == "GET":
+            form.name.data = acc.name
+            form.ecc_id.data = acc.ecc_id
+            form.email.data = acc.email
+            form.ad_login.data = acc.ad_login
+            form.ad_password.data = acc.ad_password
+        if form.validate_on_submit():
+            acc.name = form.name.data
+            acc.ecc_id = form.ecc_id.data
+            acc.email = form.email.data
+            acc.ad_login = form.ad_login.data
+            acc.ad_password = form.ad_password.data
+            acc.sim = form.sim.data
+            acc.imei = form.imei.data
+            acc.comment = form.comment.data
+            acc.reseller_id = current_user.id
+            acc.save()
+            log(log.INFO, "Account data changed for account id [%s]", acc.id)
+            return redirect(url_for("account.index"))
+        elif form.is_submitted():
+            log(log.ERROR, "Submit failed: %s", form.errors)
+        return render_template(
+            "base_add_edit.html",
+            include_header="components/_account-edit.html",
+            form=form,
+            description_header=("Edit account"),
+            cancel_link=url_for("account.index"),
+            action_url=url_for("account.edit_account", id=id),
+        )
+    else:
+        log(log.INFO, "account[%s] is deleted or unexistent", id)
+        flash("no account found for id [%s]", id)
+        return redirect(url_for("account.index"))
 
 
 @account_blueprint.route("/delete_account", methods=["GET"])
@@ -74,7 +120,9 @@ def delete_account():
         else:
             log(log.WARNING, "Couldnt connect to active directory")
         account.deleted = True
-        account.name = f"{account.name} deleted"
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        account.name = f"{account.name} deleted {current_time}"
         account.save()
         log(log.INFO, "Account deletion successful. [%s]", account)
         flash("Account deletion successful", "success")

@@ -33,6 +33,7 @@ def add_reseller():
         "base_add_edit.html",
         include_header="components/_user-edit.html",
         form=form,
+        description_header=("Add reseller", "Edit reseller"),
         cancel_link=url_for("reseller.index"),
         action_url=url_for("reseller.add_reseller"),
     )

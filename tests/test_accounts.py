@@ -51,9 +51,9 @@ def test_add_delete_account(client):
         license_key="lis_key_value",
         sim="12345678901",
         imei="",
-        ad_login=' TEST345@kryptr.li',
-        email='TEST345@kryptr.li',
-        ecc_id='TEST345',
+        ad_login=' TES345@kryptr.li',
+        email='TES345@kryptr.li',
+        ecc_id='TES345',
         comment=""
     ), follow_redirects=True
     )
