@@ -16,11 +16,7 @@ class ResellerForm(FlaskForm):
         "User type",
         default="reseller",
         choices=[
-            ("admin", "Admin"),
-            ("distributor", "Distributor"),
             ("reseller", "Reseller"),
-            ("sub_reseller", "Sub Reseller"),
-            ("support", "Support"),
         ],
     )
     submit = SubmitField()

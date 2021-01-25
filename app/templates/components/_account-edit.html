@@ -19,9 +19,9 @@
   <div class="edit__group">
     <div class="input__wrapper">
       <label class="edit__label">
-        Ecc_id
+        EСС
         </label>
-      {{ form.ecc_id(class="edit__input", type="text")}}
+      {{ form.ecc_id(class="edit__input disabled", type="text", readonly="true")}}
       </div>
     <div class="edit__feedback">
       {% for error in form.ecc_id.errors %}
@@ -47,7 +47,7 @@
       <label class="edit__label">
         Login
       </label>
-      {{ form.ad_login(class="edit__input", type="text", placeholder="Login")}}
+      {{ form.ad_login(class="edit__input disabled", type="text", placeholder="Login", readonly="true")}}
     </div>
     <div class="edit__feedback">
       {% for error in form.ad_login.errors %}

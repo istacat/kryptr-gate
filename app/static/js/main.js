@@ -49,8 +49,10 @@ if (document.getElementById('users-table')) {
       { title: "Role", field: "role" },
       { title: "Created", field: "created_at", sorter: "date", hozAlign: "center" },
     ],
-    rowClick: function (e, row) { //trigger an alert message when the row is clicked
-      alert("Row " + row.getData().id + " Clicked!!!!");
+    rowClick:function(e, row){
+      // e.preventDefault()
+      // console.log(row.getData().id,e,)
+      window.location.href = window.location.origin+"/edit_user?id="+row.getData().id
     },
   });
 }
@@ -130,28 +132,24 @@ const deleteIcon = document.querySelector(".icon__delete");
 
       {  field:"actions",minWidth:50,formatter:printIcon,
       width:20, hozAlign:"center", cellClick:function(e, cell){
-        console.log("Printing row data for: " + cell.getRow().getData().id)
-
+        // console.log("Printing row data for: " + cell.getRow().getData().id)
+        e.stopPropagation();
+        // console.log(cell.title)
         if (confirm("Are you sure you want to delete " + cell.getRow().getData().name)){
           window.location.href = window.location.origin+"/delete_account?id="+cell.getRow().getData().id       }
         else return;
       },
       },
-      // { field:"actions",minWidth:50,formatter:printIcon,
-      //   width:20, hozAlign:"center", cellClick:function(e, cell){console.log("Printing row data for: " + cell.getRow().getData().name)},
-      //  },
-
-
-
       { title: "Name", field: "name", hozAlign: "left" ,minWidth:166},
       { title: "Ecc id", field: "ecc_id" ,minWidth:166},
       { title: "Email", field: "email",minWidth:166 },
       { title: "Reseller", field: "reseller" ,minWidth:166},
       { title: "Created", field: "created_at", sorter: "date", hozAlign: "center",minWidth:166 },
       { title: "Comment", field: "comment" ,minWidth:166},
-
-
-
     ],
-
+    rowClick:function(e, row){
+      // e.preventDefault()
+      // console.log(row.getData().id,e,)
+      window.location.href = window.location.origin+"/edit_account?id="+row.getData().id
+    }
   });}
