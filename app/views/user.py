@@ -1,5 +1,6 @@
 from flask import render_template, Blueprint, flash, jsonify, redirect, url_for, request
 from flask_login import login_required
+from datetime import datetime
 from app.logger import log
 from app.models import User
 from app.forms import UserForm
@@ -81,13 +82,33 @@ def edit_user():
         return redirect(url_for("user.index"))
 
 
+@user_blueprint.route("/delete_user", methods=["GET"])
+@login_required
+def delete_user():
+    user_id = request.args.get("id")
+    user = User.query.get(user_id)
+    if user:
+        user.deleted = True
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        user.username = f"{user.username} deleted {current_time}"
+        user.save()
+        log(log.INFO, "user deletion successful. [%s]", user)
+        flash("user deletion successful", "success")
+        return redirect(url_for("user.index"))
+    else:
+        log(log.WARNING, "tried to delete unexisted or deleted user [%s]", user_id)
+        flash("user doesnt exist or already deleted", "danger")
+        return redirect(url_for("user.index"))
+
+
 @user_blueprint.route("/api/user_list")
 @login_required
 def get_user_list():
     users = User.query
     page = request.args.get('page', 1)
     page_size = request.args.get('size', 5)
-    paginated_users = users.order_by(User.id.asc()).paginate(int(page), int(page_size), False)
+    paginated_users = users.filter(User.deleted == False).order_by(User.id.asc()).paginate(int(page), int(page_size), False) # noqa e712
     res = {'max_pages': paginated_users.pages, 'data': [acc.to_json() for acc in paginated_users.items]}
     print(res)
     return jsonify(res)
