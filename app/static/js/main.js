@@ -50,8 +50,6 @@ if (document.getElementById('users-table')) {
       { title: "Created", field: "created_at", sorter: "date", hozAlign: "center" },
     ],
     rowClick:function(e, row){
-      // e.preventDefault()
-      // console.log(row.getData().id,e,)
       window.location.href = window.location.origin+"/edit_user?id="+row.getData().id
     },
   });
@@ -132,9 +130,7 @@ const deleteIcon = document.querySelector(".icon__delete");
 
       {  field:"actions",minWidth:50,formatter:printIcon,
       width:20, hozAlign:"center", cellClick:function(e, cell){
-        // console.log("Printing row data for: " + cell.getRow().getData().id)
         e.stopPropagation();
-        // console.log(cell.title)
         if (confirm("Are you sure you want to delete " + cell.getRow().getData().name)){
           window.location.href = window.location.origin+"/delete_account?id="+cell.getRow().getData().id       }
         else return;
@@ -148,8 +144,6 @@ const deleteIcon = document.querySelector(".icon__delete");
       { title: "Comment", field: "comment" ,minWidth:166},
     ],
     rowClick:function(e, row){
-      // e.preventDefault()
-      // console.log(row.getData().id,e,)
       window.location.href = window.location.origin+"/edit_account?id="+row.getData().id
     }
   });}
