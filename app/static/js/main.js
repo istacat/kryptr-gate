@@ -9,6 +9,10 @@ menuBtn && menuBtn.addEventListener('click', function () {
   overlay.classList.toggle('overlay--active');
 });
 
+function showFuncs() {
+  document.getElementById("funcs-drp").classList.toggle("show");
+}
+
 overlay && overlay.addEventListener('click', function () {
   menuBtn.classList.toggle('menu-btn--active');
   menu.classList.toggle('menu--active');

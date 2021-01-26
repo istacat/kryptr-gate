@@ -28,22 +28,29 @@
           <li class="menu__item">
             <a class="menu__link" href="{{ url_for('product.index') }}">Products</a>
           </li>
-          <li class="menu__item">
-            <a class="menu__link" href="{{ url_for('auth.logout') }}">Logout</a>
-          </li>
         </ul>
       </nav>
       <div class="overlay"></div>
       {% endif %}
+      <div>
       <a class="logo" href="#">
         <img class="logo__img" src="{{ url_for('static', filename='images/icons/logo.svg') }}" alt="Kryptr Logo" />
       </a>
+    </div>
       {% if current_user.is_authenticated %}
-        <button class="account">{{ current_user.username }}</button>
+      <div class="account-wrapper">
+        <button class="account-drp" onclick="showFuncs()">{{ current_user.username }}</button>
+        <div  id="funcs-drp" class="account-drp__content">
+          <a href="{{ url_for('auth.logout') }}">Logout</a>
+
+        </div>
+      </div>
+
       {% else %}
         <button class="account">Log in</button>
       {% endif %}
     </div>
 
   </div>
+
 </header>
