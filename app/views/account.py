@@ -22,7 +22,7 @@ def index():
 def add_account():
     form = AccountForm()
     if request.method == "GET":
-        rand_int = secrets.randbelow(10000000)
+        rand_int = secrets.randbelow(17575999)
         ecc_id = account.ecc_encode(rand_int)
         form.ecc_id.data = ecc_id
         form.email.data = f"{ecc_id}@kryptr.li"
