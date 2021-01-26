@@ -9,12 +9,18 @@ menuBtn && menuBtn.addEventListener('click', function () {
   overlay.classList.toggle('overlay--active');
 });
 
+function showFuncs() {
+  document.getElementById("funcs-drp").classList.toggle("show");
+}
+
 overlay && overlay.addEventListener('click', function () {
   menuBtn.classList.toggle('menu-btn--active');
   menu.classList.toggle('menu--active');
   overlay.classList.toggle('overlay--active');
 })
-
+const printIcon = function(cell, formatterParams, onRendered){ //plain text value
+  return  "<div class='icon__delete' >&#10008</div>"
+};
 if (document.getElementById('products-table')) {
   table = new Tabulator("#products-table", {
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
@@ -33,6 +39,7 @@ if (document.getElementById('products-table')) {
 
 if (document.getElementById('users-table')) {
   table = new Tabulator("#users-table", {
+    responsiveLayout: "collapse",
     pagination:"remote", //enable remote pagination
     paginationSize:2, //optional parameter to request a certain number of rows per page
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
@@ -42,15 +49,24 @@ if (document.getElementById('users-table')) {
       "last_page":"max_pages", //change last_page parameter name to "max_pages"
   } ,
     columns: [ //Define Table Columns
+      {formatter:"responsiveCollapse", width:30, minWidth:30, align:"center", resizable:false, headerSort:false},
       { title: "Id", field: "id" },
-      { title: "Username", field: "username", hozAlign: "left" },
-      { title: "Email", field: "email" },
-      { title: "Activated", field: "activated" },
-      { title: "Role", field: "role" },
-      { title: "Created", field: "created_at", sorter: "date", hozAlign: "center" },
+      {  field:"actions",minWidth:50,formatter:printIcon,
+      width:20, hozAlign:"center", cellClick:function(e, cell){
+        e.stopPropagation();
+        if (confirm("Are you sure you want to delete " + cell.getRow().getData().username)){
+          window.location.href = window.location.origin+"/delete_user?id="+cell.getRow().getData().id       }
+        else return;
+      },
+    },
+      { title: "Username", field: "username", hozAlign: "left" , minWidth:360},
+      { title: "Email", field: "email",minWidth:160 },
+      { title: "Activated", field: "activated",minWidth:160 },
+      { title: "Role", field: "role" ,minWidth:160},
+      { title: "Created", field: "created_at", sorter: "date", hozAlign: "center",minWidth:160 },
     ],
-    rowClick: function (e, row) { //trigger an alert message when the row is clicked
-      alert("Row " + row.getData().id + " Clicked!!!!");
+    rowClick:function(e, row){
+      window.location.href = window.location.origin+"/edit_user?id="+row.getData().id
     },
   });
 }
@@ -111,9 +127,7 @@ if (document.getElementById('distributors-table')) {
 }
 
 if (document.getElementById('accounts-table')) {
-  const printIcon = function(cell, formatterParams, onRendered){ //plain text value
-    return  "<div class='icon__delete' >&#10008</div>"
-};
+
 const deleteIcon = document.querySelector(".icon__delete");
   table = new Tabulator("#accounts-table", {
     resizableColumns:false,
@@ -130,28 +144,20 @@ const deleteIcon = document.querySelector(".icon__delete");
 
       {  field:"actions",minWidth:50,formatter:printIcon,
       width:20, hozAlign:"center", cellClick:function(e, cell){
-        console.log("Printing row data for: " + cell.getRow().getData().id)
-
+        e.stopPropagation();
         if (confirm("Are you sure you want to delete " + cell.getRow().getData().name)){
           window.location.href = window.location.origin+"/delete_account?id="+cell.getRow().getData().id       }
         else return;
       },
       },
-      // { field:"actions",minWidth:50,formatter:printIcon,
-      //   width:20, hozAlign:"center", cellClick:function(e, cell){console.log("Printing row data for: " + cell.getRow().getData().name)},
-      //  },
-
-
-
       { title: "Name", field: "name", hozAlign: "left" ,minWidth:166},
       { title: "Ecc id", field: "ecc_id" ,minWidth:166},
       { title: "Email", field: "email",minWidth:166 },
       { title: "Reseller", field: "reseller" ,minWidth:166},
       { title: "Created", field: "created_at", sorter: "date", hozAlign: "center",minWidth:166 },
       { title: "Comment", field: "comment" ,minWidth:166},
-
-
-
     ],
-
+    rowClick:function(e, row){
+      window.location.href = window.location.origin+"/edit_account?id="+row.getData().id
+    }
   });}

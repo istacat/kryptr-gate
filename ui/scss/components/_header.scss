@@ -1,17 +1,20 @@
 .header {
   background-color: $accent;
   box-shadow: 0 0 10px 5px #11111115;
-
+  z-index: 5;
+  max-height: 115px;
   &__inner {
+    position: sticky;
     display: flex;
     padding: 10px;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+
   }
 }
 
 .menu-btn {
-  margin-right: auto;
+  // margin-right: auto;
   width: 40px;
   height: 40px;
   padding: 0;
@@ -89,23 +92,27 @@
   left: 0;
   bottom: 0;
   background-color: $accent;
-  padding: 30px;
+  padding: 10px 10px 0px 30px;
   min-width: 250px;
+  // min-height: 660px;
+  height: 100%;
   border-top: 1px solid #cccccc;
   box-shadow: 0 0 10px 5px #11111115;
   transform: translateX(-200%);
   transition: transform 0.3s;
   z-index: 10;
+  overflow:auto;
 
   &__list {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content:last baseline;
+    min-height: 666px;
   }
 
   &__link {
-    display: block;
-    padding: 25px 0;
+    display:flex;
+    padding: 25px 5px 25px 0;
     border-bottom: 1px solid rgba(204, 204, 204, 0.164);
     color: $bg;
 
@@ -127,11 +134,83 @@
 }
 
 .account {
+  cursor: pointer;
   color: $bg;
   display: block;
   margin-left: auto;
   outline: transparent;
 
+  &::after {
+    content: "";
+    display: block;
+    border-bottom: 2px solid transparent;
+    transform: scale(0);
+    transition: all 0.3s;
+  }
+
+  &:hover {
+    &::after {
+      border-color: $bg;
+      transform: scale(1);
+    }
+  }
+}
+.account-wrapper{
+
+
+}
+.account-drp {
+  &__content{
+
+  }
+  &__content{
+
+    display: none;
+    position: absolute;
+    // margin-right: 200px;
+    margin-left: -40px;
+    background-color:transparent;
+    // min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    &.show{
+
+      display: flex;
+      // max-width: 200px;
+      width: 100px;
+      text-align: center;
+      flex-direction: column;
+
+    }
+    a{
+      background-color: $accent;
+      box-shadow: 0px 1px 5px 0px rgb(255, 255, 255);
+      display: block;
+      width: 100%;
+      text-align: center;
+      color: $bg;
+      margin-top: 7px;
+      padding: 4px 6px;
+      text-decoration: none;
+      &:hover{
+        color: white;
+        font-weight: bold;
+        background-color:  #314883;
+        transition: all 0.3s;
+      }
+     }
+  }
+
+  cursor: pointer;
+  color: $bg;
+  display: block;
+  margin-left: auto;
+  outline: transparent;
+  & :focus{
+    &__content{
+      display: block;
+    }
+}
   &::after {
     content: "";
     display: block;

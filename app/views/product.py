@@ -34,6 +34,7 @@ def add_product():
         "base_add_edit.html",
         include_header="components/_product-edit.html",
         form=form,
+        description_header=("Add product", "Edit product"),
         cancel_link=url_for("product.index"),
         action_url=url_for("product.add_product"),
     )

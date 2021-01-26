@@ -10,7 +10,7 @@ class UserForm(FlaskForm):
     activated = SelectField(
         "Activated",
         default="active",
-        choices=[("not_active", "Not Active"), ("active", "Active")],
+        choices=[("active", "Active"), ("not_active", "Not Active")],
     )
     role = SelectField(
         "User type",
