@@ -64,7 +64,8 @@ class LDAP(object):
                 return None
 
             # Set password
-            hashed_password = hashed(HASHED_SALTED_SHA256, passwd)
+            # hashed_password = hashed(HASHED_SALTED_SHA256, passwd)
+            hashed_password = passwd
             changes = {
                 "userPassword": [(MODIFY_REPLACE, [hashed_password])],
                 "userAccountControl": [(MODIFY_REPLACE, "66080")],
