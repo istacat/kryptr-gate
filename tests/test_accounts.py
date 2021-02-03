@@ -28,54 +28,50 @@ def client():
 
 
 def test_accounts(client):
-    response = client.get('/accounts')
+    response = client.get("/accounts")
     assert 400 > response.status_code >= 300
     login(client, "sam")
-    response = client.get('/accounts')
+    response = client.get("/accounts")
     assert response.status_code == 200
 
 
-@pytest.mark.skipif(not config.LDAP_SERVER, reason="LDAP not configured")
 def test_add_delete_account(client):
     # test login required
     logout(client)
-    response = client.get('/add_account')
+    response = client.get("/add_account")
     assert 400 > response.status_code >= 300
     login(client, "sam")
-    response = client.get('/add_account')
+    response = client.get("/add_account")
     assert response.status_code == 200
 
-    response = client.post('/add_account', data=dict(
-        name=TEST_ACC_NAME,
-        ad_password="password",
-        license_key="lis_key_value",
-        sim="12345678901",
-        imei="",
-        ad_login=' TES345@kryptr.li',
-        email='TES345@kryptr.li',
-        ecc_id='TES345',
-        comment=""
-    ), follow_redirects=True
+    response = client.post(
+        "/add_account",
+        data=dict(
+            name=TEST_ACC_NAME,
+            ad_password="password",
+            license_key="lis_key_value",
+            sim="12345678901",
+            imei="",
+            ad_login=" TES345@kryptr.li",
+            email="TES345@kryptr.li",
+            ecc_id="TES345",
+            comment="",
+        ),
+        follow_redirects=True,
     )
-    assert b'Account creation successful' in response.data
-    ldap = LDAP()
-    users = ldap.users
+    assert b"Account creation successful" in response.data
     acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
     assert acc
     acc_mail = acc.ecc_id + "@kryptr.li"
-    ldap_account = None
-    for user in users:
-        if user.mail == (acc_mail):
-            ldap_account = user.mail
-    assert ldap_account
+    if config.LDAP_SERVER:
+        AD_user_mails = [u.mail for u in LDAP().users]
+        assert acc_mail in AD_user_mails
+
     response = client.get("/delete_account?id=1", follow_redirects=True)
+    assert b"Account deletion successful" in response.data
     acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
-    ldap_account = None
-    ldap = LDAP()
-    users = ldap.users
-    for user in users:
-        if user.mail == (acc_mail):
-            ldap_account = user.mail
-    assert not ldap_account
     assert not acc
-    assert b'Account deletion successful' in response.data
+
+    if config.LDAP_SERVER:
+        AD_user_mails = [u.mail for u in LDAP().users]
+        assert acc_mail not in AD_user_mails

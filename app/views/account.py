@@ -1,12 +1,15 @@
+import secrets
+import datetime
+
 from flask import render_template, Blueprint, jsonify, flash, redirect, url_for, request
 from flask_login import login_required, current_user
+
 from app.models import Account
 from app.forms import AccountForm
 from app.logger import log
-from datetime import datetime
 from app.controllers import account
 from app.controllers.ldap import LDAP
-import secrets
+from config import BaseConfig as config
 
 account_blueprint = Blueprint("account", __name__)
 
@@ -48,13 +51,11 @@ def add_account():
             acc.ecc_id,
             acc.id,
         )
-        conn = LDAP()
-        if conn:
+        if config.LDAP_SERVER:
+            conn = LDAP()
             user = conn.add_user(acc.ecc_id, acc.ad_password)
             if not user:
                 log(log.WARNING, "Could not add user")
-        else:
-            log(log.WARNING, "Could not connect to active directory")
         log(log.INFO, "Account creation successful. [%s]", acc)
         flash("Account creation successful.", "success")
         return redirect(url_for("account.index"))
@@ -70,7 +71,7 @@ def add_account():
     )
 
 
-@account_blueprint.route("/edit_account/<account_id:int>", methods=["GET", "POST"])
+@account_blueprint.route("/edit_account/<int:account_id>", methods=["GET", "POST"])
 @login_required
 def edit_account(account_id):
     log(log.INFO, "edit account [%d]", account_id)
@@ -118,13 +119,12 @@ def delete_account():
     account_id = request.args.get("id")
     account = Account.query.get(account_id)
     if account:
-        conn = LDAP()
-        if conn:
+        if config.LDAP_SERVER:
+            conn = LDAP()
             conn.delete_user(account.ecc_id)
-        else:
-            log(log.WARNING, "Couldnt connect to active directory")
+
         account.deleted = True
-        now = datetime.now()
+        now = datetime.datetime.now()
         current_time = now.strftime("%H:%M:%S")
         account.name = f"{account.name} deleted {current_time}"
         account.save()
