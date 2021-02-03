@@ -158,6 +158,6 @@ const deleteIcon = document.querySelector(".icon__delete");
       { title: "Comment", field: "comment" ,minWidth:166},
     ],
     rowClick:function(e, row){
-      window.location.href = window.location.origin+"/edit_account?id="+row.getData().id
+      window.location.href = window.location.origin+"/edit_account?account_id="+row.getData().id
     }
   });}

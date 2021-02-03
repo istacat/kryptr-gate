@@ -42,14 +42,19 @@ def add_account():
             reseller_id=current_user.id,
         )
         acc.save()
-        log(log.INFO, "Generated ecc_id is. [%s] for account id [%s]", acc.ecc_id, acc.id)
+        log(
+            log.INFO,
+            "Generated ecc_id is. [%s] for account id [%s]",
+            acc.ecc_id,
+            acc.id,
+        )
         conn = LDAP()
         if conn:
             user = conn.add_user(acc.ecc_id, acc.ad_password)
             if not user:
-                log(log.WARNING, "Couldnt add user")
+                log(log.WARNING, "Could not add user")
         else:
-            log(log.WARNING, "Couldnt connect to active directory")
+            log(log.WARNING, "Could not connect to active directory")
         log(log.INFO, "Account creation successful. [%s]", acc)
         flash("Account creation successful.", "success")
         return redirect(url_for("account.index"))
@@ -65,13 +70,12 @@ def add_account():
     )
 
 
-@account_blueprint.route("/edit_account", methods=["GET", "POST"])
+@account_blueprint.route("/edit_account/<account_id:int>", methods=["GET", "POST"])
 @login_required
-def edit_account():
-    print(request.method)
-    id = request.args.get('id')
+def edit_account(account_id):
+    log(log.INFO, "edit account [%d]", account_id)
     form = AccountForm()
-    acc = Account.query.filter(Account.deleted == False).filter(Account.id == int(id)).first() # noqa e712
+    acc = Account.query.get(account_id)
     if acc:
         if request.method == "GET":
             form.name.data = acc.name
@@ -100,11 +104,11 @@ def edit_account():
             form=form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            action_url=url_for("account.edit_account", id=id),
+            action_url=url_for("account.edit_account", account_id=account_id),
         )
     else:
-        log(log.INFO, "account[%s] is deleted or unexistent", id)
-        flash("no account found for id [%s]", id)
+        log(log.INFO, "account[%s] is deleted or non exist", account_id)
+        flash("no account found for id [%d]", account_id)
         return redirect(url_for("account.index"))
 
 
@@ -140,7 +144,7 @@ def get_account_list():
     page = request.args.get("page", 1)
     page_size = request.args.get("size", 20)
     paginated_accounts = (
-        account.filter(Account.deleted == False) # noqa e701
+        account.filter(Account.deleted == False)  # noqa e701
         .order_by(Account.id.asc())
         .paginate(int(page), int(page_size), False)
     )
