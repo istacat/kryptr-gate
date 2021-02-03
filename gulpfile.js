@@ -10,7 +10,7 @@ const cheerio = require("gulp-cheerio");
 const replace = require("gulp-replace");
 const del = require("del");
 const browserSync = require("browser-sync").create();
-const sourcemaps = require('gulp-sourcemaps');
+const sourcemaps = require("gulp-sourcemaps");
 
 const browsersync = () => {
   browserSync.init({
@@ -22,6 +22,7 @@ const browsersync = () => {
 
 const styles = () => {
   return src("ui/scss/style.scss")
+    .pipe(dest("app/static/css"))
     .pipe(scss({ outputStyle: "compressed" }))
     .pipe(concat("style.min.css"))
     .pipe(
@@ -30,7 +31,6 @@ const styles = () => {
         grid: true,
       })
     )
-    .pipe(dest("app/static/css"))
     .pipe(browserSync.stream());
 };
 
@@ -96,12 +96,17 @@ const cleanDist = () => {
 };
 
 const build = () => {
-  return src(["app/**/*.html", "app/css/styles.min.css", "app/js/main.min.js"], { base: "app" }).pipe(dest("dist"));
+  return src(
+    [
+      "app/**/*.html",
+      "app/static/css/style.min.css",
+      "app/static/js/main.min.js",
+    ],
+    { base: "app" }
+  ).pipe(dest("dist"));
 };
 
-const jsSrcFiles = [
-  "app/static/js/main.js"
-];
+const jsSrcFiles = ["app/static/js/main.js"];
 
 const watcher = () => {
   watch(["ui/scss/**/*.scss"], styles);
