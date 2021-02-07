@@ -1,7 +1,7 @@
 import pytest
 
 from app import db, create_app
-from app.models import Account
+from app.models import Account, User
 from tests.utils import register, login, logout
 from config import BaseConfig as config
 from app.controllers.ldap import LDAP
@@ -75,3 +75,48 @@ def test_add_delete_account(client):
     if config.LDAP_SERVER:
         AD_user_mails = [u.mail for u in LDAP().users]
         assert acc_mail not in AD_user_mails
+
+
+@pytest.mark.skipif(not config.LDAP_SERVER, reason="LDAP not configured")
+def test_edit_account(client):
+    # test get method
+    login(client, "sam")
+    TEST_EMAIL = "TST001@kryptr.li"
+    TEST_PASS = "ZAQ!xsw2"
+    TEST_USER_NAME = "TST001"
+    reseller = User.query.filter(User.username == "sam").first()
+    assert reseller
+    acc = Account(
+        name="Test Name",
+        ecc_id=TEST_USER_NAME,
+        ad_login=TEST_EMAIL,
+        ad_password=TEST_PASS,
+        license_key="",
+        email=TEST_EMAIL,
+        reseller=reseller,
+    )
+    acc.save()
+    ACC_ID = acc.id
+    response = client.get(f"/edit_account/{ACC_ID}")
+    assert response.status_code == 200
+
+    # send post request for change password
+    NEW_NAME = "New Test name"
+    # NEW_PASS = "XSW@cde3"
+    NEW_PASS = TEST_PASS
+    data = {
+        "name": NEW_NAME,
+        "ecc_id": acc.ecc_id,
+        "email": acc.email,
+        "ad_login": acc.ad_login,
+        "ad_password": NEW_PASS,
+        "sim": acc.sim,
+        "imei": acc.imei,
+        "comment": acc.comment,
+    }
+    response = client.post(f"/edit_account/{ACC_ID}", data=data)
+    assert response.status_code == 302
+    acc = Account.query.get(ACC_ID)
+    assert acc.name == NEW_NAME
+    assert acc.ad_password == NEW_PASS
+    pass

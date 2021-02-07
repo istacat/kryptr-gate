@@ -1,6 +1,6 @@
 import datetime
 import ldap3
-from ldap3 import HASHED_SALTED_SHA256, MODIFY_REPLACE
+from ldap3 import HASHED_NONE as PASSWORD_HASH_ALGORITHM, MODIFY_REPLACE
 from ldap3.utils.hashed import hashed
 from ldap3.extend.microsoft.addMembersToGroups import (
     ad_add_members_to_groups as addUsersInGroups,
@@ -19,7 +19,8 @@ class LDAP(object):
         self.LDAP_URI = f"ldap://{config.LDAP_SERVER}"
         self.search_filter = "(&(objectClass=*)(sAMAccountName=*)(sn=*))"
         self.attrs = ["*"]
-        self.server = ldap3.Server(self.LDAP_URI, get_info=ldap3.ALL)
+        self.server = ldap3.Server(self.LDAP_URI, get_info=ldap3.ALL, use_ssl=True)
+        assert self.server
         # self.connection = ldap3.Connection(self.server, user=config.LDAP_USER, password=config.LDAP_PASS)
 
     @property
@@ -64,8 +65,8 @@ class LDAP(object):
                 return None
 
             # Set password
-            # hashed_password = hashed(HASHED_SALTED_SHA256, passwd)
-            hashed_password = passwd
+            hashed_password = hashed(PASSWORD_HASH_ALGORITHM, passwd)
+            # hashed_password = passwd
             changes = {
                 "userPassword": [(MODIFY_REPLACE, [hashed_password])],
                 "userAccountControl": [(MODIFY_REPLACE, "66080")],
@@ -101,3 +102,28 @@ class LDAP(object):
                 log(log.ERROR, "%s", connection.result)
                 return False
         return True
+
+    def change_password(self, name, new_password):
+        user_dn = self.FORMAT_USER_DN.format(name)
+        self.server = ldap3.Server(self.LDAP_URI, port=636, use_ssl=True)
+        with ldap3.Connection(
+            self.server, user=config.LDAP_USER, password=config.LDAP_PASS
+        ) as connection:
+            # connection.start_tls()
+            # Set password
+            # hashed_password = hashed(PASSWORD_HASH_ALGORITHM, new_password)
+            # # hashed_password = passwd
+            # changes = {
+            #     "userPassword": [(MODIFY_REPLACE, [hashed_password])],
+            #     "userAccountControl": [(MODIFY_REPLACE, "66080")],
+            # }
+            # success = connection.modify(user_dn, changes=changes)
+            # if not success:
+            #     log(log.ERROR, "Unable to change password for [%s]", user_dn)
+            #     log(log.ERROR, "%s", connection.result)
+            # return success
+            success = connection.extend.microsoft.modify_password(user_dn, new_password)
+            if not success:
+                log(log.ERROR, "Unable to change password for [%s]", user_dn)
+                log(log.ERROR, "%s", connection.result)
+            return success

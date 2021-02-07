@@ -86,14 +86,27 @@ def edit_account(account_id):
             form.ad_password.data = acc.ad_password
         if form.validate_on_submit():
             acc.name = form.name.data
-            acc.ecc_id = form.ecc_id.data
             acc.email = form.email.data
-            acc.ad_login = form.ad_login.data
+            if acc.ad_password != form.ad_password.data and config.LDAP_SERVER:
+                # change AD user password
+                ldap = LDAP()
+                success = ldap.change_password(acc.ecc_id, form.ad_password.data)
+                if not success:
+                    log(log.ERROR, "Can cot change password: %s", form.errors)
+                    return render_template(
+                        "base_add_edit.html",
+                        include_header="components/_account-edit.html",
+                        form=form,
+                        description_header=("Edit account"),
+                        cancel_link=url_for("account.index"),
+                        action_url=url_for(
+                            "account.edit_account", account_id=account_id
+                        ),
+                    )
             acc.ad_password = form.ad_password.data
             acc.sim = form.sim.data
             acc.imei = form.imei.data
             acc.comment = form.comment.data
-            acc.reseller_id = current_user.id
             acc.save()
             log(log.INFO, "Account data changed for account id [%s]", acc.id)
             return redirect(url_for("account.index"))
