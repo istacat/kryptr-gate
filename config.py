@@ -22,6 +22,11 @@ class BaseConfig(object):
     LDAP_SERVER = os.environ.get("LDAP_SERVER", None)
     AD_NAME = os.environ.get("AD_NAME", "DC=kryptr,DC=li")
 
+    REMOTE_SHELL_SERVER = os.environ.get("REMOTE_SHELL_SERVER", None)
+    REMOTE_SHELL_USER = os.environ.get("REMOTE_SHELL_USER", None)
+    REMOTE_SHELL_PASS = os.environ.get("REMOTE_SHELL_PASS", None)
+    REMOTE_SHELL_PORT = int(os.environ.get("REMOTE_SHELL_PORT", 0))
+
     @staticmethod
     def configure(app):
         # Implement this method to do further configuration on your app.

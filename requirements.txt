@@ -17,3 +17,5 @@ SQLAlchemy
 Werkzeug
 WTForms
 ldap3
+
+paramiko
