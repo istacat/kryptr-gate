@@ -1,4 +1,5 @@
-from .user import User, AnonymousUser  # noqa f401
-from .account import Account # noqa f401
-from .product import Product  # noqa f401
-from .subscription import Subscription  # noqa f401
+# flake8: noqa F401
+from .user import User, AnonymousUser
+from .account import Account
+from .product import Product
+from .subscription import Subscription

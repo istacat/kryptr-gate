@@ -1,8 +1,9 @@
-from .auth import auth_blueprint  # noqa f401
-from .main import main_blueprint  # noqa f401
-from .account import account_blueprint  # noqa f401
-from .user import user_blueprint  # noqa f401
-from .reseller import reseller_blueprint  # noqa f401
-from .distributor import distributor_blueprint  # noqa f401
-from .sub_reseller import sub_reseller_blueprint # noqa f401
-from .product import product_blueprint # noqa f401
+# flake8: noqa F401
+from .auth import auth_blueprint
+from .main import main_blueprint
+from .account import account_blueprint
+from .user import user_blueprint
+from .reseller import reseller_blueprint
+from .distributor import distributor_blueprint
+from .sub_reseller import sub_reseller_blueprint
+from .product import product_blueprint
