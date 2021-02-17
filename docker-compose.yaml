@@ -2,6 +2,7 @@ version: "3.8"
 services:
   kryptr_db:
     image: postgres
+    restart: always
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
