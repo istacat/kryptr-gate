@@ -1,5 +1,6 @@
 from app.models import User
 
+
 def fill_test_data():
     u = User(
         username='a',
