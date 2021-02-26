@@ -1,8 +1,10 @@
+from flask.helpers import url_for
 import pytest
 
 from app import db, create_app
 from app.models import User
 from tests.utils import register, login, logout
+from tests.db_data import fill_test_data
 
 
 @pytest.fixture
@@ -15,6 +17,7 @@ def client():
         app_ctx.push()
         db.drop_all()
         db.create_all()
+        fill_test_data()
         register("sam")
         yield client
         db.session.remove()
@@ -47,3 +50,81 @@ def test_add_user(client):
     ), follow_redirects=True)
 
     assert b'User creation successful' in response.data
+
+
+def test_diff_user_role(client):
+    logout(client)
+    login(client, 'a', 'a')
+    res = client.get(url_for("main.index"))
+    assert res.status_code == 200
+    assert url_for('user.index') in res.data.decode()
+    res = client.get(url_for("account.index"))
+    assert res.status_code == 200
+    assert url_for('account.index') in res.data.decode()
+
+    logout(client)
+    login(client, 'r', 'r')
+    res = client.get(url_for("main.index"))
+    assert res.status_code == 200
+    assert url_for('user.index') not in res.data.decode()
+
+    res = client.get(url_for("sub_reseller.index"))
+    assert res.status_code == 200
+    assert url_for('sub_reseller.index') in res.data.decode()
+    res = client.get(url_for("account.index"))
+    assert res.status_code == 200
+    assert url_for('account.index') in res.data.decode()
+
+    logout(client)
+    login(client, 'sr', 'sr')
+    res = client.get(url_for("main.index"))
+    assert res.status_code == 200
+    assert url_for('user.index') not in res.data.decode()
+    res = client.get(url_for("reseller.index"))
+    assert res.status_code == 200
+    assert url_for('reseller.index') not in res.data.decode()
+    res = client.get(url_for("sub_reseller.index"))
+    assert res.status_code == 200
+    assert url_for('sub_reseller.index') not in res.data.decode()
+
+    res = client.get(url_for("account.index"))
+    assert res.status_code == 200
+    assert url_for('account.index') in res.data.decode()
+
+    logout(client)
+    login(client, 's', 's')
+    res = client.get(url_for("main.index"))
+    assert res.status_code == 200
+    assert url_for('user.index') not in res.data.decode()
+    res = client.get(url_for("reseller.index"))
+    assert res.status_code == 200
+    assert url_for('reseller.index') not in res.data.decode()
+    res = client.get(url_for("sub_reseller.index"))
+    assert res.status_code == 200
+    assert url_for('sub_reseller.index') not in res.data.decode()
+
+    res = client.get(url_for("account.index"))
+    assert res.status_code == 200
+    assert url_for('account.index') in res.data.decode()
+    res = client.get(url_for("product.index"))
+    assert res.status_code == 200
+    assert url_for('product.index') in res.data.decode()
+
+    logout(client)
+    login(client, 'd', 'd')
+    res = client.get(url_for("main.index"))
+    assert res.status_code == 200
+    assert url_for('user.index') not in res.data.decode()
+    res = client.get(url_for("account.index"))
+    assert res.status_code == 200
+    assert url_for('account.index') not in res.data.decode()
+    res = client.get(url_for("product.index"))
+    assert res.status_code == 200
+    assert url_for('product.index') not in res.data.decode()
+
+    res = client.get(url_for("reseller.index"))
+    assert res.status_code == 200
+    assert url_for('reseller.index') in res.data.decode()
+    res = client.get(url_for("sub_reseller.index"))
+    assert res.status_code == 200
+    assert url_for('sub_reseller.index') in res.data.decode()
