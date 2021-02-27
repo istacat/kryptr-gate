@@ -1,6 +1,7 @@
 """ AD User """
 import ldap3
 
+from app.controllers import RemoteShell
 from config import BaseConfig as config
 
 
@@ -32,7 +33,7 @@ class User(object):
     def to_json(self):
         return self.ldap_entry.entry_to_json()
 
-    def reset_password(new_pass: str):
+    def reset_password(self, new_pass: str):
         """reset user password
 
         Args:
@@ -48,11 +49,15 @@ class User(object):
             " ".join(
                 [
                     "Set-ADAccountPassword",
-                    f'-Identity "{self.dn}"',
+                    f"-Identity '{self.dn}'",
                     "-Reset",
                     "-NewPassword",
-                    f'(ConvertTo-SecureString -AsPlainText "{new_pass}" -Force)',
+                    f"(ConvertTo-SecureString -AsPlainText '{new_pass}' -Force)",
                 ]
             )
         )
-        return res == 0
+        recognise_error_message = res.split("Set-ADAccountPassword :")
+        if len(recognise_error_message) > 1:
+            message_parts = recognise_error_message[1].split("\x1b")
+            return message_parts[0].strip(" \n\r\t")
+        return ""

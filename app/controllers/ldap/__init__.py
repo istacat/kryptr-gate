@@ -1,7 +1,5 @@
 import datetime
 import ldap3
-from ldap3 import HASHED_NONE as PASSWORD_HASH_ALGORITHM, MODIFY_REPLACE
-from ldap3.utils.hashed import hashed
 from ldap3.extend.microsoft.addMembersToGroups import (
     ad_add_members_to_groups as addUsersInGroups,
 )
@@ -31,7 +29,7 @@ class LDAP(object):
             connection.search(config.AD_NAME, self.search_filter, attributes=self.attrs)
             return [User(entry) for entry in connection.entries]
 
-    def add_user(self, name, passwd, product="Gold"):
+    def add_user(self, name, product="Gold"):
         user_dn = self.FORMAT_USER_DN.format(name)
         group_dn = f"CN=Kryptr_{product},DC=kryptr,DC=li"
         with ldap3.Connection(
@@ -61,19 +59,6 @@ class LDAP(object):
             success = ad_unlock_account(connection, user_dn)
             if not success:
                 log(log.ERROR, "Cannot unlock [%s]", user_dn)
-                log(log.ERROR, "%s", connection.result)
-                return None
-
-            # Set password
-            hashed_password = hashed(PASSWORD_HASH_ALGORITHM, passwd)
-            # hashed_password = passwd
-            changes = {
-                "userPassword": [(MODIFY_REPLACE, [hashed_password])],
-                "userAccountControl": [(MODIFY_REPLACE, "66080")],
-            }
-            success = connection.modify(user_dn, changes=changes)
-            if not success:
-                log(log.ERROR, "Unable to change password for [%s]", user_dn)
                 log(log.ERROR, "%s", connection.result)
                 return None
 

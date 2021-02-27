@@ -53,9 +53,29 @@ def add_account():
         )
         if config.LDAP_SERVER:
             conn = LDAP()
-            user = conn.add_user(acc.ecc_id, acc.ad_password)
+            user = conn.add_user(acc.ecc_id)
             if not user:
                 log(log.WARNING, "Could not add user")
+                flash("Could not add user.", "danger")
+                return render_template(
+                    "base_add_edit.html",
+                    include_header="components/_account-edit.html",
+                    form=form,
+                    description_header=("Add account"),
+                    cancel_link=url_for("account.index"),
+                    action_url=url_for("account.add_account"),
+                )
+            error_message = user.reset_password(acc.ad_password)
+            if error_message:
+                flash(error_message, "danger")
+                return render_template(
+                    "base_add_edit.html",
+                    include_header="components/_account-edit.html",
+                    form=form,
+                    description_header=("Add account"),
+                    cancel_link=url_for("account.index"),
+                    action_url=url_for("account.add_account"),
+                )
         log(log.INFO, "Account creation successful. [%s]", acc)
         flash("Account creation successful.", "success")
         return redirect(url_for("account.index"))

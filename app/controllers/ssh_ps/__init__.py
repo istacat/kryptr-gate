@@ -42,7 +42,7 @@ class RemoteShell:
         log(log.DEBUG, "RemoteShell: command [%s]", cmd)
         BUFFER_SIZE = 1024
         with self.client.get_transport().open_session() as channel:
-            channel.get_pty()
+            channel.get_pty(width=1024)
             channel.settimeout(5)
             channel.exec_command(cmd + "\r\n")
             if channel.recv_stderr_ready():
