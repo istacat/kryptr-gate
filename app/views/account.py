@@ -92,7 +92,7 @@ def edit_account(account_id):
                 ldap = LDAP()
                 success = ldap.change_password(acc.ecc_id, form.ad_password.data)
                 if not success:
-                    log(log.ERROR, "Can cot change password: %s", form.errors)
+                    log(log.ERROR, "Can not change password: %s", form.errors)
                     return render_template(
                         "base_add_edit.html",
                         include_header="components/_account-edit.html",
