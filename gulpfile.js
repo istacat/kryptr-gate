@@ -1,5 +1,7 @@
+'use strict';
+
 const { src, dest, watch, parallel, series } = require("gulp");
-const scss = require("gulp-sass");
+const sass = require("gulp-sass");
 const concat = require("gulp-concat");
 const autoprefixer = require("gulp-autoprefixer");
 const uglify = require("gulp-uglify");
@@ -12,6 +14,8 @@ const del = require("del");
 const browserSync = require("browser-sync").create();
 const sourcemaps = require("gulp-sourcemaps");
 
+sass.compiler = require('node-sass');
+
 const browsersync = () => {
   browserSync.init({
     notify: false,
@@ -22,9 +26,10 @@ const browsersync = () => {
 
 const styles = () => {
   return src("ui/scss/style.scss")
-    .pipe(dest("app/static/css"))
-    .pipe(scss({ outputStyle: "compressed" }))
-    .pipe(concat("style.min.css"))
+    .pipe(sourcemaps.init())
+    .pipe(sass({ outputStyle: "compressed" }).on('error', sass.logError))
+    .pipe(dest("./app/static/css/"))
+    .pipe(sourcemaps.write())
     .pipe(
       autoprefixer({
         overrideBrowserslist: ["last 10 versions"],
