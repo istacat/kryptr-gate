@@ -1,7 +1,6 @@
 import datetime
 import ldap3
-from ldap3 import HASHED_SALTED_SHA256, MODIFY_REPLACE
-from ldap3.utils.hashed import hashed
+from ldap3 import MODIFY_REPLACE
 from ldap3.extend.microsoft.addMembersToGroups import (
     ad_add_members_to_groups as addUsersInGroups,
 )
