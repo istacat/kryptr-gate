@@ -117,7 +117,7 @@ def test_diff_user_role(client):
     assert url_for('user.index') not in res.data.decode()
     res = client.get(url_for("account.index"))
     assert res.status_code == 200
-    assert url_for('account.index') not in res.data.decode()
+    assert url_for('account.index') in res.data.decode()
     res = client.get(url_for("product.index"))
     assert res.status_code == 200
     assert url_for('product.index') not in res.data.decode()

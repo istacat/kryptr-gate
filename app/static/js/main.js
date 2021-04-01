@@ -28,11 +28,19 @@ if (document.getElementById('products-table')) {
     ajaxURL: window.location.origin + '/api/product_list',
     columns: [ //Define Table Columns
       { title: "Id", field: "id" },
+      {  field:"actions",minWidth:50,formatter:printIcon,
+      width:20, hozAlign:"center", cellClick:function(e, cell){
+        e.stopPropagation();
+        if (confirm("Are you sure you want to delete " + cell.getRow().getData().name)){
+          window.location.href = window.location.origin+"/delete_product?id="+cell.getRow().getData().id       }
+        else return;
+      },
+    },
       { title: "Product name", field: "name", hozAlign: "left" },
       { title: "Comment", field: "comment" },
     ],
-    rowClick: function (e, row) { //trigger an alert message when the row is clicked
-      alert("Row " + row.getData().id + " Clicked!!!!");
+    rowClick:function(e, row){
+      window.location.href = window.location.origin+"/edit_product?id="+row.getData().id
     },
   });
 }
@@ -77,14 +85,22 @@ if (document.getElementById('sub_resellers-table')) {
     ajaxURL: window.location.origin + '/api/sub_reseller_list',
     columns: [ //Define Table Columns
       { title: "Id", field: "id" },
+      {  field:"actions",minWidth:50,formatter:printIcon,
+      width:20, hozAlign:"center", cellClick:function(e, cell){
+        e.stopPropagation();
+        if (confirm("Are you sure you want to delete " + cell.getRow().getData().username)){
+          window.location.href = window.location.origin+"/delete_sub_reseller?id="+cell.getRow().getData().id       }
+        else return;
+      },
+    },
       { title: "Username", field: "username", hozAlign: "left" },
       { title: "Email", field: "email" },
       { title: "Activated", field: "activated" },
       { title: "Role", field: "role" },
       { title: "Created", field: "created_at", sorter: "date", hozAlign: "center" },
     ],
-    rowClick: function (e, row) { //trigger an alert message when the row is clicked
-      alert("Row " + row.getData().id + " Clicked!!!!");
+    rowClick:function(e, row){
+      window.location.href = window.location.origin+"/edit_sub_reseller?id="+row.getData().id
     },
   });
 }
@@ -96,14 +112,22 @@ if (document.getElementById('resellers-table')) {
     ajaxURL: window.location.origin + '/api/reseller_list',
     columns: [ //Define Table Columns
       { title: "Id", field: "id" },
+      {  field:"actions",minWidth:50,formatter:printIcon,
+      width:20, hozAlign:"center", cellClick:function(e, cell){
+        e.stopPropagation();
+        if (confirm("Are you sure you want to delete " + cell.getRow().getData().username)){
+          window.location.href = window.location.origin+"/delete_reseller?id="+cell.getRow().getData().id       }
+        else return;
+      },
+    },
       { title: "Username", field: "username", hozAlign: "left" },
       { title: "Email", field: "email" },
       { title: "Activated", field: "activated" },
       { title: "Role", field: "role" },
       { title: "Created", field: "created_at", sorter: "date", hozAlign: "center" },
     ],
-    rowClick: function (e, row) { //trigger an alert message when the row is clicked
-      alert("Row " + row.getData().id + " Clicked!!!!");
+    rowClick:function(e, row){
+      window.location.href = window.location.origin+"/edit_reseller?id="+row.getData().id
     },
   });
 }
@@ -114,14 +138,22 @@ if (document.getElementById('distributors-table')) {
     ajaxURL: window.location.origin + '/api/distributor_list',
     columns: [ //Define Table Columns
       { title: "Id", field: "id" },
+      {  field:"actions",minWidth:50,formatter:printIcon,
+      width:20, hozAlign:"center", cellClick:function(e, cell){
+        e.stopPropagation();
+        if (confirm("Are you sure you want to delete " + cell.getRow().getData().username)){
+          window.location.href = window.location.origin+"/delete_distributor?id="+cell.getRow().getData().id       }
+        else return;
+      },
+    },
       { title: "Username", field: "username", hozAlign: "left" },
       { title: "Email", field: "email" },
       { title: "Activated", field: "activated" },
       { title: "Role", field: "role" },
       { title: "Created", field: "created_at", sorter: "date", hozAlign: "center" },
     ],
-    rowClick: function (e, row) { //trigger an alert message when the row is clicked
-      alert("Row " + row.getData().id + " Clicked!!!!");
+    rowClick:function(e, row){
+      window.location.href = window.location.origin+"/edit_distributor?id="+row.getData().id
     },
   });
 }
