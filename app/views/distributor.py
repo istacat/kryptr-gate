@@ -3,6 +3,7 @@ from flask import render_template, Blueprint, flash, redirect, url_for, jsonify
 from flask_login import login_required
 from app.models import User
 from app.logger import log
+from app.controllers import Admin
 distributor_blueprint = Blueprint('distributor', __name__)
 
 
@@ -42,7 +43,7 @@ def add_distributor():
 @distributor_blueprint.route("/api/distributor_list")
 @login_required
 def get_distributor_list():
-    distributors = User.query.filter(User.role == 'distributor')
+    distributors = Admin.get_distributors()
     res = [distributor.to_json() for distributor in distributors]
     print(res)
     return jsonify(res)

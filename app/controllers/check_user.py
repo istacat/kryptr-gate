@@ -79,3 +79,10 @@ class Reseller:
             for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
                 accounts.append(account)
         return accounts
+
+
+class SubReseller:
+    @staticmethod
+    def get_accounts(sub_reseller_id):
+        query = Account.query.filter(Account.reseller_id == sub_reseller_id)
+        return query
