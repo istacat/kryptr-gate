@@ -47,8 +47,8 @@ def edit_user():
     if id:
         user = User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
     else:
-        log(log.INFO, "no id was passed [%s]", id)
-        flash("no account found for id [%s]", id)
+        log(log.INFO, "No id was passed [%s]", id)
+        flash("No account found for id [%s]", id)
         return redirect(url_for("user.index"))
     if user:
         if request.method == "GET":
@@ -77,8 +77,8 @@ def edit_user():
             action_url=url_for("user.edit_user", id=id),
         )
     else:
-        log(log.INFO, "user [%s] is deleted or unexistent", id)
-        flash("no account found for id [%s]", id)
+        log(log.INFO, "User [%s] is deleted or unexistent", id)
+        flash("No account found for id [%s]", id)
         return redirect(url_for("user.index"))
 
 
@@ -93,12 +93,12 @@ def delete_user():
         current_time = now.strftime("%H:%M:%S")
         user.username = f"{user.username} deleted {current_time}"
         user.save()
-        log(log.INFO, "user deletion successful. [%s]", user)
-        flash("user deletion successful", "success")
+        log(log.INFO, "User deletion successful. [%s]", user)
+        flash("User deletion successful", "success")
         return redirect(url_for("user.index"))
     else:
-        log(log.WARNING, "tried to delete unexisted or deleted user [%s]", user_id)
-        flash("user doesnt exist or already deleted", "danger")
+        log(log.WARNING, "Tried to delete unexisted or deleted user [%s]", user_id)
+        flash("User doesnt exist or already deleted", "danger")
         return redirect(url_for("user.index"))
 
 
