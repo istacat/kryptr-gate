@@ -1,8 +1,8 @@
 from datetime import datetime
 from app.forms import DistributorForm
 from flask import render_template, Blueprint, flash, redirect, url_for, jsonify, request
-from flask_login import login_required
-from app.models import User
+from flask_login import login_required, current_user
+from app.models import User, Subordinate
 from app.logger import log
 from app.controllers import Admin
 distributor_blueprint = Blueprint('distributor', __name__)
@@ -27,6 +27,8 @@ def add_distributor():
             role=form.role.data,
         )
         res.save()
+        subordinate = Subordinate(chief_id=current_user.id, subordinate_id=res.id)
+        subordinate.save()
         flash("Distributor creation successful.", "success")
         return redirect(url_for("distributor.index"))
     elif form.is_submitted():

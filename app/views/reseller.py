@@ -1,8 +1,9 @@
+from app.controllers import Admin, Distributor
 from datetime import datetime
 from app.forms import ResellerForm
 from flask import render_template, Blueprint, flash, redirect, url_for, jsonify, request
-from flask_login import login_required
-from app.models import User
+from flask_login import login_required, current_user
+from app.models import User, Subordinate
 from app.logger import log
 reseller_blueprint = Blueprint('reseller', __name__)
 
@@ -26,6 +27,8 @@ def add_reseller():
             role=form.role.data,
         )
         res.save()
+        subordinate = Subordinate(chief_id=current_user.id, subordinate_id=res.id)
+        subordinate.save()
         flash("Reseller creation successful.", "success")
         return redirect(url_for("reseller.index"))
     elif form.is_submitted():
@@ -106,7 +109,11 @@ def delete_reseller():
 @reseller_blueprint.route("/api/reseller_list")
 @login_required
 def get_reseller_list():
-    resellers = User.query.filter(User.role == 'reseller')
+    resellers = None
+    if current_user.role.value == 5:
+        resellers = Admin.get_resellers()
+    elif current_user.role.value == 4:
+        resellers = Distributor.get_resellers(current_user.id)
     res = [reseller.to_json() for reseller in resellers]
     print(res)
     return jsonify(res)

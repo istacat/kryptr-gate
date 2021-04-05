@@ -4,7 +4,7 @@ from app.models import Account
 from app.forms import AccountForm
 from app.logger import log
 from datetime import datetime
-from app.controllers import account
+from app.controllers import account, Admin, Distributor, Reseller, SubReseller
 from app.controllers.ldap import LDAP
 import secrets
 
@@ -42,7 +42,12 @@ def add_account():
             reseller_id=current_user.id,
         )
         acc.save()
-        log(log.INFO, "Generated ecc_id is. [%s] for account id [%s]", acc.ecc_id, acc.id)
+        log(
+            log.INFO,
+            "Generated ecc_id is. [%s] for account id [%s]",
+            acc.ecc_id,
+            acc.id,
+        )
         conn = LDAP()
         if conn:
             user = conn.add_user(acc.ecc_id, acc.ad_password)
@@ -69,9 +74,13 @@ def add_account():
 @login_required
 def edit_account():
     print(request.method)
-    id = request.args.get('id')
+    id = request.args.get("id")
     form = AccountForm()
-    acc = Account.query.filter(Account.deleted == False).filter(Account.id == int(id)).first() # noqa e712
+    acc = (
+        Account.query.filter(Account.deleted == False) # noqa e712
+        .filter(Account.id == int(id))
+        .first()
+    )
     if acc:
         if request.method == "GET":
             form.name.data = acc.name
@@ -136,16 +145,31 @@ def delete_account():
 @account_blueprint.route("/api/account_list")
 @login_required
 def get_account_list():
-    account = Account.query
-    page = request.args.get("page", 1)
-    page_size = request.args.get("size", 20)
-    paginated_accounts = (
-        account.filter(Account.deleted == False) # noqa e701
-        .order_by(Account.id.asc())
-        .paginate(int(page), int(page_size), False)
-    )
+    account = None
+    if current_user.role.value == 5:
+        account = Admin.get_accounts()
+    elif current_user.role.value == 4:
+        account = Distributor.get_accounts(
+            current_user.id,
+            Distributor.get_resellers(current_user.id),
+            Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id)),
+        )
+    elif current_user.role.value == 3:
+        account = Reseller.get_accounts(
+            current_user.id, Reseller.get_sub_resellers(current_user.id)
+        )
+    elif current_user.role.value == 2:
+        account = SubReseller.get_accounts(current_user.id)
+    page = int(request.args.get("page", 1))
+    page_size = int(request.args.get("size", 20))
+    # TODO
+    accounts = account[(page*page_size-page_size):(page*page_size-1)]
+    if len(account) % page_size != 0:
+        last_page = int(len(account) / page_size) + 1
+    else:
+        last_page = len(account) / page_size
     res = {
-        "last_page": paginated_accounts.pages,
-        "data": [acc.to_json() for acc in paginated_accounts.items],
+        "last_page": last_page,
+        "data": [acc.to_json() for acc in accounts],
     }
     return jsonify(res)

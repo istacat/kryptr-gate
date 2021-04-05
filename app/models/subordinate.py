@@ -7,5 +7,5 @@ class Subordinate(db.Model, ModelMixin):
     __tablename__ = "subordinates"
 
     id = db.Column(db.Integer, primary_key=True)
-    chief_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    subordinate_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    chief_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    subordinate_id = db.Column(db.Integer, db.ForeignKey("users.id"))

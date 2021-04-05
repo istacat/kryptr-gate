@@ -1,8 +1,10 @@
 from flask.helpers import url_for
+from flask_login import current_user
 import pytest
 
 from app import db, create_app
 from app.models import User
+from app.controllers import Admin, Distributor, Reseller, SubReseller
 from tests.utils import register, login, logout
 from tests.db_data import fill_test_data
 
@@ -128,3 +130,61 @@ def test_diff_user_role(client):
     res = client.get(url_for("sub_reseller.index"))
     assert res.status_code == 200
     assert url_for('sub_reseller.index') in res.data.decode()
+
+
+def test_chief_subordinate(client):
+    # Admin
+    logout(client)
+    login(client, 'a', 'a')
+    dists = Admin.get_distributors()
+    assert dists
+    resellers = Admin.get_resellers()
+    assert resellers
+    subress = Admin.get_subresellers()
+    assert subress
+    accs = Admin.get_accounts()
+    assert accs
+
+    # Distributor # 1
+    logout(client)
+    login(client, 'd', 'd')
+    resellers = Distributor.get_resellers(current_user.id)
+    assert resellers
+    sub_resellers = Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id))
+    assert sub_resellers
+    account = Distributor.get_accounts(
+            current_user.id,
+            Distributor.get_resellers(current_user.id),
+            Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id)),
+        )
+    assert account
+
+    # Distributor # 2
+    logout(client)
+    login(client, 'd2', 'd2')
+    resellers = Distributor.get_resellers(current_user.id)
+    assert not resellers
+    sub_resellers = Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id))
+    assert not sub_resellers
+    account = Distributor.get_accounts(
+            current_user.id,
+            Distributor.get_resellers(current_user.id),
+            Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id)),
+        )
+    assert not account
+
+    # Reseller
+    logout(client)
+    login(client, 'r', 'r')
+    sub_resellers = Reseller.get_sub_resellers(current_user.id)
+    assert sub_resellers
+    account = Reseller.get_accounts(
+            current_user.id, Reseller.get_sub_resellers(current_user.id)
+        )
+    assert account
+
+    # Sub-reseller
+    logout(client)
+    login(client, 'sr', 'sr')
+    account = SubReseller.get_accounts(current_user.id)
+    assert account

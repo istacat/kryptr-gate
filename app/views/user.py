@@ -1,8 +1,8 @@
 from flask import render_template, Blueprint, flash, jsonify, redirect, url_for, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 from datetime import datetime
 from app.logger import log
-from app.models import User
+from app.models import User, Subordinate
 from app.forms import UserForm
 
 user_blueprint = Blueprint("user", __name__)
@@ -27,6 +27,8 @@ def add_user():
             role=form.role.data,
         )
         user.save()
+        subordinate = Subordinate(chief_id=current_user.id, subordinate_id=user.id)
+        subordinate.save()
         flash('User creation successful.', 'success')
         return redirect(url_for("user.index"))
     return render_template(

@@ -18,7 +18,7 @@ class Admin:
         return query
 
     @staticmethod
-    def get_acconts():
+    def get_accounts():
         query = Account.query.all()
         return query
 
@@ -59,8 +59,8 @@ class Distributor:
 
 class Reseller:
     @staticmethod
-    def get_resellers(distrib_id):
-        sub_query = Subordinate.query.filter(Subordinate.chief_id == distrib_id)
+    def get_sub_resellers(reseller_id):
+        sub_query = Subordinate.query.filter(Subordinate.chief_id == reseller_id)
         query = []
         for relation in sub_query:
             user = User.query.get(relation.subordinate_id)
@@ -68,13 +68,10 @@ class Reseller:
         return query
 
     @staticmethod
-    def get_accounts(distrib_id, resellers, sub_resellers):
+    def get_accounts(reseller_id, sub_resellers):
         accounts = []
-        for account in Account.query.filter(Account.reseller_id == distrib_id):
+        for account in Account.query.filter(Account.reseller_id == reseller_id):
             accounts.append(account)
-        for reseller in resellers:
-            for account in Account.query.filter(Account.reseller_id == reseller.id):
-                accounts.append(account)
         for sub_reseller in sub_resellers:
             for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
                 accounts.append(account)
