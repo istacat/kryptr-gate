@@ -6,22 +6,9 @@
   <div class="edit__group">
     <div class="input__wrapper">
       <label class="edit__label">
-        Account Name
-      </label>
-      {{ form.name(class="edit__input", type="text", placeholder="Name")}}
-    </div>
-    <div class="edit__feedback">
-      {% for error in form.name.errors %}
-      <span>{{ error }}</span>
-      {% endfor %}
-    </div>
-  </div>
-  <div class="edit__group">
-    <div class="input__wrapper">
-      <label class="edit__label">
         EСС
         </label>
-      {{ form.ecc_id(class="edit__input disabled", type="text", readonly="true")}}
+      {{ form.ecc_id(class="edit__input disabled edit__spec", type="text", readonly="true")}}
       </div>
     <div class="edit__feedback">
       {% for error in form.ecc_id.errors %}
@@ -85,20 +72,6 @@
   <div class="edit__group">
     <div class="input__wrapper">
       <label class="edit__label">
-        IMEI
-        </label>
-      {{ form.imei(class="edit__input", type="text", )}}
-    </div>
-    <div class="edit__feedback">
-      {% for error in form.imei.errors %}
-      <span>{{ error }}</span>
-      {% endfor %}
-    </div>
-  </div>
-
-  <div class="edit__group">
-    <div class="input__wrapper">
-      <label class="edit__label">
         Comments
       </label>
       {{ form.comment(class="edit__input", placeholder="Comments")}}
@@ -114,5 +87,16 @@
     {{ form.submit(class="edit__submit")}}
   </div>
     </div>
+    {% if description_header == 'Add account' %}
+    <div class="edit__group">
+      <div class='edit__submit-btn reload-button'>
+        <a type='button' href="javascript:window.location.reload()" class='edit__submit'>Regenerate</a>
+      </div>
+    </div>
+    {% endif %}
   </div>
+
 </form>
+
+
+
