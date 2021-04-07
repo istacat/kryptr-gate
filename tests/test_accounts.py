@@ -1,7 +1,7 @@
 import pytest
 
 from app import db, create_app
-from app.models import Account
+from app.models import Account, User
 from tests.utils import register, login, logout
 from config import BaseConfig as config
 from app.controllers.ldap import LDAP
@@ -20,7 +20,7 @@ def client():
         app_ctx.push()
         db.drop_all()
         db.create_all()
-        register("sam")
+        register("sam", role=User.RoleType.distributor)
         yield client
         db.session.remove()
         db.drop_all()
@@ -44,23 +44,21 @@ def test_add_delete_account(client):
     login(client, "sam")
     response = client.get('/add_account')
     assert response.status_code == 200
-
+    res = User.query.get(1)
     response = client.post('/add_account', data=dict(
-        name=TEST_ACC_NAME,
         ad_password="password",
-        license_key="lis_key_value",
         sim="12345678901",
-        imei="",
         ad_login=' TES345@kryptr.li',
         email='TES345@kryptr.li',
         ecc_id='TES345',
-        comment=""
+        comment="",
+        reseller=res.id
     ), follow_redirects=True
     )
     assert b'Account creation successful' in response.data
     ldap = LDAP()
     users = ldap.users
-    acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
+    acc = Account.query.filter(Account.ecc_id == 'TES345').first()
     assert acc
     acc_mail = acc.ecc_id + "@kryptr.li"
     ldap_account = None
@@ -69,7 +67,7 @@ def test_add_delete_account(client):
             ldap_account = user.mail
     assert ldap_account
     response = client.get("/delete_account?id=1", follow_redirects=True)
-    acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
+    acc = Account.query.filter(Account.ecc_id == 'TES345').first()
     ldap_account = None
     ldap = LDAP()
     users = ldap.users
@@ -77,5 +75,4 @@ def test_add_delete_account(client):
         if user.mail == (acc_mail):
             ldap_account = user.mail
     assert not ldap_account
-    assert not acc
     assert b'Account deletion successful' in response.data

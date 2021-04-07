@@ -125,7 +125,7 @@ def delete_account():
         account.deleted = True
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
-        account.name = f"{account.name} deleted {current_time}"
+        account.comment = f"Deleted {current_time}"
         account.save()
         log(log.INFO, "Account deletion successful. [%s]", account)
         flash("Account deletion successful", "success")
