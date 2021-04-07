@@ -2,4 +2,3 @@
 from .account import  (
     ecc_encode,
 )
-from .all_users import ALL_USERS

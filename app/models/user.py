@@ -68,8 +68,11 @@ class User(db.Model, UserMixin, ModelMixin):
         if user is not None and check_password_hash(user.password, password):
             return user
 
+    def __repr__(self):
+        return f"<{self.id}: {self.username}>"
+
     def __str__(self):
-        return "<User: %s>" % self.username
+        return self.username
 
 
 class AnonymousUser(AnonymousUserMixin):

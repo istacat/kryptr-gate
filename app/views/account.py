@@ -36,7 +36,7 @@ def add_account():
             ad_password=form.ad_password.data,
             sim=form.sim.data,
             comment=form.comment.data,
-            reseller_id=current_user.id,
+            reseller_id=form.reseller.data.id
         )
         acc.save()
         log(
