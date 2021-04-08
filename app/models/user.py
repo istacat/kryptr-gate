@@ -8,6 +8,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
 from app.models.utils import ModelMixin
+from app.models.subordinate import Subordinate
+from app.controllers import get_accounts
 
 
 class User(db.Model, UserMixin, ModelMixin):
@@ -49,8 +51,60 @@ class User(db.Model, UserMixin, ModelMixin):
             "email": self.email,
             "activated": self.activated.name,
             "role": self.role.name,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }
+
+    @property
+    def distributors(self):
+        if self.role == "admin":
+            return User.query.filter(User.role == "distributor")
+
+    @property
+    def resellers(self):
+        """Get resellers by roles and subordinates"""
+        if self.role == "admin":
+            query = User.query.filter(User.role == "reseller")
+            return query
+        elif self.role == "distributor":
+            query = []
+            sub_query = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in sub_query:
+                user = User.query.get(relation.subordinate_id)
+                if user.role == 'reseller':
+                    query.append(user)
+            return query
+
+    @property
+    def sub_resellers(self):
+        """Get sub_resellers by roles and subordinates"""
+        if self.role == "admin":
+            query = User.query.filter(User.role == "sub_reseller")
+            return query
+        elif self.role == "distributor":
+            query = []
+            for reseller in self.resellers:
+                new_query = Subordinate.query.filter(Subordinate.chief_id == reseller.id)
+                for relation in new_query:
+                    user = User.query.get(relation.subordinate_id)
+                    query.append(user)
+            sub_query = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in sub_query:
+                user = User.query.get(relation.subordinate_id)
+                if user.role == 'sub_reseller':
+                    query.append(user)
+            return query
+        elif self.role == 'reseller':
+            query = []
+            for sub_reseller in self.sub_resellers:
+                new_query = Subordinate.query.filter(Subordinate.chief_id == sub_reseller.id)
+                for relation in new_query:
+                    user = User.query.get(relation.subordinate_id)
+                    query.append(user)
+            return query
+
+    @property
+    def accounts(self):
+        return get_accounts(self)
 
     @hybrid_property
     def password(self):
