@@ -4,7 +4,6 @@ import pytest
 
 from app import db, create_app
 from app.models import User
-from app.controllers import Admin, Distributor, Reseller, SubReseller
 from tests.utils import register, login, logout
 from tests.db_data import fill_test_data
 
@@ -136,55 +135,59 @@ def test_chief_subordinate(client):
     # Admin
     logout(client)
     login(client, 'a', 'a')
-    dists = Admin.get_distributors()
+    dists = current_user.distributors
     assert dists
-    resellers = Admin.get_resellers()
+    resellers = current_user.resellers
     assert resellers
-    subress = Admin.get_subresellers()
+    subress = current_user.sub_resellers
     assert subress
-    accs = Admin.get_accounts()
+    accs = current_user.accounts
     assert accs
 
     # Distributor # 1
     logout(client)
     login(client, 'd', 'd')
-    resellers = Distributor.get_resellers(current_user.id)
+    dists = current_user.distributors
+    assert not dists
+    resellers = current_user.resellers
     assert resellers
-    sub_resellers = Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id))
-    assert sub_resellers
-    account = Distributor.get_accounts(
-            current_user.id,
-            Distributor.get_resellers(current_user.id),
-            Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id)),
-        )
-    assert account
+    subress = current_user.sub_resellers
+    assert subress
+    accs = current_user.accounts
+    assert accs
 
     # Distributor # 2
     logout(client)
     login(client, 'd2', 'd2')
-    resellers = Distributor.get_resellers(current_user.id)
+    dists = current_user.distributors
+    assert not dists
+    resellers = current_user.resellers
     assert not resellers
-    sub_resellers = Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id))
-    assert not sub_resellers
-    account = Distributor.get_accounts(
-            current_user.id,
-            Distributor.get_resellers(current_user.id),
-            Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id)),
-        )
-    assert not account
+    subress = current_user.sub_resellers
+    assert not subress
+    accs = current_user.accounts
+    assert not accs
 
     # Reseller
     logout(client)
     login(client, 'r', 'r')
-    sub_resellers = Reseller.get_sub_resellers(current_user.id)
-    assert sub_resellers
-    account = Reseller.get_accounts(
-            current_user.id, Reseller.get_sub_resellers(current_user.id)
-        )
-    assert account
+    dists = current_user.distributors
+    assert not dists
+    resellers = current_user.resellers
+    assert not resellers
+    subress = current_user.sub_resellers
+    assert subress
+    accs = current_user.accounts
+    assert accs
 
     # Sub-reseller
     logout(client)
     login(client, 'sr', 'sr')
-    account = SubReseller.get_accounts(current_user.id)
-    assert account
+    dists = current_user.distributors
+    assert not dists
+    resellers = current_user.resellers
+    assert not resellers
+    subress = current_user.sub_resellers
+    assert not subress
+    accs = current_user.accounts
+    assert accs
