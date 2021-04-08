@@ -1,3 +1,4 @@
-from .account import  ( # noqa F401
+# flake8: noqa F401
+from .account import  (
     ecc_encode,
-) # noqa F401
+)
