@@ -27,19 +27,16 @@ def add_account():
         form.ecc_id.data = ecc_id
         form.email.data = f"{ecc_id}@kryptr.li"
         form.ad_login.data = f"{ecc_id}@kryptr.li"
-        form.ad_password.data = f"{secrets.token_urlsafe(16)}"
+        form.ad_password.data = f"{secrets.token_urlsafe(6)}"
     if form.validate_on_submit():
-
         acc = Account(
-            name=form.name.data,
             ecc_id=form.ecc_id.data,
             email=form.email.data,
             ad_login=form.ad_login.data,
             ad_password=form.ad_password.data,
             sim=form.sim.data,
-            imei=form.imei.data,
             comment=form.comment.data,
-            reseller_id=current_user.id,
+            reseller_id=form.reseller.data.id
         )
         acc.save()
         log(
@@ -83,19 +80,16 @@ def edit_account():
     )
     if acc:
         if request.method == "GET":
-            form.name.data = acc.name
             form.ecc_id.data = acc.ecc_id
             form.email.data = acc.email
             form.ad_login.data = acc.ad_login
             form.ad_password.data = acc.ad_password
         if form.validate_on_submit():
-            acc.name = form.name.data
             acc.ecc_id = form.ecc_id.data
             acc.email = form.email.data
             acc.ad_login = form.ad_login.data
             acc.ad_password = form.ad_password.data
             acc.sim = form.sim.data
-            acc.imei = form.imei.data
             acc.comment = form.comment.data
             acc.reseller_id = current_user.id
             acc.save()
@@ -131,7 +125,7 @@ def delete_account():
         account.deleted = True
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
-        account.name = f"{account.name} deleted {current_time}"
+        account.comment = f"Deleted {current_time}"
         account.save()
         log(log.INFO, "Account deletion successful. [%s]", account)
         flash("Account deletion successful", "success")

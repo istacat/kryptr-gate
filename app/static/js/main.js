@@ -65,7 +65,7 @@ if (document.getElementById("users-table")) {
   table = new Tabulator("#users-table", {
     responsiveLayout: "collapse",
     pagination: "remote", //enable remote pagination
-    paginationSize: 2, //optional parameter to request a certain number of rows per page
+    paginationSize: 20, //optional parameter to request a certain number of rows per page
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
     layout: "fitColumns", //fit columns to width of table (optional)
     ajaxURL: window.location.origin + `/api/user_list`,
