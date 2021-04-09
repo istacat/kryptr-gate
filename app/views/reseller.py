@@ -53,8 +53,8 @@ def edit_reseller():
     id = request.args.get("id")
     if id:
         user = (
-            User.query.filter(User.deleted == False).filter(User.id == int(id)).first()
-        )  # noqa e712
+            User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
+        )
     else:
         log(log.INFO, "No id was passed [%s]", id)
         flash("No account found for id [%s]", id)
