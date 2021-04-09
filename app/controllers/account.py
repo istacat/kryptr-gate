@@ -67,9 +67,9 @@ def ecc_encode(number: int) -> str:
 
 def get_accounts(user):
     """Get accounts by roles and subordinates"""
-    if user.role == "admin" or user.role == "support":
+    if user.role.name == "admin" or user.role.name == "support":
         return Account.query.all()
-    elif user.role == "distributor":
+    elif user.role.name == "distributor":
         accounts = []
         for account in Account.query.filter(Account.reseller_id == user.id):
             accounts.append(account)
@@ -80,7 +80,7 @@ def get_accounts(user):
             for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
                 accounts.append(account)
         return accounts
-    elif user.role == "reseller":
+    elif user.role.name == "reseller":
         accounts = []
         for account in Account.query.filter(Account.reseller_id == user.id):
             accounts.append(account)
@@ -88,7 +88,7 @@ def get_accounts(user):
             for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
                 accounts.append(account)
         return accounts
-    elif user.role == "sub_reseller":
+    elif user.role.name == "sub_reseller":
         accounts = []
         for account in Account.query.filter(Account.reseller_id == user.id):
             accounts.append(account)

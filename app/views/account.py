@@ -139,21 +139,7 @@ def delete_account():
 @account_blueprint.route("/api/account_list")
 @login_required
 def get_account_list():
-    account = None
-    if current_user.role.value == 5:
-        account = Admin.get_accounts()
-    elif current_user.role.value == 4:
-        account = Distributor.get_accounts(
-            current_user.id,
-            Distributor.get_resellers(current_user.id),
-            Distributor.get_sub_resellers(Distributor.get_resellers(current_user.id)),
-        )
-    elif current_user.role.value == 3:
-        account = Reseller.get_accounts(
-            current_user.id, Reseller.get_sub_resellers(current_user.id)
-        )
-    elif current_user.role.value == 2:
-        account = SubReseller.get_accounts(current_user.id)
+    account = current_user.accounts
     page = int(request.args.get("page", 1))
     page_size = int(request.args.get("size", 20))
     # TODO

@@ -1,7 +1,7 @@
 from datetime import datetime
 import enum
 
-from flask_login import UserMixin, AnonymousUserMixin
+from flask_login import UserMixin, AnonymousUserMixin, current_user
 from sqlalchemy import Enum
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -55,32 +55,42 @@ class User(db.Model, UserMixin, ModelMixin):
         }
 
     @property
+    def chief(self):
+        if self.role.name == 'reseller' or self.role.name == 'sub_reseller':
+            sub = Subordinate.query.filter(Subordinate.subordinate_id == self.id).first()
+            if not sub:
+                return current_user
+            chief = User.query.get(sub.chief_id)
+            return chief
+
+    @property
     def distributors(self):
-        if self.role == "admin":
+        """Get all distributors for admin"""
+        if self.role.name == "admin":
             return User.query.filter(User.role == "distributor")
 
     @property
     def resellers(self):
         """Get resellers by roles and subordinates"""
-        if self.role == "admin":
+        if self.role.name == "admin":
             query = User.query.filter(User.role == "reseller")
             return query
-        elif self.role == "distributor":
+        elif self.role.name == "distributor":
             query = []
             sub_query = Subordinate.query.filter(Subordinate.chief_id == self.id)
             for relation in sub_query:
                 user = User.query.get(relation.subordinate_id)
-                if user.role == 'reseller':
+                if user.role.name == 'reseller':
                     query.append(user)
             return query
 
     @property
     def sub_resellers(self):
         """Get sub_resellers by roles and subordinates"""
-        if self.role == "admin":
+        if self.role.name == "admin":
             query = User.query.filter(User.role == "sub_reseller")
             return query
-        elif self.role == "distributor":
+        elif self.role.name == "distributor":
             query = []
             for reseller in self.resellers:
                 new_query = Subordinate.query.filter(Subordinate.chief_id == reseller.id)
@@ -90,16 +100,15 @@ class User(db.Model, UserMixin, ModelMixin):
             sub_query = Subordinate.query.filter(Subordinate.chief_id == self.id)
             for relation in sub_query:
                 user = User.query.get(relation.subordinate_id)
-                if user.role == 'sub_reseller':
+                if user.role.name == 'sub_reseller':
                     query.append(user)
             return query
-        elif self.role == 'reseller':
+        elif self.role.name == 'reseller':
             query = []
-            for sub_reseller in self.sub_resellers:
-                new_query = Subordinate.query.filter(Subordinate.chief_id == sub_reseller.id)
-                for relation in new_query:
-                    user = User.query.get(relation.subordinate_id)
-                    query.append(user)
+            new_query = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in new_query:
+                user = User.query.get(relation.subordinate_id)
+                query.append(user)
             return query
 
     @property

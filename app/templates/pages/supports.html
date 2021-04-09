@@ -4,16 +4,16 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tabulator.min.css') }}">
 {% endblock %}
 {% block content %}
-  <section class="users">
+  <section class="supports">
     <div class="container">
-      <div class="users__inner">
-        <div class="users__header">
-          <span class="users__title">Users</span>
-          <a class="btn users__add" href="{{ url_for('user.add_user') }}" >Add admin</a>
+      <div class="supports__inner">
+        <div class="supports__header">
+          <span class="supports__title">Supports</span>
+          <a class="btn supports__add" href="{{ url_for('support.add_support') }}" >Add support</a>
         </div>
 
-        <div class="users__table">
-          <div id="users-table"></div>
+        <div class="supports__table">
+          <div id="supports-table"></div>
         </div>
       </div>
     </div>

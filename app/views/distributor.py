@@ -2,10 +2,11 @@ from datetime import datetime
 from app.forms import DistributorForm
 from flask import render_template, Blueprint, flash, redirect, url_for, jsonify, request
 from flask_login import login_required, current_user
-from app.models import User, Subordinate
+from app.models import User
 from app.logger import log
-from app.controllers import Admin
-distributor_blueprint = Blueprint('distributor', __name__)
+from app.controllers import role_required
+
+distributor_blueprint = Blueprint("distributor", __name__)
 
 
 @distributor_blueprint.route("/distributors")
@@ -16,6 +17,7 @@ def index():
 
 @distributor_blueprint.route("/add_distributor", methods=["GET", "POST"])
 @login_required
+@role_required(roles=["admin"])
 def add_distributor():
     form = DistributorForm()
     if form.validate_on_submit():
@@ -27,8 +29,6 @@ def add_distributor():
             role=form.role.data,
         )
         res.save()
-        subordinate = Subordinate(chief_id=current_user.id, subordinate_id=res.id)
-        subordinate.save()
         flash("Distributor creation successful.", "success")
         return redirect(url_for("distributor.index"))
     elif form.is_submitted():
@@ -45,11 +45,14 @@ def add_distributor():
 
 @distributor_blueprint.route("/edit_distributor", methods=["GET", "POST"])
 @login_required
+@role_required(roles=["admin"])
 def edit_distributor():
     form = DistributorForm()
     id = request.args.get("id")
     if id:
-        user = User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
+        user = (
+            User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
+        )
     else:
         log(log.INFO, "No id was passed [%s]", id)
         flash("No account found for id [%s]", id)
@@ -68,7 +71,7 @@ def edit_distributor():
             user.activated = form.activated.data
             user.role = form.role.data
             user.save()
-            flash('Distributor creation successful.', 'success')
+            flash("Distributor creation successful.", "success")
             return redirect(url_for("distributor.index"))
         elif form.is_submitted():
             log(log.ERROR, "Submit failed: %s", form.errors)
@@ -88,6 +91,7 @@ def edit_distributor():
 
 @distributor_blueprint.route("/delete_distributor", methods=["GET"])
 @login_required
+@role_required(roles=["admin"])
 def delete_distributor():
     user_id = request.args.get("id")
     user = User.query.get(user_id)
@@ -101,15 +105,24 @@ def delete_distributor():
         flash("Distributor deletion successful", "success")
         return redirect(url_for("distributor.index"))
     else:
-        log(log.WARNING, "Tried to delete unexisted or deleted distributor [%s]", user_id)
+        log(
+            log.WARNING,
+            "Tried to delete unexisted or deleted distributor [%s]",
+            user_id,
+        )
         flash("Distributor doesnt exist or already deleted", "danger")
         return redirect(url_for("distributor.index"))
 
 
 @distributor_blueprint.route("/api/distributor_list")
 @login_required
+@role_required(roles=["admin"])
 def get_distributor_list():
-    distributors = Admin.get_distributors()
-    res = [distributor.to_json() for distributor in distributors]
+    distributors = current_user.distributors
+    res = [
+        distributor.to_json()
+        for distributor in distributors
+        if distributor.deleted != True # noqa E712
+    ]
     print(res)
     return jsonify(res)

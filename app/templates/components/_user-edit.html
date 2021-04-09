@@ -57,19 +57,6 @@
     </div>
   </div>
   <div class="edit__group">
-    <div class="input__wrapper">
-    <label class="edit__label">
-      Users role
-      </label>
-      {{ form.role(class="edit__input")}}
-    </div>
-    <div class="edit__feedback">
-      {% for error in form.role.errors %}
-      <span>{{ error }}</span>
-      {% endfor %}
-    </div>
-  </div>
-  <div class="edit__group">
   <div class="edit__submit-btn">
   {{ form.submit(class="edit__submit")}}
 </div>

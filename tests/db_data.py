@@ -40,6 +40,14 @@ def fill_test_data():
     )
     sub1.save()
 
+    res2 = User(
+        username='r2',
+        activated=User.StatusType.active,
+        role=User.RoleType.reseller
+    )
+    res2.password = 'r2'
+    res2.save()
+
     subres1 = User(
         username='sr',
         activated=User.StatusType.active,
@@ -54,6 +62,14 @@ def fill_test_data():
     )
     sub2.save()
 
+    subres2 = User(
+        username='sr2',
+        activated=User.StatusType.active,
+        role=User.RoleType.sub_reseller
+    )
+    subres2.password = 'sr2'
+    subres2.save()
+
     support = User(
         username='s',
         activated=User.StatusType.active,
@@ -63,7 +79,6 @@ def fill_test_data():
     support.save()
 
     acc1 = Account(
-        name='acc1',
         ecc_id='GHB123',
         ad_login='acc1',
         ad_password='123',

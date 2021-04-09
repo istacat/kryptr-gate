@@ -1,11 +1,12 @@
-from app.controllers import Admin, Distributor
 from datetime import datetime
 from app.forms import ResellerForm
 from flask import render_template, Blueprint, flash, redirect, url_for, jsonify, request
 from flask_login import login_required, current_user
 from app.models import User, Subordinate
 from app.logger import log
-reseller_blueprint = Blueprint('reseller', __name__)
+from app.controllers import role_required
+
+reseller_blueprint = Blueprint("reseller", __name__)
 
 
 @reseller_blueprint.route("/resellers")
@@ -16,6 +17,7 @@ def index():
 
 @reseller_blueprint.route("/add_reseller", methods=["GET", "POST"])
 @login_required
+@role_required(roles=["admin"])
 def add_reseller():
     form = ResellerForm()
     if form.validate_on_submit():
@@ -27,29 +29,32 @@ def add_reseller():
             role=form.role.data,
         )
         res.save()
-        subordinate = Subordinate(chief_id=current_user.id, subordinate_id=res.id)
-        subordinate.save()
+        Subordinate(chief_id=form.chief.data.id, subordinate_id=res.id).save()
         flash("Reseller creation successful.", "success")
         return redirect(url_for("reseller.index"))
     elif form.is_submitted():
         log(log.ERROR, "Submit failed: %s", form.errors)
+    form.chief.data = current_user
     return render_template(
         "base_add_edit.html",
-        include_header="components/_user-edit.html",
+        include_header="components/_reseller-edit.html",
         form=form,
         description_header=("Add reseller"),
         cancel_link=url_for("reseller.index"),
-        action_url=url_for("reseller.add_reseller"),
+        action_url=url_for("reseller.add_reseller")
     )
 
 
 @reseller_blueprint.route("/edit_reseller", methods=["GET", "POST"])
 @login_required
+@role_required(roles=["admin"])
 def edit_reseller():
     form = ResellerForm()
     id = request.args.get("id")
     if id:
-        user = User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
+        user = (
+            User.query.filter(User.deleted == False).filter(User.id == int(id)).first()
+        )  # noqa e712
     else:
         log(log.INFO, "No id was passed [%s]", id)
         flash("No account found for id [%s]", id)
@@ -61,6 +66,7 @@ def edit_reseller():
             form.activated.data = user.activated
             form.role.data = user.role
             form.email.data = user.email
+            form.chief.data = user.chief
         if form.validate_on_submit():
             user.username = form.username.data
             user.email = form.email.data
@@ -68,7 +74,13 @@ def edit_reseller():
             user.activated = form.activated.data
             user.role = form.role.data
             user.save()
-            flash('Reseller creation successful.', 'success')
+            if user.chief != form.chief.data:
+                Subordinate.query.filter(Subordinate.subordinate_id == user.id).delete()
+                Subordinate(
+                    chief_id=form.chief.data.id,
+                    subordinate_id=user.id
+                ).save()
+            flash("Reseller creation successful.", "success")
             return redirect(url_for("reseller.index"))
         elif form.is_submitted():
             log(log.ERROR, "Submit failed: %s", form.errors)
@@ -88,6 +100,7 @@ def edit_reseller():
 
 @reseller_blueprint.route("/delete_reseller", methods=["GET"])
 @login_required
+@role_required(roles=["admin"])
 def delete_reseller():
     user_id = request.args.get("id")
     user = User.query.get(user_id)
@@ -108,12 +121,9 @@ def delete_reseller():
 
 @reseller_blueprint.route("/api/reseller_list")
 @login_required
+@role_required(roles=["admin", "distributor"])
 def get_reseller_list():
-    resellers = None
-    if current_user.role.value == 5:
-        resellers = Admin.get_resellers()
-    elif current_user.role.value == 4:
-        resellers = Distributor.get_resellers(current_user.id)
-    res = [reseller.to_json() for reseller in resellers]
+    resellers = current_user.resellers
+    res = [reseller.to_json() for reseller in resellers if reseller.deleted != True] # noqa E712
     print(res)
     return jsonify(res)
