@@ -55,11 +55,30 @@ class User(db.Model, UserMixin, ModelMixin):
         }
 
     @property
+    def subs(self):
+        """Get all users subordinates"""
+        if self.role.name == 'distributor':
+            users = []
+            users.append(self)
+            for user in self.resellers:
+                users.append(user)
+            for user in self.sub_resellers:
+                users.append(user)
+            return users
+        elif self.role.name == 'reseller':
+            users = []
+            users.append(self)
+            for user in self.sub_resellers:
+                users.append(user)
+            return users
+
+    @property
     def chief(self):
+        """Get users chief"""
         if self.role.name == 'reseller' or self.role.name == 'sub_reseller':
             sub = Subordinate.query.filter(Subordinate.subordinate_id == self.id).first()
             if not sub:
-                return current_user
+                return None
             chief = User.query.get(sub.chief_id)
             return chief
 
