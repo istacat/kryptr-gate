@@ -21,50 +21,6 @@ def ecc_encode(number: int) -> str:
     return alpha_encode(number // 1000) + f"{number % 1000:03}"
 
 
-# def get_resellers(user):
-#     """Get resellers by roles and subordinates"""
-#     if user.role == "admin":
-#         query = User.query.filter(User.role == "reseller")
-#         return query
-#     elif user.role == "distributor":
-#         query = []
-#         sub_query = Subordinate.query.filter(Subordinate.chief_id == user.id)
-#         for relation in sub_query:
-#             user = User.query.get(relation.subordinate_id)
-#             if user.role == 'reseller':
-#                 query.append(user)
-#         return query
-
-
-# def get_sub_resellers(user):
-#     """Get sub_resellers by roles and subordinates"""
-#     if user.role == "admin":
-#         query = User.query.filter(User.role == "sub_reseller")
-#         return query
-#     elif user.role == "distributor":
-#         query = []
-#         new_query = Subordinate.query.filter(Subordinate.chief_id == user.id)
-#         for reseller in user.resellers:
-#             new_query = Subordinate.query.filter(Subordinate.chief_id == reseller.id)
-#             for relation in new_query:
-#                 user = User.query.get(relation.subordinate_id)
-#                 query.append(user)
-#         sub_query = Subordinate.query.filter(Subordinate.chief_id == user.id)
-#         for relation in sub_query:
-#             user = User.query.get(relation.subordinate_id)
-#             if user.role == 'sub_reseller':
-#                 query.append(user)
-#         return query
-#     elif user.role == 'reseller':
-#         query = []
-#         for sub_reseller in user.sub_resellers:
-#             new_query = Subordinate.query.filter(Subordinate.chief_id == sub_reseller.id)
-#             for relation in new_query:
-#                 user = User.query.get(relation.subordinate_id)
-#                 query.append(user)
-#         return query
-
-
 def get_accounts(user):
     """Get accounts by roles and subordinates"""
     if user.role.name == "admin" or user.role.name == "support":

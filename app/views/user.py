@@ -124,30 +124,3 @@ def get_user_list():
     }
     print(res)
     return jsonify(res)
-
-
-# @user_blueprint.route("/api/chief_list")
-# @login_required
-# @role_required(roles=["admin"])
-# def get_chief_list():
-#     role = request.args.get("role")
-#     if role == "sub_reseller":
-#         query = User.query.filter(
-#             User.role.name.in_(["admin", "distributor", "reseller"])
-#         ).filter(
-#             User.deleted == False # noqa e712
-#         )
-#         data = [user.id for user in query]
-#         return jsonify(data)
-#     elif role == "reseller":
-#         query = User.query.filter(User.role.name.in_(["admin", "distributor"])).filter(
-#             User.deleted == False # noqa e712
-#         )
-#         data = [user.id for user in query]
-#         return jsonify(data)
-#     else:
-#         query = User.query.filter(User.role.name == "admin").filter(
-#             User.deleted == False # noqa e712
-#         )
-#         data = [user.id for user in query]
-#         return jsonify(data)

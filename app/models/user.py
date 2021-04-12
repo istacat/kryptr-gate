@@ -57,17 +57,15 @@ class User(db.Model, UserMixin, ModelMixin):
     @property
     def subs(self):
         """Get all users subordinates"""
-        if self.role.name == 'distributor':
-            users = []
-            users.append(self)
+        if self.role.name == "distributor":
+            users = [self]
             for user in self.resellers:
                 users.append(user)
             for user in self.sub_resellers:
                 users.append(user)
             return users
-        elif self.role.name == 'reseller':
-            users = []
-            users.append(self)
+        elif self.role.name == "reseller":
+            users = [self]
             for user in self.sub_resellers:
                 users.append(user)
             return users
@@ -75,8 +73,10 @@ class User(db.Model, UserMixin, ModelMixin):
     @property
     def chief(self):
         """Get users chief"""
-        if self.role.name == 'reseller' or self.role.name == 'sub_reseller':
-            sub = Subordinate.query.filter(Subordinate.subordinate_id == self.id).first()
+        if self.role.name in ("reseller", "sub_reseller"):
+            sub = Subordinate.query.filter(
+                Subordinate.subordinate_id == self.id
+            ).first()
             if not sub:
                 return None
             chief = User.query.get(sub.chief_id)
@@ -92,43 +92,44 @@ class User(db.Model, UserMixin, ModelMixin):
     def resellers(self):
         """Get resellers by roles and subordinates"""
         if self.role.name == "admin":
-            query = User.query.filter(User.role == "reseller")
-            return query
+            users = User.query.filter(User.role == "reseller")
+            return users
         elif self.role.name == "distributor":
-            query = []
-            sub_query = Subordinate.query.filter(Subordinate.chief_id == self.id)
-            for relation in sub_query:
+            users = []
+            subs = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in subs:
                 user = User.query.get(relation.subordinate_id)
-                if user.role.name == 'reseller':
-                    query.append(user)
-            return query
+                if user.role.name == "reseller":
+                    users.append(user)
+            return users
 
     @property
     def sub_resellers(self):
         """Get sub_resellers by roles and subordinates"""
+        users = []
         if self.role.name == "admin":
-            query = User.query.filter(User.role == "sub_reseller")
-            return query
+            users = User.query.filter(User.role == "sub_reseller")
+            return users
         elif self.role.name == "distributor":
-            query = []
             for reseller in self.resellers:
-                new_query = Subordinate.query.filter(Subordinate.chief_id == reseller.id)
+                new_query = Subordinate.query.filter(
+                    Subordinate.chief_id == reseller.id
+                )
                 for relation in new_query:
                     user = User.query.get(relation.subordinate_id)
-                    query.append(user)
-            sub_query = Subordinate.query.filter(Subordinate.chief_id == self.id)
-            for relation in sub_query:
+                    users.append(user)
+            subs = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in subs:
                 user = User.query.get(relation.subordinate_id)
-                if user.role.name == 'sub_reseller':
-                    query.append(user)
-            return query
-        elif self.role.name == 'reseller':
-            query = []
-            new_query = Subordinate.query.filter(Subordinate.chief_id == self.id)
-            for relation in new_query:
+                if user.role.name == "sub_reseller":
+                    users.append(user)
+            return users
+        elif self.role.name == "reseller":
+            subs = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in subs:
                 user = User.query.get(relation.subordinate_id)
-                query.append(user)
-            return query
+                users.append(user)
+            return users
 
     @property
     def accounts(self):

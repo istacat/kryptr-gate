@@ -49,7 +49,9 @@ def edit_support():
     id = request.args.get("id")
     if id:
         user = (
-            User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
+            User.query.filter(User.deleted == False) # noqa e712
+            .filter(User.id == int(id))
+            .first()
         )
     else:
         log(log.INFO, "No id was passed [%s]", id)
@@ -110,11 +112,11 @@ def delete_support():
 @login_required
 @role_required(roles=["admin"])
 def get_support_list():
-    users = User.query.filter(User.role == 'support')
+    users = User.query.filter(User.role == "support")
     page = request.args.get("page", 1)
     page_size = request.args.get("size", 20)
     paginated_users = (
-        users.filter(User.deleted == False) # noqa e712
+        users.filter(User.deleted == False)  # noqa e712
         .order_by(User.id.asc())
         .paginate(int(page), int(page_size), False)
     )

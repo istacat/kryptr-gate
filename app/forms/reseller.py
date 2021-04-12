@@ -7,8 +7,8 @@ from app.models import User
 
 class ResellerForm(FlaskForm):
     def get_users():
-        return User.query.filter(User.deleted == False).filter( # noqa E712
-            User.role.in_(['distributor', 'admin'])
+        return User.query.filter(User.deleted == False).filter(  # noqa E712
+            User.role.in_(["distributor", "admin"])
         )
 
     username = StringField("Username", [DataRequired()])
@@ -19,10 +19,6 @@ class ResellerForm(FlaskForm):
         default="active",
         choices=[("not_active", "Not Active"), ("active", "Active")],
     )
-    role = StringField(
-        "User type",
-        default="reseller",
-        render_kw={'readonly': True}
-    )
+    role = StringField("User type", default="reseller", render_kw={"readonly": True})
     chief = QuerySelectField("Reseller", query_factory=get_users, allow_blank=True)
     submit = SubmitField()
