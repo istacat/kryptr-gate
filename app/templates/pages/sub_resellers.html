@@ -9,7 +9,9 @@
       <div class="sub_resellers__inner">
         <div class="sub_resellers__header">
           <span class="sub_resellers__title">Sub-resellers</span>
+          {% if current_user.role == 'admin' %}
           <a class="btn sub_resellers__add" href="{{ url_for('sub_reseller.add_sub_reseller') }}" >New sub-reseller</a>
+          {% endif %}
         </div>
 
         <div class="sub_resellers__table">

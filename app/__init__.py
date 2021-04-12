@@ -25,6 +25,7 @@ def create_app(environment='development'):
         distributor_blueprint,
         sub_reseller_blueprint,
         product_blueprint,
+        support_blueprint
     )
     from app.models import (
         User,
@@ -53,6 +54,7 @@ def create_app(environment='development'):
     app.register_blueprint(distributor_blueprint)
     app.register_blueprint(sub_reseller_blueprint)
     app.register_blueprint(product_blueprint)
+    app.register_blueprint(support_blueprint)
 
     # Set up flask login.
     @login_manager.user_loader

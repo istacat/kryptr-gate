@@ -323,3 +323,64 @@ if (document.getElementById("accounts-table")) {
     },
   });
 }
+if (document.getElementById("supports-table")) {
+  table = new Tabulator("#supports-table", {
+    responsiveLayout: "collapse",
+    pagination: "remote", //enable remote pagination
+    paginationSize: 20, //optional parameter to request a certain number of rows per page
+    // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+    layout: "fitColumns", //fit columns to width of table (optional)
+    ajaxURL: window.location.origin + `/api/support_list`,
+    paginationDataReceived: {
+      last_page: "max_pages", //change last_page parameter name to "max_pages"
+    },
+    columns: [
+      //Define Table Columns
+      {
+        formatter: "responsiveCollapse",
+        width: 30,
+        minWidth: 30,
+        align: "center",
+        resizable: false,
+        headerSort: false,
+      },
+      { title: "Id", field: "id" },
+      {
+        field: "actions",
+        minWidth: 50,
+        formatter: printIcon,
+        width: 20,
+        hozAlign: "center",
+        cellClick: function (e, cell) {
+          e.stopPropagation();
+          if (
+            confirm(
+              "Are you sure you want to delete " +
+                cell.getRow().getData().username
+            )
+          ) {
+            window.location.href =
+              window.location.origin +
+              "/delete_support?id=" +
+              cell.getRow().getData().id;
+          } else return;
+        },
+      },
+      { title: "Username", field: "username", hozAlign: "left", minWidth: 166 },
+      { title: "Email", field: "email", minWidth: 166 },
+      { title: "Activated", field: "activated", minWidth: 166 },
+      { title: "Role", field: "role", minWidth: 166 },
+      {
+        title: "Created",
+        field: "created_at",
+        sorter: "date",
+        hozAlign: "center",
+        minWidth: 166,
+      },
+    ],
+    rowClick: function (e, row) {
+      window.location.href =
+        window.location.origin + "/edit_support?id=" + row.getData().id;
+    },
+  });
+}
