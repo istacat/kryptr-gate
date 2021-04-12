@@ -17,3 +17,7 @@ SQLAlchemy
 Werkzeug
 WTForms
 ldap3
+pyjwt
+qrcode
+pillow
+pybase64

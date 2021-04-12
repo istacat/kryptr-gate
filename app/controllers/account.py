@@ -1,3 +1,5 @@
+import jwt
+import qrcode
 from app.models.account import Account
 
 
@@ -49,3 +51,10 @@ def get_accounts(user):
         for account in Account.query.filter(Account.reseller_id == user.id):
             accounts.append(account)
         return accounts
+
+
+def create_qrcode(acc):
+    """Encode ecc_id and password for chat"""
+    encoded_jwt = jwt.encode({acc.ecc_id: acc.ad_password}, "secret", algorithm="HS256")
+    img = qrcode.make(encoded_jwt)
+    return img
