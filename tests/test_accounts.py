@@ -52,7 +52,7 @@ def test_add_delete_account(client):
         email='TES345@kryptr.li',
         ecc_id='TES345',
         comment="",
-        reseller=res.id
+        reseller=res.username
     ), follow_redirects=True
     )
     assert b'Account creation successful' in response.data

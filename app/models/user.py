@@ -1,7 +1,7 @@
 from datetime import datetime
 import enum
 
-from flask_login import UserMixin, AnonymousUserMixin, current_user
+from flask_login import UserMixin, AnonymousUserMixin
 from sqlalchemy import Enum
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
