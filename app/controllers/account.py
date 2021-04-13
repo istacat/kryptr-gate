@@ -1,6 +1,7 @@
 import jwt
 import qrcode
 from app.models.account import Account
+from config import BaseConfig as conf
 
 
 def ecc_encode(number: int) -> str:
@@ -55,6 +56,6 @@ def get_accounts(user):
 
 def create_qrcode(acc):
     """Encode ecc_id and password for chat"""
-    encoded_jwt = jwt.encode({acc.ecc_id: acc.ad_password}, "secret", algorithm="HS256")
+    encoded_jwt = jwt.encode({acc.ecc_id: acc.ad_password}, conf.SECRET_KEY, algorithm="HS256")
     img = qrcode.make(encoded_jwt)
     return img
