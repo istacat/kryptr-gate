@@ -165,7 +165,7 @@ def get_account_list():
     account = current_user.accounts
     page = int(request.args.get("page", 1))
     page_size = int(request.args.get("size", 20))
-    accounts = account[(page * page_size - page_size): (page * page_size - 1)]
+    accounts = account[(page * page_size - page_size): (page * page_size)]
     if len(account) % page_size != 0:
         last_page = int(len(account) / page_size) + 1
     else:
