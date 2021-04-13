@@ -30,7 +30,7 @@ def test_qrcode(client):
     acc = Account.query.get(1)
     qrcode = create_qrcode(acc)
     assert qrcode
-    assert qrcode.size == (490, 490)
+    assert qrcode.size == (570, 570)
     response = client.get("/qrcode?id=1")
     assert response
     assert response.status_code == 200
