@@ -88,7 +88,7 @@ def edit_account():
             current_user,
             acc.id,
         )
-        flash("Access for acc [%s] closed for you.", acc.id)
+        flash(f"Access for acc [{acc.id}] closed for you.", 'danger')
         return redirect(url_for("account.index"))
     if acc:
         if request.method == "GET":
@@ -121,7 +121,7 @@ def edit_account():
         )
     else:
         log(log.INFO, "account[%s] is deleted or unexistent", id)
-        flash("no account found for id [%s]", id)
+        flash(f"No account found for id [{id}]", 'danger')
         return redirect(url_for("account.index"))
 
 
@@ -137,7 +137,7 @@ def delete_account():
             current_user,
             account_id,
         )
-        flash("Access for acc [%s] closed for you.", account_id)
+        flash(f"Access for acc [{account_id}] closed for you.", 'danger')
         return redirect(url_for("account.index"))
     if account:
         conn = LDAP()
@@ -180,7 +180,7 @@ def get_account_list():
 @account_blueprint.route("/qrcode", methods=["GET"])
 @login_required
 def show_qrcode():
-    account_id = account_id = request.args.get("id")
+    account_id = request.args.get("id")
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
@@ -189,7 +189,7 @@ def show_qrcode():
             current_user,
             account_id,
         )
-        flash("Access for acc [%s] closed for you.", account_id)
+        flash(f"Access for acc [{account_id}] closed for you.", 'danger')
         return redirect(url_for("account.index"))
     if account:
         qrcode = create_qrcode(account)
@@ -205,5 +205,5 @@ def show_qrcode():
         )
     else:
         log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
-        flash("No account found for id [%s]", account_id)
+        flash(f"No account found for id [{account_id}]", 'danger')
         return redirect(url_for("account.index"))
