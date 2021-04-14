@@ -44,6 +44,8 @@ def test_add_delete_account(client):
     login(client, "sam")
     response = client.get("/add_account")
     assert response.status_code == 200
+    reseller = User.query.first()
+    ECC_ID = "TES345"
 
     response = client.post(
         "/add_account",
@@ -52,15 +54,16 @@ def test_add_delete_account(client):
             license_key="lis_key_value",
             sim="12345678901",
             imei="",
-            ad_login="TES345@kryptr.li",
-            email="TES345@kryptr.li",
-            ecc_id="TES345",
+            ad_login=f"{ECC_ID}@kryptr.li",
+            email=f"{ECC_ID}@kryptr.li",
+            ecc_id=ECC_ID,
             comment="",
+            reseller=reseller.username,
         ),
         follow_redirects=True,
     )
     assert b"Account creation successful" in response.data
-    acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
+    acc = Account.query.filter(Account.ecc_id == ECC_ID).first()
     assert acc
     acc_mail = acc.ecc_id + "@kryptr.li"
     if config.LDAP_SERVER:
@@ -69,8 +72,9 @@ def test_add_delete_account(client):
 
     response = client.get("/delete_account?id=1", follow_redirects=True)
     assert b"Account deletion successful" in response.data
-    acc = Account.query.filter(Account.name == TEST_ACC_NAME).first()
-    assert not acc
+    acc = Account.query.filter(Account.ecc_id == ECC_ID).first()
+    assert acc
+    assert acc.deleted
 
     if config.LDAP_SERVER:
         AD_user_mails = [u.mail for u in LDAP().users]
@@ -96,25 +100,23 @@ def test_edit_account(client):
     )
     acc.save()
     ACC_ID = acc.id
-    response = client.get(f"/edit_account/{ACC_ID}")
+    response = client.get(f"/edit_account?id={ACC_ID}")
     assert response.status_code == 200
 
     # send post request for change password
-    NEW_NAME = "New Test name"
     # NEW_PASS = "XSW@cde3"
     NEW_PASS = TEST_PASS
     data = {
+        "id": ACC_ID,
         "ecc_id": acc.ecc_id,
         "email": acc.email,
         "ad_login": acc.ad_login,
         "ad_password": NEW_PASS,
         "sim": acc.sim,
-        "imei": acc.imei,
         "comment": acc.comment,
+        "reseller": reseller.username,
     }
-    response = client.post(f"/edit_account/{ACC_ID}", data=data)
+    response = client.post(f"/edit_account?id={ACC_ID}", data=data)
     assert response.status_code == 302
     acc = Account.query.get(ACC_ID)
-    assert acc.name == NEW_NAME
     assert acc.ad_password == NEW_PASS
-    pass
