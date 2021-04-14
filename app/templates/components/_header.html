@@ -8,49 +8,120 @@
       <nav class="menu">
         <ul class="menu__list">
           <li class="menu__item">
-            <a class="menu__link" href="{{ url_for('main.index') }}">Dashboard</a>
+            <a class="menu__link" href="{{ url_for('main.index') }}"
+              >Dashboard</a
+            >
           </li>
+
+          {% if current_user.role == current_user.RoleType.admin %}
           <li class="menu__item">
             <a class="menu__link" href="{{ url_for('user.index') }}">Users</a>
           </li>
           <li class="menu__item">
-            <a class="menu__link" href="{{ url_for('account.index') }}">Accounts</a>
-          </li>
-          <!-- <li class="menu__item">
-            <a class="menu__link" href="{{ url_for('reseller.index') }}">Resellers</a>
-          </li>
-          <li class="menu__item">
-            <a class="menu__link" href="{{ url_for('distributor.index') }}">Distributors</a>
+            <a class="menu__link" href="{{ url_for('distributor.index') }}"
+              >Distributors</a
+            >
           </li>
           <li class="menu__item">
-            <a class="menu__link" href="{{ url_for('sub_reseller.index') }}">Sub Resellers</a>
-          </li> -->
-          <li class="menu__item">
-            <a class="menu__link" href="{{ url_for('product.index') }}">Products</a>
+            <a class="menu__link" href="{{ url_for('reseller.index') }}"
+              >Resellers</a
+            >
           </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('sub_reseller.index') }}"
+              >Sub Resellers</a
+            >
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('support.index') }}"
+              >Supports</a
+            >
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('account.index') }}"
+              >Accounts</a
+            >
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('product.index') }}"
+              >Products</a
+            >
+          </li>
+          {% endif %} {% if current_user.role == current_user.RoleType.support
+          %}
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('account.index') }}"
+              >Accounts</a
+            >
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('product.index') }}"
+              >Products</a
+            >
+          </li>
+          {% endif %} {% if current_user.role ==
+          current_user.RoleType.distributor %}
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('reseller.index') }}"
+              >Resellers</a
+            >
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('sub_reseller.index') }}"
+              >Sub Resellers</a
+            >
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('account.index') }}"
+              >Accounts</a
+            >
+          </li>
+          {% endif %} {% if current_user.role == current_user.RoleType.reseller
+          %}
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('sub_reseller.index') }}"
+              >Sub Resellers</a
+            >
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('account.index') }}"
+              >Accounts</a
+            >
+          </li>
+          {% endif %} {% if current_user.role ==
+          current_user.RoleType.sub_reseller %}
+          <li class="menu__item">
+            <a class="menu__link" href="{{ url_for('account.index') }}"
+              >Accounts</a
+            >
+          </li>
+          {% endif %}
         </ul>
       </nav>
       <div class="overlay"></div>
       {% endif %}
       <div>
-      <a class="logo" href="#">
-        <img class="logo__img" src="{{ url_for('static', filename='images/icons/logo.svg') }}" alt="Kryptr Logo" />
-      </a>
-    </div>
+        <a class="logo" href="#">
+          <img
+            class="logo__img"
+            src="{{ url_for('static', filename='images/icons/logo.svg') }}"
+            alt="Kryptr Logo"
+          />
+        </a>
+      </div>
       {% if current_user.is_authenticated %}
       <div class="account-wrapper">
-        <button class="account-drp" onclick="showFuncs()">{{ current_user.username }}</button>
-        <div  id="funcs-drp" class="account-drp__content">
+        <button class="account-drp" onclick="showFuncs()">
+          {{ current_user.username }}
+        </button>
+        <div id="funcs-drp" class="account-drp__content">
           <a href="{{ url_for('auth.logout') }}">Logout</a>
-
         </div>
       </div>
 
       {% else %}
-        <button class="account">Log in</button>
+      <button class="account">Log in</button>
       {% endif %}
     </div>
-
   </div>
-
 </header>

@@ -3,8 +3,7 @@ import datetime
 
 from flask import render_template, Blueprint, jsonify, flash, redirect, url_for, request
 from flask_login import login_required, current_user
-
-from app.models import Account
+from app.models import Account, User
 from app.forms import AccountForm
 from app.logger import log
 from app.controllers import account
@@ -23,26 +22,25 @@ def index():
 @account_blueprint.route("/add_account", methods=["GET", "POST"])
 @login_required
 def add_account():
-    form = AccountForm()
+    form = AccountForm(user=current_user)
     if request.method == "GET":
         rand_int = secrets.randbelow(17575999)
         ecc_id = account.ecc_encode(rand_int)
         form.ecc_id.data = ecc_id
         form.email.data = f"{ecc_id}@kryptr.li"
         form.ad_login.data = f"{ecc_id}@kryptr.li"
-        form.ad_password.data = f"{secrets.token_urlsafe(16)}"
+        form.ad_password.data = f"{secrets.token_urlsafe(6)}"
+        form.reseller.data = current_user.username
     if form.validate_on_submit():
-
+        reseller = User.query.filter(User.username == form.reseller.data).first()
         acc = Account(
-            name=form.name.data,
             ecc_id=form.ecc_id.data,
             email=form.email.data,
             ad_login=form.ad_login.data,
             ad_password=form.ad_password.data,
             sim=form.sim.data,
-            imei=form.imei.data,
             comment=form.comment.data,
-            reseller_id=current_user.id,
+            reseller_id=reseller.id
         ).save()
         log(
             log.INFO,
@@ -98,13 +96,14 @@ def edit_account(account_id):
     acc = Account.query.get(account_id)
     if acc:
         if request.method == "GET":
-            form.name.data = acc.name
             form.ecc_id.data = acc.ecc_id
             form.email.data = acc.email
             form.ad_login.data = acc.ad_login
             form.ad_password.data = acc.ad_password
+            form.reseller.data = acc.reseller.username
         if form.validate_on_submit():
-            acc.name = form.name.data
+            reseller = User.query.filter(User.username == form.reseller.data).first()
+            acc.ecc_id = form.ecc_id.data
             acc.email = form.email.data
             if acc.ad_password != form.ad_password.data and config.LDAP_SERVER:
                 # change AD user password
@@ -124,8 +123,8 @@ def edit_account(account_id):
                     )
             acc.ad_password = form.ad_password.data
             acc.sim = form.sim.data
-            acc.imei = form.imei.data
             acc.comment = form.comment.data
+            acc.reseller_id = reseller.id
             acc.save()
             log(log.INFO, "Account data changed for account id [%s]", acc.id)
             return redirect(url_for("account.index"))
@@ -139,10 +138,9 @@ def edit_account(account_id):
             cancel_link=url_for("account.index"),
             action_url=url_for("account.edit_account", account_id=account_id),
         )
-    else:
-        log(log.INFO, "account[%s] is deleted or non exist", account_id)
-        flash("no account found for id [%d]", account_id)
-        return redirect(url_for("account.index"))
+    log(log.INFO, "account[%s] is deleted or non exist", account_id)
+    flash("no account found for id [%d]", account_id)
+    return redirect(url_for("account.index"))
 
 
 @account_blueprint.route("/delete_account", methods=["GET"])
@@ -158,7 +156,7 @@ def delete_account():
         account.deleted = True
         now = datetime.datetime.now()
         current_time = now.strftime("%H:%M:%S")
-        account.name = f"{account.name} deleted {current_time}"
+        account.comment = f"Deleted {current_time}"
         account.save()
         log(log.INFO, "Account deletion successful. [%s]", account)
         flash("Account deletion successful", "success")
@@ -172,16 +170,16 @@ def delete_account():
 @account_blueprint.route("/api/account_list")
 @login_required
 def get_account_list():
-    account = Account.query
-    page = request.args.get("page", 1)
-    page_size = request.args.get("size", 20)
-    paginated_accounts = (
-        account.filter(Account.deleted == False)  # noqa e701
-        .order_by(Account.id.asc())
-        .paginate(int(page), int(page_size), False)
-    )
+    account = current_user.accounts
+    page = int(request.args.get("page", 1))
+    page_size = int(request.args.get("size", 20))
+    accounts = account[(page*page_size-page_size):(page*page_size-1)]
+    if len(account) % page_size != 0:
+        last_page = int(len(account) / page_size) + 1
+    else:
+        last_page = len(account) / page_size
     res = {
-        "last_page": paginated_accounts.pages,
-        "data": [acc.to_json() for acc in paginated_accounts.items],
+        "last_page": last_page,
+        "data": [acc.to_json() for acc in accounts],
     }
     return jsonify(res)

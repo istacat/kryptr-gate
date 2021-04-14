@@ -1,9 +1,10 @@
 from sqlalchemy.orm import relationship
 
 from app import db
+from app.models.utils import ModelMixin
 
 
-class Product(db.Model):
+class Product(db.Model, ModelMixin):
 
     __tablename__ = "products"
 

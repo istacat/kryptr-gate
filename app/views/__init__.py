@@ -7,3 +7,4 @@ from .reseller import reseller_blueprint
 from .distributor import distributor_blueprint
 from .sub_reseller import sub_reseller_blueprint
 from .product import product_blueprint
+from .support import support_blueprint

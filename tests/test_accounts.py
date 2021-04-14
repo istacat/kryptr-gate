@@ -21,7 +21,7 @@ def client():
         app_ctx.push()
         db.drop_all()
         db.create_all()
-        register("sam")
+        register("sam", role=User.RoleType.distributor)
         yield client
         db.session.remove()
         db.drop_all()
@@ -48,7 +48,6 @@ def test_add_delete_account(client):
     response = client.post(
         "/add_account",
         data=dict(
-            name=TEST_ACC_NAME,
             ad_password="Simple2B123",
             license_key="lis_key_value",
             sim="12345678901",
@@ -88,7 +87,6 @@ def test_edit_account(client):
     reseller = User.query.filter(User.username == "sam").first()
     assert reseller
     acc = Account(
-        name="Test Name",
         ecc_id=TEST_USER_NAME,
         ad_login=TEST_EMAIL,
         ad_password=TEST_PASS,
@@ -106,7 +104,6 @@ def test_edit_account(client):
     # NEW_PASS = "XSW@cde3"
     NEW_PASS = TEST_PASS
     data = {
-        "name": NEW_NAME,
         "ecc_id": acc.ecc_id,
         "email": acc.email,
         "ad_login": acc.ad_login,

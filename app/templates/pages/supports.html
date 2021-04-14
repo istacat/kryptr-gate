@@ -4,18 +4,18 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tabulator.min.css') }}">
 {% endblock %}
 {% block content %}
-  <section class="resellers">
+  <section class="supports">
     <div class="container">
-      <div class="resellers__inner">
-        <div class="resellers__header">
-          <span class="resellers__title">Resellers</span>
+      <div class="supports__inner">
+        <div class="supports__header">
+          <span class="supports__title">Supports</span>
           {% if current_user.role == 'admin' %}
-          <a class="btn resellers__add" href="{{ url_for('reseller.add_reseller') }}" >New reseller</a>
+          <a class="btn supports__add" href="{{ url_for('support.add_support') }}" >Add support</a>
           {% endif %}
         </div>
 
-        <div class="resellers__table">
-          <div id="resellers-table"></div>
+        <div class="supports__table">
+          <div id="supports-table"></div>
         </div>
       </div>
     </div>

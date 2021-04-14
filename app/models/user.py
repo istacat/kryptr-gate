@@ -8,6 +8,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
 from app.models.utils import ModelMixin
+from app.models.subordinate import Subordinate
+from app.controllers import get_accounts
 
 
 class User(db.Model, UserMixin, ModelMixin):
@@ -49,8 +51,89 @@ class User(db.Model, UserMixin, ModelMixin):
             "email": self.email,
             "activated": self.activated.name,
             "role": self.role.name,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }
+
+    @property
+    def subs(self):
+        """Get all users subordinates"""
+        if self.role.name == "distributor":
+            users = [self]
+            for user in self.resellers:
+                users.append(user)
+            for user in self.sub_resellers:
+                users.append(user)
+            return users
+        elif self.role.name == "reseller":
+            users = [self]
+            for user in self.sub_resellers:
+                users.append(user)
+            return users
+
+    @property
+    def chief(self):
+        """Get users chief"""
+        if self.role.name in ("reseller", "sub_reseller"):
+            sub = Subordinate.query.filter(
+                Subordinate.subordinate_id == self.id
+            ).first()
+            if not sub:
+                return None
+            chief = User.query.get(sub.chief_id)
+            return chief
+
+    @property
+    def distributors(self):
+        """Get all distributors for admin"""
+        if self.role.name == "admin":
+            return User.query.filter(User.role == "distributor")
+
+    @property
+    def resellers(self):
+        """Get resellers by roles and subordinates"""
+        if self.role.name == "admin":
+            users = User.query.filter(User.role == "reseller")
+            return users
+        elif self.role.name == "distributor":
+            users = []
+            subs = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in subs:
+                user = User.query.get(relation.subordinate_id)
+                if user.role.name == "reseller":
+                    users.append(user)
+            return users
+
+    @property
+    def sub_resellers(self):
+        """Get sub_resellers by roles and subordinates"""
+        users = []
+        if self.role.name == "admin":
+            users = User.query.filter(User.role == "sub_reseller")
+            return users
+        elif self.role.name == "distributor":
+            for reseller in self.resellers:
+                new_query = Subordinate.query.filter(
+                    Subordinate.chief_id == reseller.id
+                )
+                for relation in new_query:
+                    user = User.query.get(relation.subordinate_id)
+                    users.append(user)
+            subs = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in subs:
+                user = User.query.get(relation.subordinate_id)
+                if user.role.name == "sub_reseller":
+                    users.append(user)
+            return users
+        elif self.role.name == "reseller":
+            subs = Subordinate.query.filter(Subordinate.chief_id == self.id)
+            for relation in subs:
+                user = User.query.get(relation.subordinate_id)
+                users.append(user)
+            return users
+
+    @property
+    def accounts(self):
+        return get_accounts(self)
 
     @hybrid_property
     def password(self):
@@ -68,8 +151,11 @@ class User(db.Model, UserMixin, ModelMixin):
         if user is not None and check_password_hash(user.password, password):
             return user
 
+    def __repr__(self):
+        return f"<{self.id}: {self.username}>"
+
     def __str__(self):
-        return "<User: %s>" % self.username
+        return self.username
 
 
 class AnonymousUser(AnonymousUserMixin):

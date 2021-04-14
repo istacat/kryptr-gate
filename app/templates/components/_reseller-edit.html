@@ -69,7 +69,20 @@
       {% endfor %}
     </div>
   </div>
-  <div class="edit__group submit-btn">
+  <div class="edit__group">
+    <div class="input__wrapper">
+    <label class="edit__label">
+      Chief
+      </label>
+      {{ form.chief(class="edit__input")}}
+    </div>
+    <div class="edit__feedback">
+      {% for error in form.chief.errors %}
+      <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="edit__group submit-btn btn-container">
   {{ form.submit(class="edit__submit")}}
   </div>
 </div>
