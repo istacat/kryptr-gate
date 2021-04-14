@@ -43,8 +43,7 @@ def add_account():
             imei=form.imei.data,
             comment=form.comment.data,
             reseller_id=current_user.id,
-        )
-        acc.save()
+        ).save()
         log(
             log.INFO,
             "Generated ecc_id is. [%s] for account id [%s]",

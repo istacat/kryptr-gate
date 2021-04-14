@@ -8,6 +8,7 @@ from app.controllers.ldap import LDAP
 
 
 TEST_ACC_NAME = "Test Account 01"
+TEST_ACC_LOGIN = "TES345@kryptr.li"
 
 
 @pytest.fixture
@@ -48,11 +49,11 @@ def test_add_delete_account(client):
         "/add_account",
         data=dict(
             name=TEST_ACC_NAME,
-            ad_password="password",
+            ad_password="Simple2B123",
             license_key="lis_key_value",
             sim="12345678901",
             imei="",
-            ad_login=" TES345@kryptr.li",
+            ad_login="TES345@kryptr.li",
             email="TES345@kryptr.li",
             ecc_id="TES345",
             comment="",
