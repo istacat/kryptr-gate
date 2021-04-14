@@ -60,4 +60,14 @@ class User(object):
         if len(recognise_error_message) > 1:
             message_parts = recognise_error_message[1].split("\x1b")
             return message_parts[0].strip(" \n\r\t")
+        sh.send_command(
+            " ".join(
+                [
+                    "Set-ADUser",
+                    f"-Identity '{self.dn}'",
+                    "-Enabled",
+                    "$true"
+                ]
+            )
+        )
         return ""
