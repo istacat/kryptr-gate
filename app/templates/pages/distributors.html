@@ -9,7 +9,7 @@
       <div class="distributors__inner">
         <div class="distributors__header">
           <span class="distributors__title">Distributors</span>
-          {% if current_user.role == 'admin' %}
+          {% if current_user.role.name == 'admin' %}
           <a class="btn distributors__add" href="{{ url_for('distributor.add_distributor') }}" >New distributor</a>
           {% endif %}
         </div>

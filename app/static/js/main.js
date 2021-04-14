@@ -23,6 +23,10 @@ const printIcon = function (cell, formatterParams, onRendered) {
   //plain text value
   return "<div class='icon__delete' >&#10008</div>";
 };
+const printIconView = function (cell, formatterParams, onRendered) {
+  //plain text value
+  return "<div class='icon__delete' >&#x1f50d</div>";
+};
 if (document.getElementById("products-table")) {
   table = new Tabulator("#products-table", {
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
@@ -303,6 +307,20 @@ if (document.getElementById("accounts-table")) {
               cell.getRow().getData().id;
           } else return;
         },
+      },
+      {
+        field: "actions-view",
+        minWidth: 50,
+        formatter: printIconView,
+        width: 20,
+        hozAlign: "center",
+        cellClick: function (e, cell) {
+          e.stopPropagation();
+            window.location.href =
+              window.location.origin +
+              "/qrcode?id=" +
+              cell.getRow().getData().id;
+        }
       },
       { title: "Name", field: "name", hozAlign: "left", minWidth: 166 },
       { title: "Ecc id", field: "ecc_id", minWidth: 166 },

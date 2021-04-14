@@ -18,9 +18,7 @@ class AccountForm(FlaskForm):
             elif current_user.role.name == "sub_reseller":
                 self.reseller.choices = current_user.username
             else:
-                users = User.query.filter(User.deleted == False).filter( # noqa E712
-                    ~User.role.in_(["admin", "support"])
-                )
+                users = User.query.filter(User.deleted == False) # noqa E712
                 self.reseller.choices = [sub.username for sub in users]
 
     ecc_id = StringField("Ecc", [DataRequired(), Length(min=6, max=6)])
