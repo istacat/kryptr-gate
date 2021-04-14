@@ -61,8 +61,8 @@ def edit_distributor():
         if request.method == "GET":
             form.password.data = user.password
             form.username.data = user.username
-            form.activated.data = user.activated
-            form.role.data = user.role
+            form.activated.data = user.activated.name
+            form.role.data = user.role.name
             form.email.data = user.email
         if form.validate_on_submit():
             user.username = form.username.data

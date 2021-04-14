@@ -1,10 +1,12 @@
+import base64
+import io
 from flask import render_template, Blueprint, jsonify, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 from app.models import Account, User
 from app.forms import AccountForm
 from app.logger import log
 from datetime import datetime
-from app.controllers import account
+from app.controllers import account, create_qrcode
 from app.controllers.ldap import LDAP
 import secrets
 
@@ -38,7 +40,7 @@ def add_account():
             ad_password=form.ad_password.data,
             sim=form.sim.data,
             comment=form.comment.data,
-            reseller_id=reseller[0].id
+            reseller_id=reseller[0].id,
         )
         acc.save()
         log(
@@ -75,10 +77,19 @@ def edit_account():
     id = request.args.get("id")
     form = AccountForm(user=current_user)
     acc = (
-        Account.query.filter(Account.deleted == False) # noqa e712
+        Account.query.filter(Account.deleted == False)  # noqa e712
         .filter(Account.id == int(id))
         .first()
     )
+    if acc not in current_user.accounts:
+        log(
+            log.INFO,
+            "User [%s] do not have permissions for acc [%s]",
+            current_user,
+            acc.id,
+        )
+        flash(f"Access for acc [{acc.id}] closed for you.", 'danger')
+        return redirect(url_for("account.index"))
     if acc:
         if request.method == "GET":
             form.ecc_id.data = acc.ecc_id
@@ -110,7 +121,7 @@ def edit_account():
         )
     else:
         log(log.INFO, "account[%s] is deleted or unexistent", id)
-        flash("no account found for id [%s]", id)
+        flash(f"No account found for id [{id}]", 'danger')
         return redirect(url_for("account.index"))
 
 
@@ -119,6 +130,15 @@ def edit_account():
 def delete_account():
     account_id = request.args.get("id")
     account = Account.query.get(account_id)
+    if account not in current_user.accounts:
+        log(
+            log.INFO,
+            "User [%s] do not have permissions for acc [%s]",
+            current_user,
+            account_id,
+        )
+        flash(f"Access for acc [{account_id}] closed for you.", 'danger')
+        return redirect(url_for("account.index"))
     if account:
         conn = LDAP()
         if conn:
@@ -145,7 +165,7 @@ def get_account_list():
     account = current_user.accounts
     page = int(request.args.get("page", 1))
     page_size = int(request.args.get("size", 20))
-    accounts = account[(page*page_size-page_size):(page*page_size-1)]
+    accounts = account[(page * page_size - page_size): (page * page_size)]
     if len(account) % page_size != 0:
         last_page = int(len(account) / page_size) + 1
     else:
@@ -155,3 +175,35 @@ def get_account_list():
         "data": [acc.to_json() for acc in accounts],
     }
     return jsonify(res)
+
+
+@account_blueprint.route("/qrcode", methods=["GET"])
+@login_required
+def show_qrcode():
+    account_id = request.args.get("id")
+    account = Account.query.get(account_id)
+    if account not in current_user.accounts:
+        log(
+            log.INFO,
+            "User [%s] do not have permissions for acc [%s]",
+            current_user,
+            account_id,
+        )
+        flash(f"Access for acc [{account_id}] closed for you.", 'danger')
+        return redirect(url_for("account.index"))
+    if account:
+        qrcode = create_qrcode(account)
+        data = io.BytesIO()
+        qrcode.save(data, "JPEG")
+        encoded_img_data = base64.b64encode(data.getvalue())
+        return render_template(
+            "base_add_edit.html",
+            include_header="components/_account-qrcode.html",
+            img_data=encoded_img_data.decode("utf-8"),
+            description_header=("Scan and close."),
+            cancel_link=url_for("account.index"),
+        )
+    else:
+        log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
+        flash(f"No account found for id [{account_id}]", 'danger')
+        return redirect(url_for("account.index"))

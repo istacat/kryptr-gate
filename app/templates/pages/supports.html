@@ -9,7 +9,7 @@
       <div class="supports__inner">
         <div class="supports__header">
           <span class="supports__title">Supports</span>
-          {% if current_user.role == 'admin' %}
+          {% if current_user.role.name == 'admin' %}
           <a class="btn supports__add" href="{{ url_for('support.add_support') }}" >Add support</a>
           {% endif %}
         </div>
