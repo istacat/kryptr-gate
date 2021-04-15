@@ -4,7 +4,6 @@ from ldap3.extend.microsoft.addMembersToGroups import (
     ad_add_members_to_groups as addUsersInGroups,
 )
 from ldap3.extend.microsoft.unlockAccount import ad_unlock_account
-
 from config import BaseConfig as config
 from app.logger import log
 from .user import User
