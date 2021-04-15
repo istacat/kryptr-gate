@@ -1,7 +1,7 @@
 """ AD User """
 import ldap3
 
-from app.controllers import RemoteShell
+from app.controllers.ssh_ps import RemoteShell
 from config import BaseConfig as config
 
 

@@ -27,6 +27,9 @@ class BaseConfig(object):
     REMOTE_SHELL_PASS = os.environ.get("REMOTE_SHELL_PASS", None)
     REMOTE_SHELL_PORT = int(os.environ.get("REMOTE_SHELL_PORT", 0))
 
+    MATRIX_SERVER_HOST_NAME = os.environ.get("MATRIX_SERVER_HOST_NAME", None)
+    MATRIX_SERVER_USER_NAME = os.environ.get("MATRIX_SERVER_USER_NAME", None)
+
     @staticmethod
     def configure(app):
         # Implement this method to do further configuration on your app.
