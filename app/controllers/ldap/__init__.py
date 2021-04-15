@@ -4,6 +4,8 @@ from ldap3.extend.microsoft.addMembersToGroups import (
     ad_add_members_to_groups as addUsersInGroups,
 )
 from ldap3.extend.microsoft.unlockAccount import ad_unlock_account
+
+from app.controllers.ssh_ps import RemoteShell
 from config import BaseConfig as config
 from app.logger import log
 from .user import User
@@ -89,25 +91,32 @@ class LDAP(object):
 
     def change_password(self, name, new_password):
         user_dn = self.FORMAT_USER_DN.format(name)
-        self.server = ldap3.Server(self.LDAP_URI, port=636, use_ssl=True)
-        with ldap3.Connection(
-            self.server, user=config.LDAP_USER, password=config.LDAP_PASS
-        ) as connection:
-            # connection.start_tls()
-            # Set password
-            # hashed_password = hashed(PASSWORD_HASH_ALGORITHM, new_password)
-            # # hashed_password = passwd
-            # changes = {
-            #     "userPassword": [(MODIFY_REPLACE, [hashed_password])],
-            #     "userAccountControl": [(MODIFY_REPLACE, "66080")],
-            # }
-            # success = connection.modify(user_dn, changes=changes)
-            # if not success:
-            #     log(log.ERROR, "Unable to change password for [%s]", user_dn)
-            #     log(log.ERROR, "%s", connection.result)
-            # return success
-            success = connection.extend.microsoft.modify_password(user_dn, new_password)
-            if not success:
-                log(log.ERROR, "Unable to change password for [%s]", user_dn)
-                log(log.ERROR, "%s", connection.result)
-            return success
+        sh = RemoteShell()
+        res = sh.send_command(
+            " ".join(
+                [
+                    "Set-ADAccountPassword",
+                    f"-Identity '{user_dn}'",
+                    "-Reset",
+                    "-NewPassword",
+                    f"(ConvertTo-SecureString -AsPlainText '{new_password}' -Force)",
+                ]
+            )
+        )
+        recognise_error_message = res.split("Set-ADAccountPassword :")
+        if len(recognise_error_message) > 1:
+            message_parts = recognise_error_message[1].split("\x1b")
+            log(log.ERROR, "%s", message_parts[0].strip(" \n\r\t"))
+            return False
+        sh.send_command(
+            " ".join(
+                [
+                    "Set-ADUser",
+                    f"-Identity '{user_dn}'",
+                    "-Enabled",
+                    "$true"
+                ]
+            )
+        )
+
+        return True
