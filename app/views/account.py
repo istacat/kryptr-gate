@@ -8,8 +8,9 @@ from flask_login import login_required, current_user
 from app.models import Account, User
 from app.forms import AccountForm
 from app.logger import log
-from app.controllers import account, create_qrcode
+from app.controllers.account import create_qrcode, generate_ecc_id
 from app.controllers.ldap import LDAP
+from app.controllers.ssh_ps import RemoteMatrix
 from config import BaseConfig as config
 
 account_blueprint = Blueprint("account", __name__)
@@ -26,8 +27,7 @@ def index():
 def add_account():
     form = AccountForm(user=current_user)
     if request.method == "GET":
-        rand_int = secrets.randbelow(17575999)
-        ecc_id = account.ecc_encode(rand_int)
+        ecc_id = generate_ecc_id()
         form.ecc_id.data = ecc_id
         form.email.data = f"{ecc_id}@kryptr.li"
         form.ad_login.data = f"{ecc_id}@kryptr.li"
@@ -66,6 +66,7 @@ def add_account():
                 )
             error_message = user.reset_password(acc.ad_password)
             if error_message:
+                log(log.ERROR, '%s', error_message)
                 flash(error_message, "danger")
                 return render_template(
                     "base_add_edit.html",
@@ -75,6 +76,9 @@ def add_account():
                     cancel_link=url_for("account.index"),
                     action_url=url_for("account.add_account"),
                 )
+        if config.MATRIX_SERVER_HOST_NAME:
+            matrix = RemoteMatrix()
+            matrix.add_user(acc)
         log(log.INFO, "Account creation successful. [%s]", acc)
         flash("Account creation successful.", "success")
         return redirect(url_for("account.index"))

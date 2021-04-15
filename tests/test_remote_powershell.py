@@ -1,6 +1,27 @@
 import pytest
-from app.controllers import RemoteShell
+import random
+from app import db, create_app
+from tests.db_data import fill_test_data
+from app.controllers.ssh_ps import RemoteShell, RemoteMatrix
+from app.models import Account
 from config import BaseConfig as conf
+
+
+@pytest.fixture
+def client():
+    app = create_app(environment="testing")
+    app.config["TESTING"] = True
+
+    with app.test_client() as client:
+        app_ctx = app.app_context()
+        app_ctx.push()
+        db.drop_all()
+        db.create_all()
+        fill_test_data()
+        yield client
+        db.session.remove()
+        db.drop_all()
+        app_ctx.pop()
 
 
 @pytest.mark.skipif(not conf.REMOTE_SHELL_SERVER, reason="Remote Shell not configured")
@@ -43,3 +64,20 @@ def test_change_user_password():
         )
     )
     assert res
+
+
+@pytest.mark.skipif(not conf.MATRIX_SERVER_HOST_NAME, reason="Remote Shell not configured")
+def test_simple_bash_commands(client):
+    number = random.randint(111, 999)
+    acc = Account(
+        ecc_id=f'SAD{number}',
+        ad_login='acc2',
+        ad_password='123abc',
+        email='testing1@gmail.com',
+        reseller_id=3
+    ).save()
+    bash = RemoteMatrix()
+    res1 = bash.add_user(acc)
+    assert res1
+    res2 = bash.add_user(acc)
+    assert not res2

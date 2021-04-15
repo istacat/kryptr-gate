@@ -5,7 +5,7 @@ from ldap3.extend.microsoft.addMembersToGroups import (
 )
 from ldap3.extend.microsoft.unlockAccount import ad_unlock_account
 
-from app.controllers import RemoteShell
+from app.controllers.ssh_ps import RemoteShell
 from config import BaseConfig as config
 from app.logger import log
 from .user import User

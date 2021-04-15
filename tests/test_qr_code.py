@@ -2,7 +2,7 @@ import pytest
 
 from app import db, create_app
 from app.models import Account
-from app.controllers import create_qrcode
+from app.controllers.account import create_qrcode
 from tests.utils import login, logout
 from tests.db_data import fill_test_data
 
