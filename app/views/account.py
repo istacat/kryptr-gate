@@ -129,7 +129,7 @@ def edit_account():
                         description_header=("Edit account"),
                         cancel_link=url_for("account.index"),
                         action_url=url_for(
-                            "account.edit_account", account_id=account_id
+                            "account.edit_account", id=account_id
                         ),
                     )
             acc.ad_password = form.ad_password.data
@@ -147,7 +147,7 @@ def edit_account():
             form=form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            action_url=url_for("account.edit_account", account_id=account_id),
+            action_url=url_for("account.edit_account", id=account_id),
         )
     log(log.INFO, "account[%s] is deleted or unexistent", id)
     flash(f"No account found for id [{id}]", 'danger')
