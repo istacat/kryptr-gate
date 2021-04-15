@@ -8,7 +8,7 @@ from flask_login import login_required, current_user
 from app.models import Account, User
 from app.forms import AccountForm
 from app.logger import log
-from app.controllers.account import ecc_encode, create_qrcode
+from app.controllers.account import create_qrcode, generate_ecc_id
 from app.controllers.ldap import LDAP
 from app.controllers.ssh_ps import RemoteMatrix
 from config import BaseConfig as config
@@ -27,8 +27,7 @@ def index():
 def add_account():
     form = AccountForm(user=current_user)
     if request.method == "GET":
-        rand_int = secrets.randbelow(17575999)
-        ecc_id = ecc_encode(rand_int)
+        ecc_id = generate_ecc_id()
         form.ecc_id.data = ecc_id
         form.email.data = f"{ecc_id}@kryptr.li"
         form.ad_login.data = f"{ecc_id}@kryptr.li"

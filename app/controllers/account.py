@@ -1,3 +1,4 @@
+import secrets
 import jwt
 import qrcode
 from app.models.account import Account
@@ -22,6 +23,17 @@ def ecc_encode(number: int) -> str:
         return "".join(base)
 
     return alpha_encode(number // 1000) + f"{number % 1000:03}"
+
+
+def generate_ecc_id():
+    def unique():
+        rand_int = secrets.randbelow(17575999)
+        ecc_id = ecc_encode(rand_int)
+        return ecc_id
+    ecc_id = unique()
+    while Account.query.filter(Account.ecc_id == ecc_id).first():
+        ecc_id = unique()
+    return ecc_id
 
 
 def get_accounts(user):
