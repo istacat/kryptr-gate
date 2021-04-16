@@ -27,4 +27,4 @@ def test_generators(client):
     assert len(password) == 8
     ecc_id = Account.gen_ecc_id()
     assert ecc_id
-    assert len(ecc_id) == 6
+    assert len(ecc_id) == 7

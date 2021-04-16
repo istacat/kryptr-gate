@@ -1,4 +1,5 @@
 import secrets
+import string
 from datetime import datetime
 from sqlalchemy.orm import relationship
 
@@ -43,31 +44,16 @@ class Account(db.Model, ModelMixin):
 
     @staticmethod
     def gen_ecc_id():
-        def unique():
-            rand_int = secrets.randbelow(17575999)
-            ecc_id = ecc_encode(rand_int)
-            return ecc_id
-        ecc_id = unique()
+        ecc_id = ecc_sample_gen()
         while Account.query.filter(Account.ecc_id == ecc_id).first():
-            ecc_id = unique()
+            ecc_id = ecc_sample_gen()
         return ecc_id
 
 
-def ecc_encode(number: int) -> str:
-    if not isinstance(number, int):
-        raise TypeError("number must be an integer")
-    if number < 0:
-        raise ValueError("number must be positive")
-
-    def alpha_encode(number):
-        ALPHABET, base = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", list("AAA")
-        len_ab = len(ALPHABET)
-        len_base = len(base)
-        for i in range(len_base):
-            number, idx = divmod(number, len_ab)
-            base[i] = ALPHABET[idx]
-
-        base.reverse()
-        return "".join(base)
-
-    return alpha_encode(number // 1000) + f"{number % 1000:03}"
+def ecc_sample_gen() -> str:
+    ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"+string.digits
+    while True:
+        password = ''.join(secrets.choice(ALPHABET) for i in range(7))
+        if (sum(c.isalpha() for c in password) >= 3
+                and sum(c.isdigit() for c in password) >= 3):
+            return password
