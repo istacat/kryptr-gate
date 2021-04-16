@@ -21,7 +21,7 @@ class AccountForm(FlaskForm):
                 users = User.query.filter(User.deleted == False) # noqa E712
                 self.reseller.choices = [sub.username for sub in users]
 
-    ecc_id = StringField("Ecc", [DataRequired(), Length(min=6, max=6)])
+    ecc_id = StringField("Ecc", [DataRequired(), Length(min=7, max=7)])
     email = StringField("Email", [DataRequired(), Email(3, 45)])
     ad_login = StringField("Login", [DataRequired()])
     ad_password = StringField("Password", [DataRequired()])
