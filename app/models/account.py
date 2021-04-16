@@ -12,7 +12,7 @@ class Account(db.Model, ModelMixin):
     __tablename__ = "accounts"
 
     id = db.Column(db.Integer, primary_key=True)
-    ecc_id = db.Column(db.String(6), nullable=False, unique=True)
+    ecc_id = db.Column(db.String(7), nullable=False, unique=True)
     ad_login = db.Column(db.String(32), nullable=False)
     ad_password = db.Column(db.String(32), nullable=False)
     license_key = db.Column(db.String(64), nullable=True)
