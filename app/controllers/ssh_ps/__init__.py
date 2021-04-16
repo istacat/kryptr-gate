@@ -41,7 +41,7 @@ class SshShell(object):
         with self.client.get_transport().open_session() as channel:
             channel.get_pty(width=1024)
             channel.settimeout(5)
-            channel.exec_command(cmd + "\r\n")
+            channel.exec_command(cmd + "\n")
             if channel.recv_stderr_ready():
                 log(log.ERROR, "RemoteShell: Error")
                 data = channel.recv_stderr(BUFFER_SIZE)

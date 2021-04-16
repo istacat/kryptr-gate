@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.models.utils import ModelMixin
 from app.models.subordinate import Subordinate
-from app.controllers.account import get_accounts
+from app.models.account import Account
 
 
 class User(db.Model, UserMixin, ModelMixin):
@@ -156,6 +156,36 @@ class User(db.Model, UserMixin, ModelMixin):
 
     def __str__(self):
         return self.username
+
+
+def get_accounts(user):
+    """Get accounts by roles and subordinates"""
+    if user.role.name == "admin" or user.role.name == "support":
+        return Account.query.all()
+    elif user.role.name == "distributor":
+        accounts = []
+        for account in Account.query.filter(Account.reseller_id == user.id):
+            accounts.append(account)
+        for reseller in user.resellers:
+            for account in Account.query.filter(Account.reseller_id == reseller.id):
+                accounts.append(account)
+        for sub_reseller in user.sub_resellers:
+            for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
+                accounts.append(account)
+        return accounts
+    elif user.role.name == "reseller":
+        accounts = []
+        for account in Account.query.filter(Account.reseller_id == user.id):
+            accounts.append(account)
+        for sub_reseller in user.sub_resellers:
+            for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
+                accounts.append(account)
+        return accounts
+    elif user.role.name == "sub_reseller":
+        accounts = []
+        for account in Account.query.filter(Account.reseller_id == user.id):
+            accounts.append(account)
+        return accounts
 
 
 class AnonymousUser(AnonymousUserMixin):
