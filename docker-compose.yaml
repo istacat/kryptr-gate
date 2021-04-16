@@ -21,6 +21,7 @@ services:
       - kryptr_db
     volumes:
       - ./:/usr/src/app
+      - ${HOME}/.ssh:/root/.ssh
     environment:
       - FLASK_APP=wsgi:app
       - FLASK_ENV=development
