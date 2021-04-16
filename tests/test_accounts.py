@@ -45,7 +45,7 @@ def test_add_delete_account(client):
     response = client.get("/add_account")
     assert response.status_code == 200
     reseller = User.query.first()
-    ECC_ID = "TES345"
+    ECC_ID = "TES3456"
 
     response = client.post(
         "/add_account",
@@ -87,7 +87,7 @@ def test_edit_account(client):
     login(client, "sam")
     TEST_EMAIL = "TST001@kryptr.li"
     TEST_PASS = "ZAQ!xsw2"
-    TEST_USER_NAME = "TST001"
+    TEST_USER_NAME = "TST0001"
     reseller = User.query.filter(User.username == "sam").first()
     assert reseller
     acc = Account(
