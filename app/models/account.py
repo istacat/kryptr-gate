@@ -1,3 +1,5 @@
+import secrets
+import string
 from datetime import datetime
 from sqlalchemy.orm import relationship
 
@@ -39,3 +41,19 @@ class Account(db.Model, ModelMixin):
             "created_at": self.created_at,
             "comment": self.comment
         }
+
+    @staticmethod
+    def gen_ecc_id():
+        ecc_id = ecc_sample_gen()
+        while Account.query.filter(Account.ecc_id == ecc_id).first():
+            ecc_id = ecc_sample_gen()
+        return ecc_id
+
+
+def ecc_sample_gen() -> str:
+    ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"+string.digits
+    while True:
+        password = ''.join(secrets.choice(ALPHABET) for i in range(7))
+        if (sum(c.isalpha() for c in password) >= 3
+                and sum(c.isdigit() for c in password) >= 3):
+            return password
