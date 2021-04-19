@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block links %}
+  <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+{% endblock %}
+
 {% block content %}
   <section class="edit">
     <div class="container">

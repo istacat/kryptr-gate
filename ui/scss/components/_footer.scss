@@ -1,11 +1,13 @@
 .footer {
-  
+
   &__copyright {
-    position: absolute;
-    bottom: 10px;
-    right: 20px;
+    text-align: end;
+    padding-right:20px;
     @extend %nunito-300;
     font-size: 12px;
     font-style: italic;
+    flex-grow: 1;
+    background: rgb(127,168,230);
+    background: linear-gradient(144deg, rgba(127,168,230,1) 0%, rgba(64,137,193,1) 46%, rgba(49,198,218,1) 100%);
   }
 }

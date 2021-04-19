@@ -1,7 +1,6 @@
 <form class="edit__form" action="{{ action_url }}" method="POST">
   <div class="edit__container">
     {{ form.hidden_tag() }}
-
     <div class="edit__group">
       <div class="input__wrapper">
         <label class="edit__label"> EСС </label>
@@ -99,10 +98,29 @@
         >
       </div>
     </div>
-    {% endif %}
-
+    {% else %}
     <div class="edit__group">
-      <div class="edit__submit-btn">{{ form.submit(class="edit__submit")}}</div>
+      <div class="edit__submit-btn reload-button">
+        <a
+          type="button"
+          href="{{ action_url }}"
+          class="edit__submit"
+          >&#9974;</a
+        >
+      </div>
+    </div>
+    {% endif %}
+    <div>
+      <img src="{{ url_for('static', filename='images/loading-11.gif') }} " id="gif">
+    </div>
+    <div class="edit__group btn-container">
+      <div class="edit__submit-btn reload-button">{{ form.submit(class="edit__submit")}}</div>
     </div>
   </div>
 </form>
+
+<script type="text/javascript">
+  $('.edit__form').submit(function() {
+    $('#gif').css('visibility', 'visible');
+  });
+</script>

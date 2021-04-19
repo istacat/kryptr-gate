@@ -10,7 +10,6 @@ product_blueprint = Blueprint('product', __name__)
 @product_blueprint.route('/products')
 @login_required
 def index():
-    flash('Welcome to Machine', 'success')
     return render_template('pages/products.html')
 
 

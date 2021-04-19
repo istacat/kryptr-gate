@@ -22,28 +22,32 @@
 
     <main class="main">
       <div class="container container--lg"></div>
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismisible" id="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" id="close-btn">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only">Close</span>
+            </button>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
       {% block content %}{% endblock %}
     </main>
-
-    <footer class="footer">
-      <!-- Flash Messages -->
-        <!-- {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-            <div class="flash flash--{{ category }}">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                <span class="sr-only">Close</span>
-              </button>
-              {{ message }}
-            </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %} -->
+    <footer>
       <div class="footer__copyright">©2020 {{ config.APP_NAME }}. All rights reserved.</div>
     </footer>
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/main.min.js') }}" type="text/javascript" defer></script>
+    <script>
+      document.getElementById('close-btn').onclick = function() {
+        document.getElementById('alert').hidden = true;
+      }
+    </script>
     {% block scripts %}{% endblock %}
   </body>
 </html>
