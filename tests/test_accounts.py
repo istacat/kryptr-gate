@@ -70,7 +70,7 @@ def test_add_delete_account(client):
         AD_user_mails = [u.mail for u in LDAP().users]
         assert acc_mail in AD_user_mails
 
-    response = client.get("/delete_account?id=1", follow_redirects=True)
+    response = client.get("/delete_account/1", follow_redirects=True)
     assert b"Account deletion successful" in response.data
     acc = Account.query.filter(Account.ecc_id == ECC_ID).first()
     assert acc
@@ -100,7 +100,7 @@ def test_edit_account(client):
     )
     acc.save()
     ACC_ID = acc.id
-    response = client.get(f"/edit_account?id={ACC_ID}")
+    response = client.get(f"/edit_account/{ACC_ID}")
     assert response.status_code == 200
 
     # send post request for change password
@@ -116,7 +116,7 @@ def test_edit_account(client):
         "comment": acc.comment,
         "reseller": reseller.username,
     }
-    response = client.post(f"/edit_account?id={ACC_ID}", data=data)
+    response = client.post(f"/edit_account/{ACC_ID}", data=data)
     assert response.status_code == 302
     acc = Account.query.get(ACC_ID)
     assert acc.ad_password == NEW_PASS

@@ -31,13 +31,13 @@ def test_qrcode(client):
     qrcode = create_qrcode(acc)
     assert qrcode
     assert qrcode.size == (570, 570)
-    response = client.get("/qrcode?id=1")
+    response = client.get("/qrcode/1")
     assert response
     assert response.status_code == 200
     assert len(response.data) > 50000
     logout(client)
     login(client, "d2", "d2")
-    response = client.get("/qrcode?id=1")
+    response = client.get("/qrcode/1")
     assert response.status_code == 302
     assert (
         'You should be redirected automatically to target URL: <a href="/accounts">/accounts</a>'
