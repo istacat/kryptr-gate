@@ -25,7 +25,7 @@ const printIcon = function (cell, formatterParams, onRendered) {
 };
 const printIconView = function (cell, formatterParams, onRendered) {
   //plain text value
-  return "<div class='icon__delete' >&#x1f50d</div>";
+  return "<div class='icon__delete' >&#9974;</div>";
 };
 if (document.getElementById("products-table")) {
   table = new Tabulator("#products-table", {
@@ -267,7 +267,6 @@ if (document.getElementById("distributors-table")) {
 }
 
 if (document.getElementById("accounts-table")) {
-  const deleteIcon = document.querySelector(".icon__delete");
   table = new Tabulator("#accounts-table", {
     resizableColumns: false,
     responsiveLayout: "collapse",
@@ -280,8 +279,7 @@ if (document.getElementById("accounts-table")) {
       //Define Table Columns
       {
         formatter: "responsiveCollapse",
-        width: 30,
-        minWidth: 30,
+        widthGrow: 1,
         align: "center",
         resizable: false,
         headerSort: false,
@@ -290,9 +288,8 @@ if (document.getElementById("accounts-table")) {
 
       {
         field: "actions",
-        minWidth: 50,
         formatter: printIcon,
-        width: 20,
+        widthGrow: 1,
         hozAlign: "center",
         cellClick: function (e, cell) {
           e.stopPropagation();
@@ -303,41 +300,31 @@ if (document.getElementById("accounts-table")) {
           ) {
             window.location.href =
               window.location.origin +
-              "/delete_account?id=" +
+              "/delete_account/" +
               cell.getRow().getData().id;
           } else return;
         },
       },
       {
-        field: "actions-view",
-        minWidth: 50,
+        field: "actions",
         formatter: printIconView,
-        width: 20,
+        widthGrow: 1,
+        sorter: false,
+        headerSort: false,
         hozAlign: "center",
         cellClick: function (e, cell) {
           e.stopPropagation();
-            window.location.href =
-              window.location.origin +
-              "/qrcode?id=" +
-              cell.getRow().getData().id;
+          window.location.href =
+            window.location.origin +
+            "/qrcode/" +
+            cell.getRow().getData().id;
         }
       },
-      { title: "Name", field: "name", hozAlign: "left", minWidth: 166 },
-      { title: "Ecc id", field: "ecc_id", minWidth: 166 },
-      { title: "Email", field: "email", minWidth: 166 },
-      { title: "Reseller", field: "reseller", minWidth: 166 },
-      {
-        title: "Created",
-        field: "created_at",
-        sorter: "date",
-        hozAlign: "center",
-        minWidth: 166,
-      },
-      { title: "Comment", field: "comment", minWidth: 166 },
+      { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
     ],
     rowClick: function (e, row) {
       window.location.href =
-        window.location.origin + "/edit_account?id=" + row.getData().id;
+        window.location.origin + "/edit_account/" + row.getData().id;
     },
   });
 }

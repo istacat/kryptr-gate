@@ -40,7 +40,7 @@ def add_account():
             ad_password=form.ad_password.data,
             sim=form.sim.data,
             comment=form.comment.data,
-            reseller_id=reseller.id
+            reseller_id=reseller.id,
         ).save()
         log(
             log.INFO,
@@ -64,7 +64,7 @@ def add_account():
                 )
             error_message = user.reset_password(acc.ad_password)
             if error_message:
-                log(log.ERROR, '%s', error_message)
+                log(log.ERROR, "%s", error_message)
                 flash(error_message, "danger")
                 return render_template(
                     "base_add_edit.html",
@@ -79,7 +79,7 @@ def add_account():
             matrix.add_user(acc)
         log(log.INFO, "Account creation successful. [%s]", acc)
         flash("Account creation successful.", "success")
-        return redirect(url_for("account.index"))
+        return redirect(url_for("account.show_qrcode", account_id=acc.id))
     elif form.is_submitted():
         log(log.ERROR, "Submit failed: %s", form.errors)
     return render_template(
@@ -92,10 +92,9 @@ def add_account():
     )
 
 
-@account_blueprint.route("/edit_account", methods=["GET", "POST"])
+@account_blueprint.route("/edit_account/<int:account_id>", methods=["GET", "POST"])
 @login_required
-def edit_account():
-    account_id = request.args.get("id")
+def edit_account(account_id):
     form = AccountForm(user=current_user)
     acc = Account.query.get(account_id)
     if acc not in current_user.accounts:
@@ -105,7 +104,7 @@ def edit_account():
             current_user,
             acc.id,
         )
-        flash(f"Access for acc [{acc.id}] closed for you.", 'danger')
+        flash(f"Access for acc [{acc.id}] closed for you.", "danger")
         return redirect(url_for("account.index"))
     if acc:
         if request.method == "GET":
@@ -130,9 +129,7 @@ def edit_account():
                         form=form,
                         description_header=("Edit account"),
                         cancel_link=url_for("account.index"),
-                        action_url=url_for(
-                            "account.edit_account", id=account_id
-                        ),
+                        action_url=url_for("account.edit_account", account_id=account_id),
                     )
             acc.ad_password = form.ad_password.data
             acc.sim = form.sim.data
@@ -149,17 +146,16 @@ def edit_account():
             form=form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            action_url=url_for("account.edit_account", id=account_id),
+            action_url=url_for("account.show_qrcode", account_id=account_id)
         )
-    log(log.INFO, "account[%s] is deleted or unexistent", id)
-    flash(f"No account found for id [{id}]", 'danger')
+    log(log.INFO, "account[%s] is deleted or unexistent", account_id)
+    flash(f"No account found for id [{account_id}]", "danger")
     return redirect(url_for("account.index"))
 
 
-@account_blueprint.route("/delete_account", methods=["GET"])
+@account_blueprint.route("/delete_account/<int:account_id>", methods=["GET"])
 @login_required
-def delete_account():
-    account_id = request.args.get("id")
+def delete_account(account_id):
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
@@ -168,7 +164,7 @@ def delete_account():
             current_user,
             account_id,
         )
-        flash(f"Access for acc [{account_id}] closed for you.", 'danger')
+        flash(f"Access for acc [{account_id}] closed for you.", "danger")
         return redirect(url_for("account.index"))
     if account:
         if config.LDAP_SERVER:
@@ -192,7 +188,8 @@ def delete_account():
 @account_blueprint.route("/api/account_list")
 @login_required
 def get_account_list():
-    account = current_user.accounts
+    account = [acc for acc in current_user.accounts if acc.deleted == False] # noqa E712
+    account.sort(reverse=True, key=lambda x: x.id)
     page = int(request.args.get("page", 1))
     page_size = int(request.args.get("size", 20))
     accounts = account[(page * page_size - page_size): (page * page_size)]
@@ -207,10 +204,9 @@ def get_account_list():
     return jsonify(res)
 
 
-@account_blueprint.route("/qrcode", methods=["GET"])
+@account_blueprint.route("/qrcode/<int:account_id>", methods=["GET"])
 @login_required
-def show_qrcode():
-    account_id = request.args.get("id")
+def show_qrcode(account_id):
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
@@ -219,7 +215,7 @@ def show_qrcode():
             current_user,
             account_id,
         )
-        flash(f"Access for acc [{account_id}] closed for you.", 'danger')
+        flash(f"Access for acc [{account_id}] closed for you.", "danger")
         return redirect(url_for("account.index"))
     if account:
         qrcode = create_qrcode(account)
@@ -232,8 +228,9 @@ def show_qrcode():
             img_data=encoded_img_data.decode("utf-8"),
             description_header=("Scan and close."),
             cancel_link=url_for("account.index"),
+            action_url=url_for("account.edit_account", account_id=account_id),
         )
     else:
         log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
-        flash(f"No account found for id [{account_id}]", 'danger')
+        flash(f"No account found for id [{account_id}]", "danger")
         return redirect(url_for("account.index"))
