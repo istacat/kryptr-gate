@@ -43,12 +43,12 @@ def add_distributor():
     )
 
 
-@distributor_blueprint.route("/edit_distributor", methods=["GET", "POST"])
+@distributor_blueprint.route("/edit_distributor/<int:distributor_id>", methods=["GET", "POST"])
 @login_required
 @role_required(roles=["admin"])
-def edit_distributor():
+def edit_distributor(distributor_id):
     form = DistributorForm()
-    id = request.args.get("id")
+    id = distributor_id
     if id:
         user = (
             User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
@@ -81,7 +81,7 @@ def edit_distributor():
             form=form,
             description_header=("Edit distributor"),
             cancel_link=url_for("distributor.index"),
-            action_url=url_for("distributor.edit_distributor", id=id),
+            action_url=url_for("distributor.edit_distributor", distributor_id=id),
         )
     else:
         log(log.INFO, "Distributor [%s] is deleted or unexistent", id)
@@ -89,12 +89,11 @@ def edit_distributor():
         return redirect(url_for("distributor.index"))
 
 
-@distributor_blueprint.route("/delete_distributor", methods=["GET"])
+@distributor_blueprint.route("/delete_distributor/<int:distributor_id>", methods=["GET"])
 @login_required
 @role_required(roles=["admin"])
-def delete_distributor():
-    user_id = request.args.get("id")
-    user = User.query.get(user_id)
+def delete_distributor(distributor_id):
+    user = User.query.get(distributor_id)
     if user:
         user.deleted = True
         now = datetime.now()
@@ -108,7 +107,7 @@ def delete_distributor():
         log(
             log.WARNING,
             "Tried to delete unexisted or deleted distributor [%s]",
-            user_id,
+            distributor_id,
         )
         flash("Distributor doesnt exist or already deleted", "danger")
         return redirect(url_for("distributor.index"))

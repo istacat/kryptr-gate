@@ -41,12 +41,12 @@ def add_user():
     )
 
 
-@user_blueprint.route("/edit_user", methods=["GET", "POST"])
+@user_blueprint.route("/edit_user/<int:user_id>", methods=["GET", "POST"])
 @login_required
 @role_required(roles=["admin"])
-def edit_user():
+def edit_user(user_id):
     form = UserForm()
-    id = request.args.get("id")
+    id = user_id
     if id:
         user = (
             User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
@@ -77,7 +77,7 @@ def edit_user():
             form=form,
             description_header=("Edit user"),
             cancel_link=url_for("user.index"),
-            action_url=url_for("user.edit_user", id=id),
+            action_url=url_for("user.edit_user", user_id=id),
         )
     else:
         log(log.INFO, "User [%s] is deleted or unexistent", id)
@@ -85,11 +85,10 @@ def edit_user():
         return redirect(url_for("user.index"))
 
 
-@user_blueprint.route("/delete_user", methods=["GET"])
+@user_blueprint.route("/delete_user/<int:user_id>", methods=["GET"])
 @login_required
 @role_required(roles=["admin"])
-def delete_user():
-    user_id = request.args.get("id")
+def delete_user(user_id):
     user = User.query.get(user_id)
     if user:
         user.deleted = True
@@ -108,19 +107,7 @@ def delete_user():
 
 @user_blueprint.route("/api/user_list")
 @login_required
-@role_required(roles=["admin"])
+@role_required(roles=["admin", "support"])
 def get_user_list():
-    users = User.query
-    page = request.args.get("page", 1)
-    page_size = request.args.get("size", 20)
-    paginated_users = (
-        users.filter(User.deleted == False) # noqa e712
-        .order_by(User.id.asc())
-        .paginate(int(page), int(page_size), False)
-    )
-    res = {
-        "max_pages": paginated_users.pages,
-        "data": [acc.to_json() for acc in paginated_users.items],
-    }
-    print(res)
-    return jsonify(res)
+    users = User.query.filter(User.deleted == False) # noqa e712
+    return jsonify([acc.to_json() for acc in users])

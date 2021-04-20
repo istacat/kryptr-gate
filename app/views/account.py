@@ -190,18 +190,7 @@ def delete_account(account_id):
 def get_account_list():
     account = [acc for acc in current_user.accounts if acc.deleted == False] # noqa E712
     account.sort(reverse=True, key=lambda x: x.id)
-    page = int(request.args.get("page", 1))
-    page_size = int(request.args.get("size", 20))
-    accounts = account[(page * page_size - page_size): (page * page_size)]
-    if len(account) % page_size != 0:
-        last_page = int(len(account) / page_size) + 1
-    else:
-        last_page = len(account) / page_size
-    res = {
-        "last_page": last_page,
-        "data": [acc.to_json() for acc in accounts],
-    }
-    return jsonify(res)
+    return jsonify([acc.to_json() for acc in account])
 
 
 @account_blueprint.route("/qrcode/<int:account_id>", methods=["GET"])

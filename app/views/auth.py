@@ -15,7 +15,7 @@ def login():
         if user is not None:
             login_user(user)
             flash('Login successful.', 'success')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('account.index'))
         flash('Wrong user ID or password.', 'danger')
     return render_template('login.html', form=form)
 

@@ -25,7 +25,7 @@ const printIcon = function (cell, formatterParams, onRendered) {
 };
 const printIconView = function (cell, formatterParams, onRendered) {
   //plain text value
-  return "<div class='icon__delete' >&#9974;</div>";
+  return "<div class='qrcode-container'><img src='static/images/qr-code--v2.png' class='qrcode-icon' ></img></div>";
 };
 if (document.getElementById("products-table")) {
   table = new Tabulator("#products-table", {
@@ -68,24 +68,13 @@ if (document.getElementById("products-table")) {
 if (document.getElementById("users-table")) {
   table = new Tabulator("#users-table", {
     responsiveLayout: "collapse",
-    pagination: "remote", //enable remote pagination
+    pagination: "local", //enable remote pagination
     paginationSize: 20, //optional parameter to request a certain number of rows per page
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
     layout: "fitColumns", //fit columns to width of table (optional)
     ajaxURL: window.location.origin + `/api/user_list`,
-    paginationDataReceived: {
-      last_page: "max_pages", //change last_page parameter name to "max_pages"
-    },
     columns: [
       //Define Table Columns
-      {
-        formatter: "responsiveCollapse",
-        width: 30,
-        minWidth: 30,
-        align: "center",
-        resizable: false,
-        headerSort: false,
-      },
       { title: "Id", field: "id" },
       {
         field: "actions",
@@ -103,7 +92,7 @@ if (document.getElementById("users-table")) {
           ) {
             window.location.href =
               window.location.origin +
-              "/delete_user?id=" +
+              "/delete_user/" +
               cell.getRow().getData().id;
           } else return;
         },
@@ -122,7 +111,7 @@ if (document.getElementById("users-table")) {
     ],
     rowClick: function (e, row) {
       window.location.href =
-        window.location.origin + "/edit_user?id=" + row.getData().id;
+        window.location.origin + "/edit_user/" + row.getData().id;
     },
   });
 }
@@ -150,7 +139,7 @@ if (document.getElementById("sub_resellers-table")) {
           ) {
             window.location.href =
               window.location.origin +
-              "/delete_sub_reseller?id=" +
+              "/delete_sub_reseller/" +
               cell.getRow().getData().id;
           } else return;
         },
@@ -168,7 +157,7 @@ if (document.getElementById("sub_resellers-table")) {
     ],
     rowClick: function (e, row) {
       window.location.href =
-        window.location.origin + "/edit_sub_reseller?id=" + row.getData().id;
+        window.location.origin + "/edit_sub_reseller/" + row.getData().id;
     },
   });
 }
@@ -197,7 +186,7 @@ if (document.getElementById("resellers-table")) {
           ) {
             window.location.href =
               window.location.origin +
-              "/delete_reseller?id=" +
+              "/delete_reseller/" +
               cell.getRow().getData().id;
           } else return;
         },
@@ -215,7 +204,7 @@ if (document.getElementById("resellers-table")) {
     ],
     rowClick: function (e, row) {
       window.location.href =
-        window.location.origin + "/edit_reseller?id=" + row.getData().id;
+        window.location.origin + "/edit_reseller/" + row.getData().id;
     },
   });
 }
@@ -243,7 +232,7 @@ if (document.getElementById("distributors-table")) {
           ) {
             window.location.href =
               window.location.origin +
-              "/delete_distributor?id=" +
+              "/delete_distributor/" +
               cell.getRow().getData().id;
           } else return;
         },
@@ -261,73 +250,64 @@ if (document.getElementById("distributors-table")) {
     ],
     rowClick: function (e, row) {
       window.location.href =
-        window.location.origin + "/edit_distributor?id=" + row.getData().id;
+        window.location.origin + "/edit_distributor/" + row.getData().id;
     },
   });
 }
 
 if (document.getElementById("accounts-table")) {
-  table = new Tabulator("#accounts-table", {
-    resizableColumns: false,
-    responsiveLayout: "collapse",
-    pagination: "remote", //enable remote pagination
-    layout: "fitColumns",
-    ajaxURL: window.location.origin + "/api/account_list",
-    paginationSize: 20, //optional parameter to request a certain number of rows per page
-    paginationInitialPage: 1, //optional parameter to set the initial page to load
-    columns: [
-      //Define Table Columns
-      {
-        formatter: "responsiveCollapse",
-        widthGrow: 1,
-        align: "center",
-        resizable: false,
-        headerSort: false,
-      },
-      { title: "Id", field: "id" },
-
-      {
-        field: "actions",
-        formatter: printIcon,
-        widthGrow: 1,
-        hozAlign: "center",
-        cellClick: function (e, cell) {
-          e.stopPropagation();
-          if (
-            confirm(
-              "Are you sure you want to delete " + cell.getRow().getData().name
-            )
-          ) {
+    table = new Tabulator("#accounts-table", {
+      resizableColumns: false,
+      responsiveLayout: "collapse",
+      pagination: "local", //enable remote pagination
+      layout: "fitColumns",
+      ajaxURL: window.location.origin + "/api/account_list",
+      paginationSize: 20, //optional parameter to request a certain number of rows per page
+      columns: [
+        { title: "Id", field: "id" },
+        { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
+        {
+          field: "actions",
+          formatter: printIconView,
+          widthGrow: 1,
+          headerSort: false,
+          hozAlign: "center",
+          cellClick: function (e, cell) {
+            e.stopPropagation();
             window.location.href =
               window.location.origin +
-              "/delete_account/" +
+              "/qrcode/" +
               cell.getRow().getData().id;
-          } else return;
+          }
         },
+        {
+          field: "actions",
+          formatter: printIcon,
+          widthGrow: 1,
+          hozAlign: "center",
+          headerSort: false,
+          cellClick: function (e, cell) {
+            e.stopPropagation();
+            if (
+              confirm(
+                "Are you sure you want to delete " + cell.getRow().getData().name
+              )
+            ) {
+              window.location.href =
+                window.location.origin +
+                "/delete_account/" +
+                cell.getRow().getData().id;
+            } else return;
+          },
+        },
+      ],
+      rowClick: function (e, row) {
+        window.location.href =
+          window.location.origin + "/edit_account/" + row.getData().id;
       },
-      {
-        field: "actions",
-        formatter: printIconView,
-        widthGrow: 1,
-        sorter: false,
-        headerSort: false,
-        hozAlign: "center",
-        cellClick: function (e, cell) {
-          e.stopPropagation();
-          window.location.href =
-            window.location.origin +
-            "/qrcode/" +
-            cell.getRow().getData().id;
-        }
-      },
-      { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
-    ],
-    rowClick: function (e, row) {
-      window.location.href =
-        window.location.origin + "/edit_account/" + row.getData().id;
-    },
-  });
+    });
 }
+
 if (document.getElementById("supports-table")) {
   table = new Tabulator("#supports-table", {
     responsiveLayout: "collapse",
@@ -366,7 +346,7 @@ if (document.getElementById("supports-table")) {
           ) {
             window.location.href =
               window.location.origin +
-              "/delete_support?id=" +
+              "/delete_support/" +
               cell.getRow().getData().id;
           } else return;
         },
@@ -385,7 +365,8 @@ if (document.getElementById("supports-table")) {
     ],
     rowClick: function (e, row) {
       window.location.href =
-        window.location.origin + "/edit_support?id=" + row.getData().id;
+        window.location.origin + "/edit_support/" + row.getData().id;
     },
   });
 }
+
