@@ -229,214 +229,214 @@ def test_chief_subordinate(client):
     assert accs
 
 
-def test_permissions(client):
+def test_permissions_admin(client):
     # Admin
     logout(client)
     login(client, 'a', 'a')
     res = client.get(url_for("distributor.add_distributor"))
     assert res.status_code == 200
-    res = client.get(url_for("distributor.edit_distributor"))
+    res = client.get(url_for("distributor.edit_distributor", distributor_id=2))
+    assert res.status_code == 200
+    res = client.get(url_for("distributor.delete_distributor", distributor_id=2))
     assert res.status_code == 302
-    assert 'You should be redirected automatically to target URL: <a href="/distributors">/distributors</a>' in res.data.decode() # noqa E501
-    res = client.get(url_for("distributor.delete_distributor"))
-    assert res.status_code == 302
-    assert 'You should be redirected automatically to target URL: <a href="/distributors">/distributors</a>' in res.data.decode() # noqa E501
 
     res = client.get(url_for("reseller.add_reseller"))
     assert res.status_code == 200
-    res = client.get(url_for("reseller.edit_reseller"))
+    res = client.get(url_for("reseller.edit_reseller", reseller_id=4))
+    assert res.status_code == 200
+    res = client.get(url_for("reseller.delete_reseller", reseller_id=4))
     assert res.status_code == 302
-    assert 'You should be redirected automatically to target URL: <a href="/resellers">/resellers</a>' in res.data.decode() # noqa E501
-    res = client.get(url_for("reseller.delete_reseller"))
-    assert res.status_code == 302
-    assert 'You should be redirected automatically to target URL: <a href="/resellers">/resellers</a>' in res.data.decode() # noqa E501
 
     res = client.get(url_for("sub_reseller.add_sub_reseller"))
     assert res.status_code == 200
-    res = client.get(url_for("sub_reseller.edit_sub_reseller"))
+    res = client.get(url_for("sub_reseller.edit_sub_reseller", sub_reseller_id=5))
+    assert res.status_code == 200
+    res = client.get(url_for("sub_reseller.delete_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
-    assert 'You should be redirected automatically to target URL: <a href="/sub_resellers">/sub_resellers</a>' in res.data.decode() # noqa E501
-    res = client.get(url_for("sub_reseller.delete_sub_reseller"))
-    assert res.status_code == 302
-    assert 'You should be redirected automatically to target URL: <a href="/sub_resellers">/sub_resellers</a>' in res.data.decode() # noqa E501
 
     res = client.get(url_for("user.add_user"))
     assert res.status_code == 200
-    res = client.get(url_for("user.edit_user"))
+    res = client.get(url_for("user.edit_user", user_id=3))
+    assert res.status_code == 200
+    res = client.get(url_for("user.delete_user", user_id=3))
     assert res.status_code == 302
-    assert 'You should be redirected automatically to target URL: <a href="/users">/users</a>' in res.data.decode() # noqa E501
-    res = client.get(url_for("user.delete_user"))
-    assert res.status_code == 302
-    assert 'You should be redirected automatically to target URL: <a href="/users">/users</a>' in res.data.decode() # noqa E501
 
+
+def test_permissions_distributor(client):
     # Distributor
     logout(client)
     login(client, 'd', 'd')
     res = client.get(url_for("distributor.add_distributor"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("distributor.edit_distributor"))
+    res = client.get(url_for("distributor.edit_distributor", distributor_id=2))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("distributor.delete_distributor"))
+    res = client.get(url_for("distributor.delete_distributor", distributor_id=2))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("reseller.add_reseller"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("reseller.edit_reseller"))
+    res = client.get(url_for("reseller.edit_reseller", reseller_id=4))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("reseller.delete_reseller"))
+    res = client.get(url_for("reseller.delete_reseller", reseller_id=4))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("sub_reseller.add_sub_reseller"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("sub_reseller.edit_sub_reseller"))
+    res = client.get(url_for("sub_reseller.edit_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("sub_reseller.delete_sub_reseller"))
+    res = client.get(url_for("sub_reseller.delete_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("user.add_user"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("user.edit_user"))
+    res = client.get(url_for("user.edit_user", user_id=3))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("user.delete_user"))
+    res = client.get(url_for("user.delete_user", user_id=3))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
+
+def test_permissions_reseller(client):
     # Reseller
     logout(client)
     login(client, 'r', 'r')
     res = client.get(url_for("distributor.add_distributor"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("distributor.edit_distributor"))
+    res = client.get(url_for("distributor.edit_distributor", distributor_id=2))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("distributor.delete_distributor"))
+    res = client.get(url_for("distributor.delete_distributor", distributor_id=2))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("reseller.add_reseller"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("reseller.edit_reseller"))
+    res = client.get(url_for("reseller.edit_reseller", reseller_id=4))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("reseller.delete_reseller"))
+    res = client.get(url_for("reseller.delete_reseller", reseller_id=4))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("sub_reseller.add_sub_reseller"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("sub_reseller.edit_sub_reseller"))
+    res = client.get(url_for("sub_reseller.edit_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("sub_reseller.delete_sub_reseller"))
+    res = client.get(url_for("sub_reseller.delete_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("user.add_user"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("user.edit_user"))
+    res = client.get(url_for("user.edit_user", user_id=3))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("user.delete_user"))
+    res = client.get(url_for("user.delete_user", user_id=3))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
+
+def test_permissions_sub_reseller(client):
     # Sub-reseller
     logout(client)
     login(client, 'r', 'r')
     res = client.get(url_for("distributor.add_distributor"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("distributor.edit_distributor"))
+    res = client.get(url_for("distributor.edit_distributor", distributor_id=2))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("distributor.delete_distributor"))
+    res = client.get(url_for("distributor.delete_distributor", distributor_id=2))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("reseller.add_reseller"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("reseller.edit_reseller"))
+    res = client.get(url_for("reseller.edit_reseller", reseller_id=4))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("reseller.delete_reseller"))
+    res = client.get(url_for("reseller.delete_reseller", reseller_id=4))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("sub_reseller.add_sub_reseller"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("sub_reseller.edit_sub_reseller"))
+    res = client.get(url_for("sub_reseller.edit_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("sub_reseller.delete_sub_reseller"))
+    res = client.get(url_for("sub_reseller.delete_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("user.add_user"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("user.edit_user"))
+    res = client.get(url_for("user.edit_user", user_id=3))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("user.delete_user"))
+    res = client.get(url_for("user.delete_user", user_id=3))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
+
+def test_permissions_support(client):
     # Support
     logout(client)
     login(client, 'r', 'r')
     res = client.get(url_for("distributor.add_distributor"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("distributor.edit_distributor"))
+    res = client.get(url_for("distributor.edit_distributor", distributor_id=2))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("distributor.delete_distributor"))
+    res = client.get(url_for("distributor.delete_distributor", distributor_id=2))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("reseller.add_reseller"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("reseller.edit_reseller"))
+    res = client.get(url_for("reseller.edit_reseller", reseller_id=4))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("reseller.delete_reseller"))
+    res = client.get(url_for("reseller.delete_reseller", reseller_id=4))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("sub_reseller.add_sub_reseller"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("sub_reseller.edit_sub_reseller"))
+    res = client.get(url_for("sub_reseller.edit_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("sub_reseller.delete_sub_reseller"))
+    res = client.get(url_for("sub_reseller.delete_sub_reseller", sub_reseller_id=5))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
 
     res = client.get(url_for("user.add_user"))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("user.edit_user"))
+    res = client.get(url_for("user.edit_user", user_id=3))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
-    res = client.get(url_for("user.delete_user"))
+    res = client.get(url_for("user.delete_user", user_id=3))
     assert res.status_code == 302
     assert 'You should be redirected automatically to target URL: <a href="/">/</a>' in res.data.decode()
