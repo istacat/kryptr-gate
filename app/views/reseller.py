@@ -45,12 +45,12 @@ def add_reseller():
     )
 
 
-@reseller_blueprint.route("/edit_reseller", methods=["GET", "POST"])
+@reseller_blueprint.route("/edit_reseller/<int:reseller_id>", methods=["GET", "POST"])
 @login_required
 @role_required(roles=["admin"])
-def edit_reseller():
+def edit_reseller(reseller_id):
     form = ResellerForm()
-    id = request.args.get("id")
+    id = reseller_id
     if id:
         user = (
             User.query.filter(User.deleted == False).filter(User.id == int(id)).first() # noqa e712
@@ -90,7 +90,7 @@ def edit_reseller():
             form=form,
             description_header=("Edit reseller"),
             cancel_link=url_for("reseller.index"),
-            action_url=url_for("reseller.edit_reseller", id=id),
+            action_url=url_for("reseller.edit_reseller", reseller_id=id),
         )
     else:
         log(log.INFO, "Reseller [%s] is deleted or unexistent", id)
@@ -98,12 +98,11 @@ def edit_reseller():
         return redirect(url_for("reseller.index"))
 
 
-@reseller_blueprint.route("/delete_reseller", methods=["GET"])
+@reseller_blueprint.route("/delete_reseller/<int:reseller_id>", methods=["GET"])
 @login_required
 @role_required(roles=["admin"])
-def delete_reseller():
-    user_id = request.args.get("id")
-    user = User.query.get(user_id)
+def delete_reseller(reseller_id):
+    user = User.query.get(reseller_id)
     if user:
         user.deleted = True
         now = datetime.now()
@@ -114,7 +113,7 @@ def delete_reseller():
         flash("Reseller deletion successful", "success")
         return redirect(url_for("reseller.index"))
     else:
-        log(log.WARNING, "Tried to delete unexisted or deleted reseller [%s]", user_id)
+        log(log.WARNING, "Tried to delete unexisted or deleted reseller [%s]", reseller_id)
         flash("Reseller doesnt exist or already deleted", "danger")
         return redirect(url_for("reseller.index"))
 

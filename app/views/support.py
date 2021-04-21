@@ -41,12 +41,12 @@ def add_support():
     )
 
 
-@support_blueprint.route("/edit_support", methods=["GET", "POST"])
+@support_blueprint.route("/edit_support/<int:support_id>", methods=["GET", "POST"])
 @login_required
 @role_required(roles=["admin"])
-def edit_support():
+def edit_support(support_id):
     form = SupportForm()
-    id = request.args.get("id")
+    id = support_id
     if id:
         user = (
             User.query.filter(User.deleted == False) # noqa e712
@@ -79,7 +79,7 @@ def edit_support():
             form=form,
             description_header=("Edit support"),
             cancel_link=url_for("support.index"),
-            action_url=url_for("support.edit_support", id=id),
+            action_url=url_for("support.edit_support", support_id=id),
         )
     else:
         log(log.INFO, "Support [%s] is deleted or unexistent", id)
@@ -87,12 +87,11 @@ def edit_support():
         return redirect(url_for("support.index"))
 
 
-@support_blueprint.route("/delete_support", methods=["GET"])
+@support_blueprint.route("/delete_support/<int:support_id>", methods=["GET"])
 @login_required
 @role_required(roles=["admin"])
-def delete_support():
-    user_id = request.args.get("id")
-    user = User.query.get(user_id)
+def delete_support(support_id):
+    user = User.query.get(support_id)
     if user:
         user.deleted = True
         now = datetime.now()
@@ -103,7 +102,7 @@ def delete_support():
         flash("Support deletion successful", "success")
         return redirect(url_for("support.index"))
     else:
-        log(log.WARNING, "Tried to delete unexisted or deleted user [%s]", user_id)
+        log(log.WARNING, "Tried to delete unexisted or deleted user [%s]", support_id)
         flash("Support doesnt exist or already deleted", "danger")
         return redirect(url_for("support.index"))
 
