@@ -21,7 +21,7 @@ class Account(db.Model, ModelMixin):
     )  # automatically generated
     reseller_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     reseller = relationship("User")
-    subscriptions = relationship("Subscription")
+    subscriptions = relationship("Subscription", viewonly=True)
     sim = db.Column(db.String(20))
     comment = db.Column(db.String(200))
     created_at = db.Column(db.DateTime, default=datetime.now)
