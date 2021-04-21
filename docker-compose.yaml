@@ -1,8 +1,9 @@
 version: "3.8"
 services:
-  kryptr_db:
+  db:
     image: postgres
     restart: always
+    container_name: kryptr-gate-db
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
@@ -14,11 +15,11 @@ services:
   app:
     build: .
     restart: always
-    container_name: app
+    container_name: kryptr-gate-app
     ports:
       - 127.0.0.1:5000:5000
     depends_on:
-      - kryptr_db
+      - db
     volumes:
       - ./:/usr/src/app
       - ${HOME}/.ssh:/root/.ssh
