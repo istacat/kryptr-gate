@@ -1,0 +1,14 @@
+{
+    "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": "https://play.google.com/managed/downloadManagingApp?identifier=memdm",
+    "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": true,
+    "android.app.extra.PROVISIONING_ADMIN_EXTRAS_BUNDLE": {
+        "TV": "CDD0ECAB-6F9C-4CB0-884B-657789C8A295",
+        "Fqdn": "161.97.148.123",
+        "CI": false,
+        "Port": "9383",
+        "Token": "b77dd649",
+        "TN": "zapikey"
+    },
+    "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": "qdbQoq_bFYSbjNMdUf5zuOGxcLqlcML48qP4ZSgpy70=",
+    "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "com.manageengine.mdm.android/com.manageengine.mdm.framework.deviceadmin.DeviceAdminMonitor"
+}
