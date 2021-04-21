@@ -25,7 +25,7 @@ const printIcon = function (cell, formatterParams, onRendered) {
 };
 const printIconView = function (cell, formatterParams, onRendered) {
   //plain text value
-  return "<div class='qrcode-container'><img src='static/images/qr-code--v2.png' class='qrcode-icon' ></img></div>";
+  return "<div class='qrcode-container'><img src='static/images/icons/qrcode.svg' class='qrcode-icon' ></img></div>";
 };
 if (document.getElementById("products-table")) {
   table = new Tabulator("#products-table", {
