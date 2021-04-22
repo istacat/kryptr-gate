@@ -8,7 +8,13 @@ class DeviceAction(object):
 
     @property
     def status(self):
-        return get(f"device/{self.device_id}/actions/{self.name}")
+        return get(f"devices/{self.device_id}/actions/{self.name}")['status_description']
 
     def run(self):
-        return post(f"device/{self.device_id}/actions/{self.name}")
+        return post(f"devices/{self.device_id}/actions/{self.name}")
+
+    def cancel(self):
+        pass
+
+    def __repr__(self) -> str:
+        return f"{self.device_id}:{self.name}"

@@ -42,10 +42,9 @@ def test_main_endpoints(client):
         if device.device_id == TEST_DEVICE_ID:
             test_device = device
 
-    test_device.status_action('scan')
     action = test_device.get_action("scan")
     assert action
-    action.run()
+    assert action.run() == 202
     status = action.status
     assert status
     action.cancel()

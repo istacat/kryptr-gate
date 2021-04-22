@@ -16,11 +16,11 @@ def get(sub_url,  **kwargs) -> dict:
     return json.loads(response.text)
 
 
-def post(sub_url, data: dict) -> dict:
+def post(sub_url) -> dict:
     url = urljoin(BASE_URL, sub_url)
-    response = requests.post(url, headers={"Authorization": API_KEY}, data=data)
+    response = requests.post(url, headers={"Authorization": API_KEY})
     response.raise_for_status()
-    return json.loads(response.text)
+    return response.status_code
 
 
 def get_list_of(name, sub_url, **kwargs):
