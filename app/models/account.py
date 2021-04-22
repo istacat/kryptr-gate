@@ -26,6 +26,7 @@ class Account(db.Model, ModelMixin):
     comment = db.Column(db.String(200))
     created_at = db.Column(db.DateTime, default=datetime.now)
     deleted = db.Column(db.Boolean, default=False)
+    mdm_device_id = db.Column(db.String(10))
 
     def to_json(self):
         return {

@@ -1,0 +1,47 @@
+<form class="edit__form" action="{{ action_url }}" method="POST">
+  <div class="edit__container">
+    {{ form.hidden_tag() }}
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> Complete Wipe. Status: {{ status_complete_wipe }}</label>
+        {{ form.complete_wipe(class="edit__input")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in form.complete_wipe.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="edit__submit-btn reload-button">
+        <a type="button" href="{{ cancel_link }}" class="edit__submit"
+          >Back to Account</a
+        >
+      </div>
+    </div>
+
+    <div>
+      <img
+        src="{{ url_for('static', filename='images/loading-11.gif') }} "
+        id="gif"
+      />
+    </div>
+    <div class="edit__group btn-container">
+      <div class="edit__submit-btn reload-button">
+        {{ form.submit(class="edit__submit", id="sub")}}
+      </div>
+    </div>
+  </div>
+</form>
+
+<script type="text/javascript">
+  $(".edit__form").submit(function () {
+    $("#gif").css("visibility", "visible");
+  });
+
+  $(".edit__form").submit(function (e) {
+    let input = $(this).find("#sub");
+    input.attr("disabled", true);
+  });
+</script>
