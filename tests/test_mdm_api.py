@@ -23,45 +23,35 @@ def client():
         app_ctx.pop()
 
 
-TEST_DEVICE_ID = os.environ.get("TEST_DEVICE_ID", "3025")
+TEST_DEVICE_ID = os.environ.get("TEST_DEVICE_ID", None)  # 3034
 
 
 @pytest.mark.skipif(not TEST_DEVICE_ID, reason="Test device id doesnt set")
 def test_main_endpoints(client):
-    # acc = Account.query.get(1)
     conn = MDM()
+
     groups = conn.groups
     assert(groups)
     assert len(groups) > 50
+
     devices = conn.devices
     assert devices
     assert len(devices)
+
+    device = conn.get_device(TEST_DEVICE_ID)
+    assert device
+
+    users = conn.users
+    assert users
+
     test_device = None
     for device in devices:
         assert device.actions
         if device.device_id == TEST_DEVICE_ID:
             test_device = device
 
-    action = test_device.get_action("scan")
+    action = test_device.get_action("remote_alarm")
     assert action
     assert action.run() == 202
     status = action.status
     assert status
-    action.cancel()
-
-
-def old_test():
-    conn = MDM()
-    actions = conn.get_available_actions()
-    assert actions
-    complete_wipe = conn.get_action_status('complete_wipe')  # Complete Wipe
-    scan = conn.get_action_status('scan')  # Scan Now
-    lock = conn.get_action_status('lock')  # Remote Lock
-    remote_alarm = conn.get_action_status('remote_alarm')  # Remote Alarm
-    corporate_wipe = conn.get_action_status('corporate_wipe')  # Corporate Wipe
-    clear_passcode = conn.get_action_status('clear_passcode')  # Clear Passcode
-    reset_passcode = conn.get_action_status('reset_passcode')  # Reset Passcode
-    fetch_location = conn.get_action_status('fetch_location')  # Locate device
-    enable_lost_mode = conn.get_action_status('enable_lost_mode')  # Enable Lost Mode
-    restart = conn.get_action_status('restart')  # Restart Device
-    remote_debug = conn.get_action_status('remote_debug')  # Request Bug Report

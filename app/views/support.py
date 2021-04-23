@@ -11,6 +11,7 @@ support_blueprint = Blueprint("support", __name__)
 
 @support_blueprint.route("/supports")
 @login_required
+@role_required(roles=["admin"])
 def index():
     return render_template("pages/supports.html")
 

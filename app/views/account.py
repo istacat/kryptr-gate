@@ -234,6 +234,7 @@ def show_qrcode(account_id):
 @account_blueprint.route("/account/<int:account_id>/device", methods=["GET", "POST"])
 @login_required
 def device(account_id):
+    command_name = request.args.get('command')
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
@@ -245,22 +246,21 @@ def device(account_id):
         flash(f"Access for acc [{account_id}] closed for you.", "danger")
         return redirect(url_for("account.index"))
     if account:
-        conn = MDM(account)
+        conn = MDM()
         form = DeviceForm()
         device_id = account.mdm_device_id
         if not device_id:
             for device in conn.devices:
-                if "user" in device:
-                    if account.ecc_id == device["user"]["user_name"]:
-                        account.mdm_device_id = device["device_id"]
+                if "user" in device.data:
+                    if account.ecc_id == device.data["user"]["user_name"]:
+                        account.mdm_device_id = device.device_id
                         account.save()
-                        flash("Account device has been updated")
+                        flash("Account device has been updated", "info")
                         log(
                             log.INFO,
                             "For account %s device has been set",
                             account.ecc_id,
                         )
-                        status_complete_wipe = conn.status_complete_wipe
                         return render_template(
                             "base_add_edit.html",
                             form=form,
@@ -270,9 +270,8 @@ def device(account_id):
                                 "account.edit_account", account_id=account_id
                             ),
                             action_url=url_for("account.device", account_id=account_id),
-                            status_complete_wipe=status_complete_wipe
                         )
-            flash("Device for account not set in mdm yet.")
+            flash("Device for account not set in mdm yet.", "danger")
             log(
                 log.INFO,
                 "Device for account %s not set in mdm yet.",
@@ -287,8 +286,14 @@ def device(account_id):
                 action_url=url_for("account.show_qrcode", account_id=account_id),
                 device_link=url_for("account.device", account_id=account_id),
             )
+        device = conn.get_device(account.mdm_device_id)
         if request.method == "GET":
-            status_complete_wipe = conn.status_complete_wipe
+            if command_name:
+                command = device.get_action(command_name)
+                status = f"Status: {command.status}"
+                form.command.data = command_name
+            else:
+                status = None
             return render_template(
                 "base_add_edit.html",
                 form=form,
@@ -296,22 +301,14 @@ def device(account_id):
                 description_header=(f"{account.ecc_id} device."),
                 cancel_link=url_for("account.edit_account", account_id=account_id),
                 action_url=url_for("account.device", account_id=account_id),
-                status_complete_wipe=status_complete_wipe
+                status=status
             )
         if form.validate_on_submit():
-            complete_wipe = form.complete_wipe.data
-            if complete_wipe == "run":
-                conn.run_complete_wipe
-            status_complete_wipe = conn.status_complete_wipe
-            return render_template(
-                "base_add_edit.html",
-                form=form,
-                include_header="components/_account-device.html",
-                description_header=(f"{account.ecc_id} device."),
-                cancel_link=url_for("account.edit_account", account_id=account_id),
-                action_url=url_for("account.device", account_id=account_id),
-                status_complete_wipe=status_complete_wipe
-            )
+            action = device.get_action(form.command.data)
+            action.run()
+            command = form.command.data
+            flash("Commands have been run", "info")
+            return redirect(url_for("account.device", account_id=account_id, command=command))
     log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
     flash(f"No account found for id [{account_id}]", "danger")
     return redirect(url_for("account.index"))

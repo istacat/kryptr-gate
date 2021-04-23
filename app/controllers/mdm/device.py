@@ -6,6 +6,7 @@ class Device(object):
     def __init__(self, device_id: str = None, data: dict = None):
         self.data = data if data else None
         self.device_id = data["device_id"] if data else device_id
+        self.account = data['user']['user_name'] if 'user' in data else None
 
     @property
     def actions(self) -> list:

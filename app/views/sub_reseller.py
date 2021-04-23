@@ -11,6 +11,7 @@ sub_reseller_blueprint = Blueprint("sub_reseller", __name__)
 
 @sub_reseller_blueprint.route("/sub_resellers")
 @login_required
+@role_required(roles=["admin", "distributor", "reseller"])
 def index():
     return render_template("pages/sub_resellers.html")
 
