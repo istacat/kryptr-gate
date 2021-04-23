@@ -7,3 +7,4 @@ from .reseller import ResellerForm
 from .sub_reseller import SubResellerForm
 from .product import ProductForm
 from .support import SupportForm
+from .device import DeviceForm

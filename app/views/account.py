@@ -4,9 +4,9 @@ import io
 from flask import render_template, Blueprint, jsonify, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 from app.models import Account, User
-from app.forms import AccountForm
+from app.forms import AccountForm, DeviceForm
 from app.logger import log
-from app.controllers import create_qrcode, generate_password
+from app.controllers import create_qrcode, generate_password, MDM
 from app.controllers.ldap import LDAP
 from app.controllers.ssh_ps import RemoteMatrix
 from config import BaseConfig as config
@@ -129,7 +129,10 @@ def edit_account(account_id):
                         form=form,
                         description_header=("Edit account"),
                         cancel_link=url_for("account.index"),
-                        action_url=url_for("account.edit_account", account_id=account_id),
+                        action_url=url_for(
+                            "account.edit_account", account_id=account_id
+                        ),
+                        device_link=url_for("account.device", account_id=account_id),
                     )
             acc.ad_password = form.ad_password.data
             acc.sim = form.sim.data
@@ -146,7 +149,8 @@ def edit_account(account_id):
             form=form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            action_url=url_for("account.show_qrcode", account_id=account_id)
+            action_url=url_for("account.show_qrcode", account_id=account_id),
+            device_link=url_for("account.device", account_id=account_id),
         )
     log(log.INFO, "account[%s] is deleted or unexistent", account_id)
     flash(f"No account found for id [{account_id}]", "danger")
@@ -188,7 +192,9 @@ def delete_account(account_id):
 @account_blueprint.route("/api/account_list")
 @login_required
 def get_account_list():
-    account = [acc for acc in current_user.accounts if acc.deleted == False] # noqa E712
+    account = [
+        acc for acc in current_user.accounts if acc.deleted == False  # noqa E712
+    ]
     account.sort(reverse=True, key=lambda x: x.id)
     return jsonify([acc.to_json() for acc in account])
 
@@ -223,3 +229,89 @@ def show_qrcode(account_id):
         log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
         flash(f"No account found for id [{account_id}]", "danger")
         return redirect(url_for("account.index"))
+
+
+@account_blueprint.route("/account/<int:account_id>/device", methods=["GET", "POST"])
+@login_required
+def device(account_id):
+    command_name = request.args.get('command')
+    account = Account.query.get(account_id)
+    if account not in current_user.accounts:
+        log(
+            log.INFO,
+            "User [%s] do not have permissions for acc [%s]",
+            current_user,
+            account_id,
+        )
+        flash(f"Access for acc [{account_id}] closed for you.", "danger")
+        return redirect(url_for("account.index"))
+    if account:
+        conn = MDM()
+        form = DeviceForm()
+        device_id = account.mdm_device_id
+        if not device_id:
+            for device in conn.devices:
+                if "user" in device.data:
+                    if account.ecc_id == device.data["user"]["user_name"]:
+                        account.mdm_device_id = device.device_id
+                        account.save()
+                        flash("Account device has been updated", "info")
+                        log(
+                            log.INFO,
+                            "For account %s device has been set",
+                            account.ecc_id,
+                        )
+                        device = conn.get_device(account.mdm_device_id)
+                        form.command.choices.append(device.actions)
+                        return render_template(
+                            "base_add_edit.html",
+                            form=form,
+                            include_header="components/_account-device.html",
+                            description_header=(f"{account.ecc_id} device."),
+                            cancel_link=url_for(
+                                "account.edit_account", account_id=account_id
+                            ),
+                            action_url=url_for("account.device", account_id=account_id),
+                        )
+            flash("Device for account not set in mdm yet.", "danger")
+            log(
+                log.INFO,
+                "Device for account %s not set in mdm yet.",
+                account.ecc_id,
+            )
+            return render_template(
+                "base_add_edit.html",
+                include_header="components/_account-edit.html",
+                form=form,
+                description_header=("Edit account"),
+                cancel_link=url_for("account.index"),
+                action_url=url_for("account.show_qrcode", account_id=account_id),
+                device_link=url_for("account.device", account_id=account_id),
+            )
+        device = conn.get_device(account.mdm_device_id)
+        form.command.choices.extend(device.actions)
+        if request.method == "GET":
+            if command_name:
+                command = device.get_action(command_name)
+                status = f"Status: {command.status}"
+                form.command.data = command_name
+            else:
+                status = None
+            return render_template(
+                "base_add_edit.html",
+                form=form,
+                include_header="components/_account-device.html",
+                description_header=(f"{account.ecc_id} device."),
+                cancel_link=url_for("account.edit_account", account_id=account_id),
+                action_url=url_for("account.device", account_id=account_id),
+                status=status
+            )
+        if form.validate_on_submit():
+            action = device.get_action(form.command.data)
+            action.run()
+            command = form.command.data
+            flash("Commands have been run", "info")
+            return redirect(url_for("account.device", account_id=account_id, command=command))
+    log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
+    flash(f"No account found for id [{account_id}]", "danger")
+    return redirect(url_for("account.index"))

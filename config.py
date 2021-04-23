@@ -30,6 +30,9 @@ class BaseConfig(object):
     MATRIX_SERVER_HOST_NAME = os.environ.get("MATRIX_SERVER_HOST_NAME", None)
     MATRIX_SERVER_USER_NAME = os.environ.get("MATRIX_SERVER_USER_NAME", None)
 
+    BASE_MDM_API_URL = os.environ.get("BASE_MDM_API_URL", None)
+    MDM_API_KEY = os.environ.get("MDM_API_KEY", None)
+
     @staticmethod
     def configure(app):
         # Implement this method to do further configuration on your app.

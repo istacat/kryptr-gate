@@ -19,6 +19,7 @@ pyjwt
 qrcode
 pillow
 pybase64
+requests
 
 pytest
 black

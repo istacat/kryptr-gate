@@ -1,0 +1,50 @@
+<form class="edit__form" action="{{ action_url }}" method="POST">
+  <div class="edit__container">
+    {{ form.hidden_tag() }}
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> Choose a Command </label>
+        {{ form.command(class="edit__input")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in form.command.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group btn-container">
+      <div class="edit__submit-btn reload-button">
+        {{ form.submit(class="edit__submit", id="sub")}}
+
+      </div>
+    </div>
+    {% if status %}
+        <div class="edit__group">
+          <div class="input__wrapper">
+            <label class="edit__label"> {{ status }}</label>
+          </div>
+        </div>
+        <div class="edit__group ghost">
+          <div class="input__wrapper">
+            <label class="edit__label"> {{ status }}</label>
+          </div>
+        </div>
+    {% endif %}
+
+  </div>
+</form>
+<div class="edit__group btn-container">
+  <div class="edit__submit-btn reload-button">
+    <a type="button" href="{{ cancel_link }}" class="edit__submit"
+      >Back to Account</a
+    >
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(".edit__form").submit(function (e) {
+    let input = $(this).find("#sub");
+    input.attr("disabled", true);
+  });
+</script>

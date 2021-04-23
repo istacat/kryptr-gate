@@ -11,6 +11,7 @@ distributor_blueprint = Blueprint("distributor", __name__)
 
 @distributor_blueprint.route("/distributors")
 @login_required
+@role_required(roles=["admin"])
 def index():
     return render_template("pages/distributors.html")
 
