@@ -261,6 +261,8 @@ def device(account_id):
                             "For account %s device has been set",
                             account.ecc_id,
                         )
+                        device = conn.get_device(account.mdm_device_id)
+                        form.command.choices.append(device.actions)
                         return render_template(
                             "base_add_edit.html",
                             form=form,
@@ -287,6 +289,7 @@ def device(account_id):
                 device_link=url_for("account.device", account_id=account_id),
             )
         device = conn.get_device(account.mdm_device_id)
+        form.command.choices.extend(device.actions)
         if request.method == "GET":
             if command_name:
                 command = device.get_action(command_name)

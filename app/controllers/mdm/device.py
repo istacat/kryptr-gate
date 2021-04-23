@@ -11,7 +11,7 @@ class Device(object):
     @property
     def actions(self) -> list:
         actions = get_list_of("actions", f"devices/{self.device_id}/actions")
-        return [action["name"] for action in actions]
+        return [(action["name"], action['localized_name']) for action in actions]
 
     def get_action(self, name):
         return DeviceAction(device_id=self.device_id, name=name)

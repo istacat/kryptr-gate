@@ -40,6 +40,8 @@ def test_main_endpoints(client):
 
     device = conn.get_device(TEST_DEVICE_ID)
     assert device
+    device_actions = device.actions
+    assert device_actions
 
     users = conn.users
     assert users
