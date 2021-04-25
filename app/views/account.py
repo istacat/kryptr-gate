@@ -149,7 +149,7 @@ def edit_account(account_id):
             form=form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            action_url=url_for("account.show_qrcode", account_id=account_id),
+            action_url=url_for("account.edit_account", account_id=account_id),
             device_link=url_for("account.device", account_id=account_id),
         )
     log(log.INFO, "account[%s] is deleted or unexistent", account_id)
@@ -262,7 +262,7 @@ def device(account_id):
                             account.ecc_id,
                         )
                         return redirect(url_for("account.device", account_id=account_id))
-            flash("Device for account not set in mdm yet.", "danger")
+            flash("Account has not device.", "danger")
             log(
                 log.INFO,
                 "Device for account %s not set in mdm yet.",

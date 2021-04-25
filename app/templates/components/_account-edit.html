@@ -128,14 +128,3 @@
     </div>
   </div>
 </form>
-
-<script type="text/javascript">
-  $('.edit__form').submit(function() {
-    $('#gif').css('visibility', 'visible');
-  });
-
-  $('.edit__form').submit(function(e){
-    let input = $(this).find('#sub');
-    input.attr('disabled', true);
-  });
-</script>

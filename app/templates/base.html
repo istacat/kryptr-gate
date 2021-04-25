@@ -43,11 +43,6 @@
     </footer>
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/main.min.js') }}" type="text/javascript" defer></script>
-    <script>
-      document.getElementById('close-btn').onclick = function() {
-        document.getElementById('alert').hidden = true;
-      }
-    </script>
     {% block scripts %}{% endblock %}
   </body>
 </html>
