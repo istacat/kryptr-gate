@@ -8,9 +8,9 @@ services:
       - db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: kryptr_db
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - 5432:5432
+      - 127.0.0.1:${DB_LOCAL_PORT}:5432
 
   app:
     build: .
