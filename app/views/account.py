@@ -251,8 +251,8 @@ def device(account_id):
         device_id = account.mdm_device_id
         if not device_id:
             for device in conn.devices:
-                if "user" in device.data:
-                    if account.ecc_id == device.data["user"]["user_name"]:
+                if device.user:
+                    if account.ecc_id == device.user.name:
                         account.mdm_device_id = device.device_id
                         account.save()
                         flash("Account device has been updated", "info")
@@ -261,33 +261,14 @@ def device(account_id):
                             "For account %s device has been set",
                             account.ecc_id,
                         )
-                        device = conn.get_device(account.mdm_device_id)
-                        form.command.choices.append(device.actions)
-                        return render_template(
-                            "base_add_edit.html",
-                            form=form,
-                            include_header="components/_account-device.html",
-                            description_header=(f"{account.ecc_id} device."),
-                            cancel_link=url_for(
-                                "account.edit_account", account_id=account_id
-                            ),
-                            action_url=url_for("account.device", account_id=account_id),
-                        )
+                        return redirect(url_for("account.device", account_id=account_id))
             flash("Device for account not set in mdm yet.", "danger")
             log(
                 log.INFO,
                 "Device for account %s not set in mdm yet.",
                 account.ecc_id,
             )
-            return render_template(
-                "base_add_edit.html",
-                include_header="components/_account-edit.html",
-                form=form,
-                description_header=("Edit account"),
-                cancel_link=url_for("account.index"),
-                action_url=url_for("account.show_qrcode", account_id=account_id),
-                device_link=url_for("account.device", account_id=account_id),
-            )
+            return redirect(url_for("account.edit_account", account_id=account_id))
         device = conn.get_device(account.mdm_device_id)
         form.command.choices.extend(device.actions)
         if request.method == "GET":
