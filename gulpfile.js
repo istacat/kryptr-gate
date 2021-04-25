@@ -111,7 +111,10 @@ const build = () => {
   ).pipe(dest("dist"));
 };
 
-const jsSrcFiles = ["app/static/js/main.js"];
+const jsSrcFiles = [
+  "app/static/js/main.js",
+  "app/static/js/account.js",
+];
 
 const watcher = () => {
   watch(["ui/scss/**/*.scss"], styles);

@@ -99,7 +99,7 @@
       </div>
     </div>
     {% else %}
-    <div class="edit__group">
+    <div class="edit__group btn-container">
       <div class="edit__submit-btn reload-button">
         <a
           type="button"
@@ -124,7 +124,7 @@
       <img src="{{ url_for('static', filename='images/loading-11.gif') }} " id="gif">
     </div>
     <div class="edit__group btn-container">
-      <div class="edit__submit-btn reload-button">{{ form.submit(class="edit__submit", id="sub")}}</div>
+      <div class="edit__submit-btn reload-button">{{ form.submit(class="edit__submit")}}</div>
     </div>
   </div>
 </form>
