@@ -1,5 +1,6 @@
 from .base import get_list_of
 from .device_action import DeviceAction
+from .user import User
 
 
 class Device(object):
@@ -40,5 +41,11 @@ class Device(object):
     def imei(self):
         return self.data["imei"][0] if self.data and "imei" in self.data else None
 
+    @property
+    def user(self) -> User or None:
+        if "user" in self.data:
+            user = self.data["user"]
+            return User(mail=user["user_email"], user_id=user["user_id"], name=user["user_name"])
+
     def __repr__(self) -> str:
-        return f"{self.device_id}:{self.name}:{self.serial_number}:{self.imei}"
+        return f"\n{self.device_id}:{self.model}:{self.serial_number}:{self.imei}"

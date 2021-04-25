@@ -26,3 +26,8 @@ class MDM:
     def users(self):
         users = get_list_of("users", "users")
         return [User(mail=user['user_email'], user_id=user['user_id'], name=user['user_name']) for user in users]
+
+    def __getitem__(self, device_id: int) -> Device or None:
+        for device in self.devices:
+            if int(device.device_id) == device_id:
+                return device

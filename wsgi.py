@@ -6,8 +6,10 @@ import click
 from app import create_app, db, models, forms
 from app.models import User
 from tests.db_data import fill_test_data
+from app.controllers import MDM
 
-app = create_app()
+app = create_app(os.environ.get("CONFIG_ENV", "development"))
+mdm = MDM()
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
@@ -31,7 +33,7 @@ def _init_db():
 @app.shell_context_processor
 def get_context():
     """Objects exposed here will be automatically available from the shell."""
-    return dict(app=app, db=db, m=models, forms=forms)
+    return dict(app=app, db=db, m=models, forms=forms, mdm=mdm)
 
 
 @app.cli.command()
