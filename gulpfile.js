@@ -27,7 +27,7 @@ const browsersync = () => {
 const styles = () => {
   return src("ui/scss/style.scss")
     .pipe(sourcemaps.init())
-    .pipe(sass({ outputStyle: "compressed" }).on('error', sass.logError))
+    .pipe(sass({ outputStyle: "compressed"}).on('error', sass.logError))
     .pipe(dest("./app/static/css/"))
     .pipe(sourcemaps.write())
     .pipe(
@@ -87,7 +87,7 @@ const svg = () => {
 };
 
 const scripts = () => {
-  return src(["app/static/js/main.js"])
+  return src(["app/static/js/main.js", "app/static/js/account.js"])
     .pipe(sourcemaps.init())
     .pipe(concat("main.min.js"))
     .pipe(uglify())
@@ -104,14 +104,17 @@ const build = () => {
   return src(
     [
       "app/**/*.html",
-      "app/static/css/style.min.css",
+      "app/static/css/style.css",
       "app/static/js/main.min.js",
     ],
     { base: "app" }
   ).pipe(dest("dist"));
 };
 
-const jsSrcFiles = ["app/static/js/main.js"];
+const jsSrcFiles = [
+  "app/static/js/main.js",
+  "app/static/js/account.js",
+];
 
 const watcher = () => {
   watch(["ui/scss/**/*.scss"], styles);
@@ -128,5 +131,6 @@ exports.cleanDist = cleanDist;
 exports.watcher = watcher;
 exports.svg = svg;
 
-exports.build = series(cleanDist, images, build);
+
+exports.build = series(cleanDist, images, build, styles, scripts, svg);
 exports.default = parallel(styles, scripts, svg, browsersync, watcher);

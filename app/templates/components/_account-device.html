@@ -15,7 +15,7 @@
 
     <div class="edit__group btn-container">
       <div class="edit__submit-btn reload-button">
-        {{ form.submit(class="edit__submit", id="sub")}}
+        {{ form.submit(class="edit__submit")}}
 
       </div>
     </div>
@@ -41,10 +41,3 @@
     >
   </div>
 </div>
-
-<script type="text/javascript">
-  $(".edit__form").submit(function (e) {
-    let input = $(this).find("#sub");
-    input.attr("disabled", true);
-  });
-</script>

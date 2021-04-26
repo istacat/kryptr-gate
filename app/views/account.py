@@ -265,7 +265,7 @@ def device(account_id):
                             account.ecc_id,
                         )
                         return redirect(url_for("account.device", account_id=account_id))
-            flash("Device for account not set in mdm yet.", "danger")
+            flash("Account has not device.", "danger")
             log(
                 log.INFO,
                 "Device for account %s not set in mdm yet.",
