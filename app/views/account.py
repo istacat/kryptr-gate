@@ -113,6 +113,7 @@ def edit_account(account_id):
             form.ad_login.data = acc.ad_login
             form.ad_password.data = acc.ad_password
             form.reseller.data = acc.reseller.username
+            form.comment.data = acc.comment
         if form.validate_on_submit():
             reseller = User.query.filter(User.username == form.reseller.data).first()
             acc.ecc_id = form.ecc_id.data
@@ -129,6 +130,7 @@ def edit_account(account_id):
                         form=form,
                         description_header=("Edit account"),
                         cancel_link=url_for("account.index"),
+                        qrcode_url=url_for("account.show_qrcode", account_id=account_id),
                         action_url=url_for(
                             "account.edit_account", account_id=account_id
                         ),
@@ -149,7 +151,8 @@ def edit_account(account_id):
             form=form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            action_url=url_for("account.show_qrcode", account_id=account_id),
+            qrcode_url=url_for("account.show_qrcode", account_id=account_id),
+            action_url=url_for("account.edit_account", account_id=account_id),
             device_link=url_for("account.device", account_id=account_id),
         )
     log(log.INFO, "account[%s] is deleted or unexistent", account_id)
