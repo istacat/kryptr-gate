@@ -14,8 +14,17 @@ class Device(object):
         actions = get_list_of("actions", f"devices/{self.device_id}/actions")
         return [(action["name"], action['localized_name']) for action in actions]
 
-    def get_action(self, name):
-        return DeviceAction(device_id=self.device_id, name=name)
+    def action(self, name):
+        for short_name, full_name in self.actions:
+            if name in (short_name, full_name):
+                return DeviceAction(device_id=self.device_id, name=short_name)
+
+    def wipe(self, wipe_sd_card=False):
+        # a.run(data=dict(wipe_sd_card=False), params={"SUBREQUEST": "XMLHTTP"})
+        action = self.action("complete_wipe")
+        if action:
+            # return action.run(data=dict(wipe_sd_card=wipe_sd_card), params={"SUBREQUEST": "XMLHTTP"})
+            return action.run(data=dict(wipe_sd_card=wipe_sd_card))
 
     @property
     def name(self):

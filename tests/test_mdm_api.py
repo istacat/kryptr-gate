@@ -52,7 +52,7 @@ def test_main_endpoints(client):
         if device.device_id == TEST_DEVICE_ID:
             test_device = device
 
-    action = test_device.get_action("remote_alarm")
+    action = test_device.action("remote_alarm")
     assert action
     assert action.run() == 202
     status = action.status

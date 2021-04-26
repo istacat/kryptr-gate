@@ -8,10 +8,11 @@ class DeviceAction(object):
 
     @property
     def status(self):
-        return get(f"devices/{self.device_id}/actions/{self.name}")['status_description']
+        status = get(f"devices/{self.device_id}/actions/{self.name}")
+        return status["status_description"] if "status_description" in status else None
 
-    def run(self):
-        return post(f"devices/{self.device_id}/actions/{self.name}")
+    def run(self, data: dict = None, **kwargs):
+        return post(f"devices/{self.device_id}/actions/{self.name}", data, **kwargs)
 
     def cancel(self):
         pass

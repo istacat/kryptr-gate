@@ -16,9 +16,9 @@ def get(sub_url,  **kwargs) -> dict:
     return json.loads(response.text)
 
 
-def post(sub_url) -> dict:
+def post(sub_url, data: dict = None, **kwargs) -> dict:
     url = urljoin(BASE_URL, sub_url)
-    response = requests.post(url, headers={"Authorization": API_KEY})
+    response = requests.post(url, headers={"Authorization": API_KEY}, json=data, **kwargs)
     response.raise_for_status()
     return response.status_code
 

@@ -74,6 +74,7 @@ def add_account():
                     cancel_link=url_for("account.index"),
                     action_url=url_for("account.add_account"),
                 )
+            MDM().sync()
         if config.MATRIX_SERVER_HOST_NAME:
             matrix = RemoteMatrix()
             matrix.add_user(acc)
@@ -285,7 +286,7 @@ def device(account_id):
         form.command.choices.extend(device.actions)
         if request.method == "GET":
             if command_name:
-                command = device.get_action(command_name)
+                command = device.action(command_name)
                 status = f"Status: {command.status}"
                 form.command.data = command_name
             else:
@@ -300,7 +301,7 @@ def device(account_id):
                 status=status
             )
         if form.validate_on_submit():
-            action = device.get_action(form.command.data)
+            action = device.action(form.command.data)
             action.run()
             command = form.command.data
             flash("Commands have been run", "info")

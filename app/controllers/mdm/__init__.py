@@ -1,7 +1,7 @@
 from .device import Device
 from .group import Group
 from .user import User
-from .base import get_list_of, get
+from .base import get_list_of, get, post
 from .device_action import DeviceAction # noqa F401
 
 
@@ -31,3 +31,8 @@ class MDM:
         for device in self.devices:
             if int(device.device_id) == device_id:
                 return device
+
+    def sync(self, is_full_sync=True):
+        # https://mdm.kryptr.li:9383/api/v1/mdm/directory/sync
+        # POST: {is_full_sync: true}
+        post("directory/sync", data=dict(is_full_sync=is_full_sync))
