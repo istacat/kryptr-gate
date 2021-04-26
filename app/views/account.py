@@ -149,7 +149,7 @@ def edit_account(account_id):
             form=form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            action_url=url_for("account.show_qrcode", account_id=account_id),
+            action_url=url_for("account.edit_account", account_id=account_id),
             device_link=url_for("account.device", account_id=account_id),
         )
     log(log.INFO, "account[%s] is deleted or unexistent", account_id)
@@ -273,7 +273,7 @@ def device(account_id):
         form.command.choices.extend(device.actions)
         if request.method == "GET":
             if command_name:
-                command = device.get_action(command_name)
+                command = device.action(command_name)
                 status = f"Status: {command.status}"
                 form.command.data = command_name
             else:
@@ -288,7 +288,7 @@ def device(account_id):
                 status=status
             )
         if form.validate_on_submit():
-            action = device.get_action(form.command.data)
+            action = device.action(form.command.data)
             action.run()
             command = form.command.data
             flash("Commands have been run", "info")
