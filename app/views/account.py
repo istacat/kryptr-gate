@@ -100,12 +100,12 @@ def edit_account(account_id):
     acc = Account.query.get(account_id)
     if acc not in current_user.accounts:
         log(
-            log.INFO,
+            log.ERROR,
             "User [%s] do not have permissions for acc [%s]",
             current_user,
             acc.id,
         )
-        flash(f"Access for acc [{acc.id}] closed for you.", "danger")
+        flash(f"<Access denied to account {account_id}>", "danger")
         return redirect(url_for("account.index"))
     if acc:
         if request.method == "GET":
@@ -135,7 +135,7 @@ def edit_account(account_id):
                         action_url=url_for(
                             "account.edit_account", account_id=account_id
                         ),
-                        device_link=url_for("account.device", account_id=account_id),
+                        account_id=account_id
                     )
             acc.ad_password = form.ad_password.data
             acc.sim = form.sim.data
@@ -152,13 +152,9 @@ def edit_account(account_id):
             form=form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            qrcode_url=url_for("account.show_qrcode", account_id=account_id),
             action_url=url_for("account.edit_account", account_id=account_id),
-            device_link=url_for("account.device", account_id=account_id),
+            account_id=account_id,
         )
-    log(log.INFO, "account[%s] is deleted or unexistent", account_id)
-    flash(f"No account found for id [{account_id}]", "danger")
-    return redirect(url_for("account.index"))
 
 
 @account_blueprint.route("/delete_account/<int:account_id>", methods=["GET"])
@@ -168,12 +164,12 @@ def delete_account(account_id):
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
-            log.INFO,
+            log.ERROR,
             "User [%s] do not have permissions for acc [%s]",
             current_user,
             account_id,
         )
-        flash(f"Access for acc [{account_id}] closed for you.", "danger")
+        flash(f"<Access denied to account {account_id}>", "danger")
         return redirect(url_for("account.index"))
     if account:
         if config.LDAP_SERVER:
@@ -188,28 +184,16 @@ def delete_account(account_id):
         log(log.INFO, "Account deletion successful. [%s]", account)
         flash("Account deletion successful", "success")
         return redirect(url_for("account.index"))
-    else:
-        log(log.WARNING, "tried to delete unexisted or deleted acc [%s]", account_id)
-        flash("Account doesnt exist or already deleted", "danger")
-        return redirect(url_for("account.index"))
 
 
 @account_blueprint.route("/api/account_list")
 @login_required
 def get_account_list():
-    search = request.args.get("search", None)
     accounts = [
         acc for acc in current_user.accounts if acc.deleted == False  # noqa E712
     ]
     accounts.sort(reverse=True, key=lambda x: x.id)
-    if search:
-        data = []
-        for acc in accounts:
-            if str(acc.ecc_id).find(search) >= 0 or str(acc.sim).find(search) >= 0:
-                data.append(acc)
-    else:
-        data = accounts
-    return jsonify([acc.to_json() for acc in data])
+    return jsonify([acc.to_json() for acc in accounts])
 
 
 @account_blueprint.route("/qrcode/<int:account_id>", methods=["GET"])
@@ -218,12 +202,12 @@ def show_qrcode(account_id):
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
-            log.INFO,
+            log.ERROR,
             "User [%s] do not have permissions for acc [%s]",
             current_user,
             account_id,
         )
-        flash(f"Access for acc [{account_id}] closed for you.", "danger")
+        flash(f"<Access denied to account {account_id}>", "danger")
         return redirect(url_for("account.index"))
     if account:
         qrcode = create_qrcode(account)
@@ -238,10 +222,6 @@ def show_qrcode(account_id):
             cancel_link=url_for("account.index"),
             action_url=url_for("account.edit_account", account_id=account_id),
         )
-    else:
-        log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
-        flash(f"No account found for id [{account_id}]", "danger")
-        return redirect(url_for("account.index"))
 
 
 @account_blueprint.route("/account/<int:account_id>/device", methods=["GET", "POST"])
@@ -251,12 +231,12 @@ def device(account_id):
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
-            log.INFO,
+            log.ERROR,
             "User [%s] do not have permissions for acc [%s]",
             current_user,
             account_id,
         )
-        flash(f"Access for acc [{account_id}] closed for you.", "danger")
+        flash(f"<Access denied to account {account_id}>", "danger")
         return redirect(url_for("account.index"))
     if account:
         conn = MDM()
@@ -277,7 +257,7 @@ def device(account_id):
                         return redirect(url_for("account.device", account_id=account_id))
             flash("Account has not device.", "danger")
             log(
-                log.INFO,
+                log.ERROR,
                 "Device for account %s not set in mdm yet.",
                 account.ecc_id,
             )
@@ -298,7 +278,7 @@ def device(account_id):
                 description_header=(f"{account.ecc_id} device."),
                 cancel_link=url_for("account.edit_account", account_id=account_id),
                 action_url=url_for("account.device", account_id=account_id),
-                wipe_link=url_for("account.device_wipe", account_id=account_id),
+                account_id=account_id,
                 status=status
             )
         if form.validate_on_submit():
@@ -315,9 +295,6 @@ def device(account_id):
                     return redirect(url_for("account.device", account_id=account_id, command=None))
             flash("Commands have been run", "info")
             return redirect(url_for("account.device", account_id=account_id, command=command))
-    log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
-    flash(f"No account found for id [{account_id}]", "danger")
-    return redirect(url_for("account.index"))
 
 
 @account_blueprint.route("/account/<int:account_id>/device/wipe", methods=["GET"])
@@ -326,12 +303,12 @@ def device_wipe(account_id):
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
-            log.INFO,
+            log.ERROR,
             "User [%s] do not have permissions for acc [%s]",
             current_user,
             account_id,
         )
-        flash(f"Access for acc [{account_id}] closed for you.", "danger")
+        flash(f"<Access denied to account {account_id}>", "danger")
         return redirect(url_for("account.index"))
     if account:
         conn = MDM()
@@ -341,7 +318,3 @@ def device_wipe(account_id):
         account.save()
         flash("The device has been wiped.", "info")
         return redirect(url_for("account.edit_account", account_id=account_id))
-    else:
-        log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
-        flash(f"No account found for id [{account_id}]", "danger")
-        return redirect(url_for("account.index"))

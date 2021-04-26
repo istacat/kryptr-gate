@@ -16,30 +16,31 @@
     <div class="edit__group btn-container">
       <div class="edit__submit-btn reload-button">
         {{ form.submit(class="edit__submit")}}
-
       </div>
     </div>
     {% if status %}
-        <div class="edit__group">
-          <div class="input__wrapper">
-            <label class="edit__label"> {{ status }}</label>
-          </div>
-        </div>
-        <div class="edit__group ghost">
-          <div class="input__wrapper">
-            <label class="edit__label"> {{ status }}</label>
-          </div>
-        </div>
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> {{ status }}</label>
+      </div>
+    </div>
+    <div class="edit__group ghost">
+      <div class="input__wrapper">
+        <label class="edit__label"> {{ status }}</label>
+      </div>
+    </div>
     {% endif %}
 
     <div class="edit__group btn-container">
       <div class="edit__submit-btn reload-button">
-        <a type="button" href="{{ wipe_link }}" class="edit__submit"
+        <a
+          type="button"
+          href="{{ url_for('account.device_wipe', account_id=account_id) }}"
+          class="edit__submit"
           >Wipe</a
         >
       </div>
     </div>
-
   </div>
 </form>
 <div class="edit__group btn-container">
