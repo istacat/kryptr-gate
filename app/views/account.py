@@ -298,14 +298,50 @@ def device(account_id):
                 description_header=(f"{account.ecc_id} device."),
                 cancel_link=url_for("account.edit_account", account_id=account_id),
                 action_url=url_for("account.device", account_id=account_id),
+                wipe_link=url_for("account.device_wipe", account_id=account_id),
                 status=status
             )
         if form.validate_on_submit():
             action = device.action(form.command.data)
-            action.run()
             command = form.command.data
+            if command == 'complete_wipe':
+                device.wipe()
+                account.mdm_device_id = None
+                account.save()
+            else:
+                res = action.run()
+                if res >= 400:
+                    flash(f"Could not launch {command}", "danger")
+                    return redirect(url_for("account.device", account_id=account_id, command=None))
             flash("Commands have been run", "info")
             return redirect(url_for("account.device", account_id=account_id, command=command))
     log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
     flash(f"No account found for id [{account_id}]", "danger")
     return redirect(url_for("account.index"))
+
+
+@account_blueprint.route("/account/<int:account_id>/device/wipe", methods=["GET"])
+@login_required
+def device_wipe(account_id):
+    account = Account.query.get(account_id)
+    if account not in current_user.accounts:
+        log(
+            log.INFO,
+            "User [%s] do not have permissions for acc [%s]",
+            current_user,
+            account_id,
+        )
+        flash(f"Access for acc [{account_id}] closed for you.", "danger")
+        return redirect(url_for("account.index"))
+    if account:
+        conn = MDM()
+        device = conn.get_device(account.mdm_device_id)
+        device.wipe()
+        account.mdm_device_id = None
+        account.save()
+        flash("The device has been wiped.", "info")
+        return redirect(url_for("account.edit_account", account_id=account_id))
+    else:
+        log(log.INFO, "Account[%s] is deleted or unexistent", account_id)
+        flash(f"No account found for id [{account_id}]", "danger")
+        return redirect(url_for("account.index"))
