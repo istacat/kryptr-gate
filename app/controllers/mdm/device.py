@@ -26,7 +26,6 @@ class Device(object):
             # return action.run(data=dict(wipe_sd_card=wipe_sd_card), params={"SUBREQUEST": "XMLHTTP"})
             return action.run(data=dict(wipe_sd_card=wipe_sd_card))
 
-
     @property
     def name(self):
         return (

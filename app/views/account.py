@@ -74,6 +74,7 @@ def add_account():
                     cancel_link=url_for("account.index"),
                     action_url=url_for("account.add_account"),
                 )
+            MDM().sync()
         if config.MATRIX_SERVER_HOST_NAME:
             matrix = RemoteMatrix()
             matrix.add_user(acc)
