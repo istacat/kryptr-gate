@@ -21,7 +21,7 @@ def client():
         app_ctx.push()
         db.drop_all()
         db.create_all()
-        register("sam", role=User.RoleType.distributor)
+        register("sam", role=User.RoleType.admin)
         yield client
         db.session.remove()
         db.drop_all()
@@ -45,7 +45,7 @@ def test_add_delete_account(client):
     response = client.get("/add_account")
     assert response.status_code == 200
     reseller = User.query.first()
-    ECC_ID = "TES3456"
+    ECC_ID = "TES3453"
 
     response = client.post(
         "/add_account",

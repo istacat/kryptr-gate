@@ -256,56 +256,55 @@ if (document.getElementById("distributors-table")) {
 }
 
 if (document.getElementById("accounts-table")) {
-    table = new Tabulator("#accounts-table", {
-      resizableColumns: false,
-      responsiveLayout: "collapse",
-      pagination: "local", //enable remote pagination
-      layout: "fitColumns",
-      ajaxURL: window.location.origin + "/api/account_list",
-      paginationSize: 20, //optional parameter to request a certain number of rows per page
-      columns: [
-        { title: "Id", field: "id" },
-        { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
-        {
-          field: "actions",
-          formatter: printIconView,
-          widthGrow: 1,
-          headerSort: false,
-          hozAlign: "center",
-          cellClick: function (e, cell) {
-            e.stopPropagation();
+  table = new Tabulator("#accounts-table", {
+    resizableColumns: false,
+    responsiveLayout: "collapse",
+    pagination: "local", //enable remote pagination
+    layout: "fitColumns",
+    ajaxURL: window.location.origin + "/api/account_list",
+    ajaxFiltering: true,
+    paginationSize: 20, //optional parameter to request a certain number of rows per page
+    columns: [
+      { title: "Id", field: "id" },
+      { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
+      {
+        field: "actions",
+        formatter: printIconView,
+        widthGrow: 1,
+        headerSort: false,
+        hozAlign: "center",
+        cellClick: function (e, cell) {
+          e.stopPropagation();
+          window.location.href =
+            window.location.origin + "/qrcode/" + cell.getRow().getData().id;
+        },
+      },
+      {
+        field: "actions",
+        formatter: printIcon,
+        widthGrow: 1,
+        hozAlign: "center",
+        headerSort: false,
+        cellClick: function (e, cell) {
+          e.stopPropagation();
+          if (
+            confirm(
+              "Are you sure you want to delete " + cell.getRow().getData().name
+            )
+          ) {
             window.location.href =
               window.location.origin +
-              "/qrcode/" +
+              "/delete_account/" +
               cell.getRow().getData().id;
-          }
+          } else return;
         },
-        {
-          field: "actions",
-          formatter: printIcon,
-          widthGrow: 1,
-          hozAlign: "center",
-          headerSort: false,
-          cellClick: function (e, cell) {
-            e.stopPropagation();
-            if (
-              confirm(
-                "Are you sure you want to delete " + cell.getRow().getData().name
-              )
-            ) {
-              window.location.href =
-                window.location.origin +
-                "/delete_account/" +
-                cell.getRow().getData().id;
-            } else return;
-          },
-        },
-      ],
-      rowClick: function (e, row) {
-        window.location.href =
-          window.location.origin + "/edit_account/" + row.getData().id;
       },
-    });
+    ],
+    rowClick: function (e, row) {
+      window.location.href =
+        window.location.origin + "/edit_account/" + row.getData().id;
+    },
+  });
 }
 
 if (document.getElementById("supports-table")) {
@@ -370,9 +369,9 @@ if (document.getElementById("supports-table")) {
   });
 }
 
-const closeBtn = document.getElementById('close-btn');
-if(closeBtn) {
-  closeBtn.addEventListener('click', function(e) {
-    document.getElementById('alert').hidden = true;
+const closeBtn = document.getElementById("close-btn");
+if (closeBtn) {
+  closeBtn.addEventListener("click", function (e) {
+    document.getElementById("alert").hidden = true;
   });
 }

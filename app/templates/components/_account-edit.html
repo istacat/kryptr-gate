@@ -103,7 +103,7 @@
       <div class="edit__submit-btn reload-button">
         <a
           type="button"
-          href="{{ action_url }}"
+          href="{{ url_for('account.show_qrcode', account_id=account_id) }}"
           class="edit__submit"
           >QR Code</a
         >
@@ -113,7 +113,7 @@
       <div class="edit__submit-btn reload-button">
         <a
           type="button"
-          href="{{ device_link }}"
+          href="{{ url_for('account.device', account_id=account_id) }}"
           class="edit__submit"
           >Device</a
         >
