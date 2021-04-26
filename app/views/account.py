@@ -6,7 +6,7 @@ from flask_login import login_required, current_user
 from app.models import Account, User
 from app.forms import AccountForm, DeviceForm
 from app.logger import log
-from app.controllers import create_qrcode, generate_password, MDM
+from app.controllers import create_qrcode, generate_password, MDM, role_required
 from app.controllers.ldap import LDAP
 from app.controllers.ssh_ps import RemoteMatrix
 from config import BaseConfig as config
@@ -162,6 +162,7 @@ def edit_account(account_id):
 
 @account_blueprint.route("/delete_account/<int:account_id>", methods=["GET"])
 @login_required
+@role_required(roles=["admin", "support"])
 def delete_account(account_id):
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
@@ -195,11 +196,19 @@ def delete_account(account_id):
 @account_blueprint.route("/api/account_list")
 @login_required
 def get_account_list():
-    account = [
+    search = request.args.get("search", None)
+    accounts = [
         acc for acc in current_user.accounts if acc.deleted == False  # noqa E712
     ]
-    account.sort(reverse=True, key=lambda x: x.id)
-    return jsonify([acc.to_json() for acc in account])
+    accounts.sort(reverse=True, key=lambda x: x.id)
+    if search:
+        data = []
+        for acc in accounts:
+            if str(acc.ecc_id).find(search) >= 0 or str(acc.sim).find(search) >= 0:
+                data.append(acc)
+    else:
+        data = accounts
+    return jsonify([acc.to_json() for acc in data])
 
 
 @account_blueprint.route("/qrcode/<int:account_id>", methods=["GET"])

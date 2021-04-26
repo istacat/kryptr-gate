@@ -262,10 +262,11 @@ if (document.getElementById("accounts-table")) {
       pagination: "local", //enable remote pagination
       layout: "fitColumns",
       ajaxURL: window.location.origin + "/api/account_list",
+      ajaxFiltering: true,
       paginationSize: 20, //optional parameter to request a certain number of rows per page
       columns: [
         { title: "Id", field: "id" },
-        { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
+        { title: "Ecc id", field: "ecc_id", widthGrow: 3, headerFilter:true },
         {
           field: "actions",
           formatter: printIconView,
@@ -306,6 +307,7 @@ if (document.getElementById("accounts-table")) {
           window.location.origin + "/edit_account/" + row.getData().id;
       },
     });
+    table.setFilter();
 }
 
 if (document.getElementById("supports-table")) {
