@@ -13,40 +13,6 @@ function showFuncs() {
   document.getElementById("funcs-drp").classList.toggle("show");
 }
 
-//Define variables for input elements
-var fieldEl = document.getElementById("filter-field");
-var valueEl = document.getElementById("filter-value");
-
-//Trigger setFilter function with correct parameters
-function updateFilter(){
-  var filterVal = fieldEl.options[fieldEl.selectedIndex].value;
-  var typeVal = 'like'
-
-  var filter = filterVal == "function" ? customFilter : filterVal;
-
-  if(filterVal == "function" ){
-    valueEl.disabled = true;
-  }else{
-    valueEl.disabled = false;
-  }
-
-  if(filterVal){
-    table.setFilter(filter,typeVal, valueEl.value);
-  }
-}
-
-//Update filters on value change
-document.getElementById("filter-field").addEventListener("change", updateFilter);
-document.getElementById("filter-value").addEventListener("keyup", updateFilter);
-
-//Clear filters on "Clear Filters" button click
-document.getElementById("filter-clear").addEventListener("click", function(){
-  fieldEl.value = "";
-  valueEl.value = "";
-
-  table.clearFilter();
-});
-
 overlay &&
   overlay.addEventListener("click", function () {
     menuBtn.classList.toggle("menu-btn--active");
@@ -106,7 +72,7 @@ if (document.getElementById("users-table")) {
     paginationSize: 20, //optional parameter to request a certain number of rows per page
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
     layout: "fitColumns", //fit columns to width of table (optional)
-    ajaxURL: window.location.origin + `/api/user_list`,
+    ajaxURL: window.location.origin + "/api/user_list",
     columns: [
       //Define Table Columns
       { title: "Id", field: "id" },
@@ -290,58 +256,95 @@ if (document.getElementById("distributors-table")) {
 }
 
 if (document.getElementById("accounts-table")) {
-    table = new Tabulator("#accounts-table", {
-      resizableColumns: false,
-      responsiveLayout: "collapse",
-      pagination: "local", //enable remote pagination
-      layout: "fitColumns",
-      ajaxURL: window.location.origin + "/api/account_list",
-      paginationSize: 20, //optional parameter to request a certain number of rows per page
+  //Define variables for input elements
+  var fieldEl = document.getElementById("filter-field");
+  var valueEl = document.getElementById("filter-value");
 
-      columns: [
-        { title: "Id", field: "id" },
-        { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
-        { title: "Sim", field: "sim", width: 0 },
-        {
-          field: "actions",
-          formatter: printIconView,
-          widthGrow: 1,
-          headerSort: false,
-          hozAlign: "center",
-          cellClick: function (e, cell) {
-            e.stopPropagation();
+  //Trigger setFilter function with correct parameters
+  function updateFilter() {
+    var filterVal = fieldEl.options[fieldEl.selectedIndex].value;
+    var typeVal = "like";
+
+    var filter = filterVal == "function" ? customFilter : filterVal;
+
+    if (filterVal == "function") {
+      valueEl.disabled = true;
+    } else {
+      valueEl.disabled = false;
+    }
+
+    if (filterVal) {
+      table.setFilter(filter, typeVal, valueEl.value);
+    }
+  }
+
+  //Update filters on value change
+  document
+    .getElementById("filter-field")
+    .addEventListener("change", updateFilter);
+  document
+    .getElementById("filter-value")
+    .addEventListener("keyup", updateFilter);
+
+  //Clear filters on "Clear Filters" button click
+  document
+    .getElementById("filter-clear")
+    .addEventListener("click", function () {
+      fieldEl.value = "";
+      valueEl.value = "";
+
+      table.clearFilter();
+    });
+  table = new Tabulator("#accounts-table", {
+    resizableColumns: false,
+    responsiveLayout: "collapse",
+    pagination: "local", //enable remote pagination
+    layout: "fitColumns",
+    ajaxURL: window.location.origin + "/api/account_list",
+    paginationSize: 20, //optional parameter to request a certain number of rows per page
+
+    columns: [
+      { title: "Id", field: "id" },
+      { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
+      { title: "Sim", field: "sim", width: 0 },
+      {
+        field: "actions",
+        formatter: printIconView,
+        widthGrow: 1,
+        headerSort: false,
+        hozAlign: "center",
+        cellClick: function (e, cell) {
+          e.stopPropagation();
+          window.location.href =
+            window.location.origin + "/qrcode/" + cell.getRow().getData().id;
+        },
+      },
+      {
+        field: "actions",
+        formatter: printIcon,
+        widthGrow: 1,
+        hozAlign: "center",
+        headerSort: false,
+        cellClick: function (e, cell) {
+          e.stopPropagation();
+          if (
+            confirm(
+              "Are you sure you want to delete " + cell.getRow().getData().name
+            )
+          ) {
             window.location.href =
               window.location.origin +
-              "/qrcode/" +
+              "/delete_account/" +
               cell.getRow().getData().id;
-          }
+          } else return;
         },
-        {
-          field: "actions",
-          formatter: printIcon,
-          widthGrow: 1,
-          hozAlign: "center",
-          headerSort: false,
-          cellClick: function (e, cell) {
-            e.stopPropagation();
-            if (
-              confirm(
-                "Are you sure you want to delete " + cell.getRow().getData().name
-              )
-            ) {
-              window.location.href =
-                window.location.origin +
-                "/delete_account/" +
-                cell.getRow().getData().id;
-            } else return;
-          },
-        },
-      ],
-      rowClick: function (e, row) {
-        window.location.href =
-          window.location.origin + "/edit_account/" + row.getData().id;
       },
-    });
+    ],
+    rowClick: function (e, row) {
+      window.location.href =
+        window.location.origin + "/edit_account/" + row.getData().id;
+    },
+  });
 }
 
 if (document.getElementById("supports-table")) {
@@ -406,9 +409,9 @@ if (document.getElementById("supports-table")) {
   });
 }
 
-const closeBtn = document.getElementById('close-btn');
-if(closeBtn) {
-  closeBtn.addEventListener('click', function(e) {
-    document.getElementById('alert').hidden = true;
+const closeBtn = document.getElementById("close-btn");
+if (closeBtn) {
+  closeBtn.addEventListener("click", function (e) {
+    document.getElementById("alert").hidden = true;
   });
 }

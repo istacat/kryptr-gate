@@ -160,21 +160,26 @@ class User(db.Model, UserMixin, ModelMixin):
 
 def get_accounts(user):
     """Get accounts by roles and subordinates"""
+    accounts = []
     if user.role.name == "admin" or user.role.name == "support":
         return Account.query.all()
     elif user.role.name == "distributor":
-        accounts = []
-        for account in Account.query.filter(Account.reseller_id == user.id):
-            accounts.append(account)
-        for reseller in user.resellers:
-            for account in Account.query.filter(Account.reseller_id == reseller.id):
-                accounts.append(account)
-        for sub_reseller in user.sub_resellers:
-            for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
-                accounts.append(account)
-        return accounts
+        users = [user]
+        users.extend(user.resellers)
+        users.extend(user.sub_resellers)
+        users_ids = [user.id for user in users]
+        query = Account.query.filter(Account.reseller_id.in_(users_ids))
+        return query
+        # for account in Account.query.filter(Account.reseller_id == user.id):
+        #     accounts.append(account)
+        # for reseller in user.resellers:
+        #     for account in Account.query.filter(Account.reseller_id == reseller.id):
+        #         accounts.append(account)
+        # for sub_reseller in user.sub_resellers:
+        #     for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
+        #         accounts.append(account)
+        # return accounts
     elif user.role.name == "reseller":
-        accounts = []
         for account in Account.query.filter(Account.reseller_id == user.id):
             accounts.append(account)
         for sub_reseller in user.sub_resellers:
@@ -182,7 +187,6 @@ def get_accounts(user):
                 accounts.append(account)
         return accounts
     elif user.role.name == "sub_reseller":
-        accounts = []
         for account in Account.query.filter(Account.reseller_id == user.id):
             accounts.append(account)
         return accounts
