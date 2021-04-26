@@ -13,6 +13,40 @@ function showFuncs() {
   document.getElementById("funcs-drp").classList.toggle("show");
 }
 
+//Define variables for input elements
+var fieldEl = document.getElementById("filter-field");
+var valueEl = document.getElementById("filter-value");
+
+//Trigger setFilter function with correct parameters
+function updateFilter(){
+  var filterVal = fieldEl.options[fieldEl.selectedIndex].value;
+  var typeVal = 'like'
+
+  var filter = filterVal == "function" ? customFilter : filterVal;
+
+  if(filterVal == "function" ){
+    valueEl.disabled = true;
+  }else{
+    valueEl.disabled = false;
+  }
+
+  if(filterVal){
+    table.setFilter(filter,typeVal, valueEl.value);
+  }
+}
+
+//Update filters on value change
+document.getElementById("filter-field").addEventListener("change", updateFilter);
+document.getElementById("filter-value").addEventListener("keyup", updateFilter);
+
+//Clear filters on "Clear Filters" button click
+document.getElementById("filter-clear").addEventListener("click", function(){
+  fieldEl.value = "";
+  valueEl.value = "";
+
+  table.clearFilter();
+});
+
 overlay &&
   overlay.addEventListener("click", function () {
     menuBtn.classList.toggle("menu-btn--active");
@@ -263,9 +297,11 @@ if (document.getElementById("accounts-table")) {
       layout: "fitColumns",
       ajaxURL: window.location.origin + "/api/account_list",
       paginationSize: 20, //optional parameter to request a certain number of rows per page
+
       columns: [
         { title: "Id", field: "id" },
         { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
+        { title: "Sim", field: "sim", width: 0 },
         {
           field: "actions",
           formatter: printIconView,
