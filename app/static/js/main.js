@@ -370,3 +370,9 @@ if (document.getElementById("supports-table")) {
   });
 }
 
+const closeBtn = document.getElementById('close-btn');
+if(closeBtn) {
+  closeBtn.addEventListener('click', function(e) {
+    document.getElementById('alert').hidden = true;
+  });
+}
