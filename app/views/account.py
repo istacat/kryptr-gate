@@ -1,9 +1,10 @@
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import base64
 import io
 from flask import render_template, Blueprint, jsonify, flash, redirect, url_for, request
 from flask_login import login_required, current_user
-from app.models import Account, User
+from app.models import Account, User, Subscription
 from app.forms import AccountForm, DeviceForm
 from app.logger import log
 from app.controllers import create_qrcode, generate_password, MDM, role_required
@@ -26,21 +27,29 @@ def add_account():
     form = AccountForm(user=current_user)
     if request.method == "GET":
         ecc_id = Account.gen_ecc_id()
+        ad_login = Account.gen_ad_login()
         form.ecc_id.data = ecc_id
-        form.email.data = f"{ecc_id}@kryptr.li"
-        form.ad_login.data = f"{ecc_id}@kryptr.li"
-        form.ad_password.data = generate_password()
         form.reseller.data = current_user.username
+        form.email.data = f"{ad_login}@kryptr.li"
+        form.ad_login.data = ad_login
+        form.ad_password.data = generate_password()
+        form.ecc_password.data = generate_password()
     if form.validate_on_submit():
         reseller = User.query.filter(User.username == form.reseller.data).first()
         acc = Account(
             ecc_id=form.ecc_id.data,
+            ecc_password=form.ecc_password.data,
             email=form.email.data,
             ad_login=form.ad_login.data,
             ad_password=form.ad_password.data,
             sim=form.sim.data,
-            comment=form.comment.data,
             reseller_id=reseller.id,
+            comment=form.comment.data
+        ).save()
+        Subscription(
+            account_id=acc.id,
+            months=form.sub_duration.data,
+            activation_date=form.sub_activate_date.data
         ).save()
         log(
             log.INFO,
@@ -50,7 +59,7 @@ def add_account():
         )
         if config.LDAP_SERVER:
             conn = LDAP()
-            user = conn.add_user(acc.ecc_id)
+            user = conn.add_user(acc.ad_login)
             if not user:
                 log(log.WARNING, "Could not add user")
                 flash("Could not add user.", "danger")
@@ -110,42 +119,34 @@ def edit_account(account_id):
     if acc:
         if request.method == "GET":
             form.ecc_id.data = acc.ecc_id
-            form.email.data = acc.email
+            form.ecc_password.data = acc.ecc_password
+            form.reseller.data = acc.reseller.username
+            form.sim.data = acc.sim
+            form.comment.data = acc.comment
             form.ad_login.data = acc.ad_login
             form.ad_password.data = acc.ad_password
-            form.reseller.data = acc.reseller.username
-            form.comment.data = acc.comment
+            form.email.data = acc.email
         if form.validate_on_submit():
             reseller = User.query.filter(User.username == form.reseller.data).first()
             acc.ecc_id = form.ecc_id.data
-            acc.email = form.email.data
-            if acc.ad_password != form.ad_password.data and config.LDAP_SERVER:
-                # change AD user password
-                ldap = LDAP()
-                success = ldap.change_password(acc.ecc_id, form.ad_password.data)
-                if not success:
-                    log(log.ERROR, "Can not change password: %s", form.errors)
-                    return render_template(
-                        "base_add_edit.html",
-                        include_header="components/_account-edit.html",
-                        form=form,
-                        description_header=("Edit account"),
-                        cancel_link=url_for("account.index"),
-                        qrcode_url=url_for("account.show_qrcode", account_id=account_id),
-                        action_url=url_for(
-                            "account.edit_account", account_id=account_id
-                        ),
-                        account_id=account_id
-                    )
-            acc.ad_password = form.ad_password.data
+            acc.ecc_id = form.ecc_password.data
             acc.sim = form.sim.data
             acc.comment = form.comment.data
             acc.reseller_id = reseller.id
             acc.save()
+            if form.sub_duration.data:
+                Subscription(
+                    account_id=acc.id,
+                    months=form.sub_duration.data,
+                    activation_date=form.sub_activate_date.data,
+                    type='ext'
+                ).save()
             log(log.INFO, "Account data changed for account id [%s]", acc.id)
             return redirect(url_for("account.index"))
         elif form.is_submitted():
             log(log.ERROR, "Submit failed: %s", form.errors)
+        subscription = acc.subscriptions[-1]
+        experation_date = subscription.activation_date + relativedelta(months=+subscription.months)
         return render_template(
             "base_add_edit.html",
             include_header="components/_account-edit.html",
@@ -154,6 +155,7 @@ def edit_account(account_id):
             cancel_link=url_for("account.index"),
             action_url=url_for("account.edit_account", account_id=account_id),
             account_id=account_id,
+            experation_date=f'Experation Date: {experation_date.strftime("%m/%d/%Y, %H:%M:%S")}'
         )
 
 
