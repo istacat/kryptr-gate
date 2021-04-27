@@ -1,6 +1,7 @@
 <form class="edit__form" action="{{ action_url }}" method="POST">
   <div class="edit__container">
     {{ form.hidden_tag() }}
+    {% if current_user.role.value == 'admin' or current_user.role.value == 'support' %}
     <div class="edit__group">
       <div class="input__wrapper">
         <label class="edit__label"> EСС </label>
@@ -12,6 +13,19 @@
         {% endfor %}
       </div>
     </div>
+    {% else %}
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> EСС </label>
+        {{ form.ecc_id(class="edit__input disabled", type="text", readonly="true")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in form.ecc_id.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 
     <div class="edit__group">
       <div class="input__wrapper">

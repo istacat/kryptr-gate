@@ -289,7 +289,8 @@ if (document.getElementById("accounts-table")) {
 
     columns: [
       { title: "Id", field: "id" },
-      { title: "Ecc id", field: "ecc_id", widthGrow: 3 },
+      { title: "Ecc id", field: "ecc_id", widthGrow: 2 },
+      { title: "Activation date", field: "subscriptions[-1].activation_date" },
       {
         field: "actions",
         formatter: printIconView,

@@ -45,12 +45,12 @@ def add_account():
             ad_password=form.ad_password.data,
             sim=form.sim.data,
             reseller_id=reseller.id,
-            comment=form.comment.data
+            comment=form.comment.data,
         ).save()
         Subscription(
             account_id=acc.id,
             months=form.sub_duration.data,
-            activation_date=form.sub_activate_date.data
+            activation_date=form.sub_activate_date.data,
         ).save()
         log(
             log.INFO,
@@ -140,14 +140,16 @@ def edit_account(account_id):
                     account_id=acc.id,
                     months=form.sub_duration.data,
                     activation_date=form.sub_activate_date.data,
-                    type='ext'
+                    type="ext",
                 ).save()
             log(log.INFO, "Account data changed for account id [%s]", acc.id)
             return redirect(url_for("account.index"))
         elif form.is_submitted():
             log(log.ERROR, "Submit failed: %s", form.errors)
         subscription = acc.subscriptions[-1]
-        experation_date = subscription.activation_date + relativedelta(months=+subscription.months)
+        experation_date = subscription.activation_date + relativedelta(
+            months=+subscription.months
+        )
         return render_template(
             "base_add_edit.html",
             include_header="components/_account-edit.html",
@@ -156,7 +158,7 @@ def edit_account(account_id):
             cancel_link=url_for("account.index"),
             action_url=url_for("account.edit_account", account_id=account_id),
             account_id=account_id,
-            experation_date=f'Experation Date: {experation_date.strftime("%m/%d/%Y, %H:%M:%S")}'
+            experation_date=f'Expiration Date: {experation_date.strftime("%m/%d/%Y, %H:%M:%S")}',
         )
 
 
@@ -200,7 +202,11 @@ def get_account_list():
     if search_value:
         paginated_accs = (
             accounts.filter(
-                or_(Account.ecc_id.contains(search_value), Account.sim.contains(search_value))
+                or_(
+                    Account.ecc_id.contains(search_value),
+                    Account.sim.contains(search_value),
+                    Account.ad_login.contains(search_value),
+                )
             )
             .order_by(Account.id.desc())
             .paginate(page, size, False)
@@ -299,12 +305,12 @@ def device(account_id):
                 cancel_link=url_for("account.edit_account", account_id=account_id),
                 action_url=url_for("account.device", account_id=account_id),
                 account_id=account_id,
-                status=status
+                status=status,
             )
         if form.validate_on_submit():
             action = device.action(form.command.data)
             command = form.command.data
-            if command == 'complete_wipe':
+            if command == "complete_wipe":
                 device.wipe()
                 account.mdm_device_id = None
                 account.save()
@@ -312,9 +318,13 @@ def device(account_id):
                 res = action.run()
                 if res >= 400:
                     flash(f"Could not launch {command}", "danger")
-                    return redirect(url_for("account.device", account_id=account_id, command=None))
+                    return redirect(
+                        url_for("account.device", account_id=account_id, command=None)
+                    )
             flash("Commands have been run", "info")
-            return redirect(url_for("account.device", account_id=account_id, command=command))
+            return redirect(
+                url_for("account.device", account_id=account_id, command=command)
+            )
 
 
 @account_blueprint.route("/account/<int:account_id>/device/wipe", methods=["GET"])
