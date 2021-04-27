@@ -72,7 +72,7 @@ if (document.getElementById("users-table")) {
     paginationSize: 20, //optional parameter to request a certain number of rows per page
     // height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
     layout: "fitColumns", //fit columns to width of table (optional)
-    ajaxURL: window.location.origin + `/api/user_list`,
+    ajaxURL: window.location.origin + "/api/user_list",
     columns: [
       //Define Table Columns
       { title: "Id", field: "id" },
@@ -256,14 +256,37 @@ if (document.getElementById("distributors-table")) {
 }
 
 if (document.getElementById("accounts-table")) {
+  //Define variables for input elements
+  var valueEl = document.getElementById("filter-value");
+
+  //Trigger setFilter function with correct parameters
+  function updateFilter() {
+    var typeVal = "like";
+
+    var filter = "ecc_id";
+    var filterVal = true;
+
+    if (filterVal) {
+      table.setFilter(filter, typeVal, valueEl.value);
+    }
+  }
+
+  //Update filters on value change
+
+  document
+    .getElementById("filter-value")
+    .addEventListener("keyup", updateFilter);
+
   table = new Tabulator("#accounts-table", {
     resizableColumns: false,
     responsiveLayout: "collapse",
-    pagination: "local", //enable remote pagination
+    pagination: "remote", //enable remote pagination
     layout: "fitColumns",
     ajaxURL: window.location.origin + "/api/account_list",
     ajaxFiltering: true,
+    headerSort: false,
     paginationSize: 20, //optional parameter to request a certain number of rows per page
+
     columns: [
       { title: "Id", field: "id" },
       { title: "Ecc id", field: "ecc_id", widthGrow: 3 },

@@ -33,6 +33,9 @@ class BaseConfig(object):
     BASE_MDM_API_URL = os.environ.get("BASE_MDM_API_URL", None)
     MDM_API_KEY = os.environ.get("MDM_API_KEY", None)
 
+    STARTING_PAGE = os.environ.get('STARTING_PAGE', 1)
+    ITEMS_PER_PAGE = os.environ.get('ITEMS_PER_PAGE', 20)
+
     @staticmethod
     def configure(app):
         # Implement this method to do further configuration on your app.

@@ -87,7 +87,7 @@ def test_chief_subordinate(client):
     assert not resellers
     subress = current_user.sub_resellers
     assert not subress
-    accs = current_user.accounts
+    accs = current_user.accounts.all()
     assert not accs
 
     # Reseller
@@ -111,7 +111,7 @@ def test_chief_subordinate(client):
     assert not resellers
     subress = current_user.sub_resellers
     assert not subress
-    accs = current_user.accounts
+    accs = current_user.accounts.all()
     assert not accs
 
     # Sub-reseller
@@ -135,7 +135,7 @@ def test_chief_subordinate(client):
     assert not resellers
     subress = current_user.sub_resellers
     assert not subress
-    accs = current_user.accounts
+    accs = current_user.accounts.all()
     assert not accs
 
     # Support
