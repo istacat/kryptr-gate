@@ -16,7 +16,7 @@ class AccountForm(FlaskForm):
             ):
                 self.reseller.choices = [sub.username for sub in current_user.subs]
             elif current_user.role.name == "sub_reseller":
-                self.reseller.choices = current_user.username
+                self.reseller.choices = [current_user.username]
             else:
                 users = User.query.filter(User.deleted == False) # noqa E712
                 self.reseller.choices = [sub.username for sub in users]

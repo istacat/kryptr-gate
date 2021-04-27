@@ -1,6 +1,7 @@
 from datetime import datetime
 import base64
 import io
+from sqlalchemy import or_
 from flask import render_template, Blueprint, jsonify, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 from app.models import Account, User
@@ -189,11 +190,26 @@ def delete_account(account_id):
 @account_blueprint.route("/api/account_list")
 @login_required
 def get_account_list():
-    accounts = [
-        acc for acc in current_user.accounts if acc.deleted == False  # noqa E712
-    ]
-    accounts.sort(reverse=True, key=lambda x: x.id)
-    return jsonify([acc.to_json() for acc in accounts])
+    accounts = current_user.accounts
+    page = int(request.args.get("page", config.STARTING_PAGE))
+    size = int(request.args.get("size", config.ITEMS_PER_PAGE))
+    search_value = request.args.get("filters[0][value]", None)
+    paginated_accs = accounts.order_by(Account.id.desc()).paginate(page, size, False)
+    if search_value:
+        paginated_accs = (
+            accounts.filter(
+                or_(Account.ecc_id.contains(search_value), Account.sim.contains(search_value))
+            )
+            .order_by(Account.id.desc())
+            .paginate(page, size, False)
+        )
+    last_page = paginated_accs.pages
+    return jsonify(
+        {
+            "last_page": last_page,
+            "data": [acc.to_json() for acc in paginated_accs.items],
+        }
+    )
 
 
 @account_blueprint.route("/qrcode/<int:account_id>", methods=["GET"])
@@ -227,7 +243,7 @@ def show_qrcode(account_id):
 @account_blueprint.route("/account/<int:account_id>/device", methods=["GET", "POST"])
 @login_required
 def device(account_id):
-    command_name = request.args.get('command')
+    command_name = request.args.get("command")
     account = Account.query.get(account_id)
     if account not in current_user.accounts:
         log(
@@ -254,7 +270,9 @@ def device(account_id):
                             "For account %s device has been set",
                             account.ecc_id,
                         )
-                        return redirect(url_for("account.device", account_id=account_id))
+                        return redirect(
+                            url_for("account.device", account_id=account_id)
+                        )
             flash("Account has not device.", "danger")
             log(
                 log.ERROR,

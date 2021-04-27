@@ -11,7 +11,9 @@
           <span class="accounts__title">Accounts</span>
           <a class="btn accounts__add" href="{{ url_for('account.add_account') }}" >New account</a>
         </div>
-
+        <div class="input__wrapper">
+          <input id="filter-value" type="text" placeholder="Search" class="edit__input">
+        </div>
         <div class="accounts__table">
           <div id="accounts-table"></div>
         </div>
