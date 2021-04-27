@@ -160,35 +160,23 @@ class User(db.Model, UserMixin, ModelMixin):
 
 def get_accounts(user):
     """Get accounts by roles and subordinates"""
-    accounts = []
+    users = [user]
     if user.role.name == "admin" or user.role.name == "support":
-        return Account.query.all()
+        return Account.query.filter(Account.deleted == False) # noqa E712
     elif user.role.name == "distributor":
-        users = [user]
         users.extend(user.resellers)
         users.extend(user.sub_resellers)
         users_ids = [user.id for user in users]
-        query = Account.query.filter(Account.reseller_id.in_(users_ids))
-        return query
-        # for account in Account.query.filter(Account.reseller_id == user.id):
-        #     accounts.append(account)
-        # for reseller in user.resellers:
-        #     for account in Account.query.filter(Account.reseller_id == reseller.id):
-        #         accounts.append(account)
-        # for sub_reseller in user.sub_resellers:
-        #     for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
-        #         accounts.append(account)
-        # return accounts
+        accounts = Account.query.filter(Account.reseller_id.in_(users_ids)).filter(Account.deleted == False) # noqa E712
+        accounts = Account.query.filter(Account.reseller_id.in_(users_ids)).filter(Account.deleted == False) # noqa E712
+        return accounts
     elif user.role.name == "reseller":
-        for account in Account.query.filter(Account.reseller_id == user.id):
-            accounts.append(account)
-        for sub_reseller in user.sub_resellers:
-            for account in Account.query.filter(Account.reseller_id == sub_reseller.id):
-                accounts.append(account)
+        users.extend(user.sub_resellers)
+        users_ids = [user.id for user in users]
+        accounts = Account.query.filter(Account.reseller_id.in_(users_ids)).filter(Account.deleted == False) # noqa E712
         return accounts
     elif user.role.name == "sub_reseller":
-        for account in Account.query.filter(Account.reseller_id == user.id):
-            accounts.append(account)
+        accounts = Account.query.filter(Account.reseller_id == user.id).filter(Account.deleted == False) # noqa E712
         return accounts
 
 
