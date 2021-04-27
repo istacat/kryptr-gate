@@ -191,8 +191,8 @@ def delete_account(account_id):
 @login_required
 def get_account_list():
     accounts = current_user.accounts
-    page = int(request.args.get("page", 1))
-    size = int(request.args.get("size", 20))
+    page = int(request.args.get("page", config.STARTING_PAGE))
+    size = int(request.args.get("size", config.ITEMS_PER_PAGE))
     search_value = request.args.get("filters[0][value]", None)
     paginated_accs = accounts.order_by(Account.id.desc()).paginate(page, size, False)
     if search_value:

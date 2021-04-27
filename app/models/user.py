@@ -164,14 +164,13 @@ def get_accounts(user):
     if user.role.name == "admin" or user.role.name == "support":
         return Account.query.filter(Account.deleted == False) # noqa E712
     elif user.role.name == "distributor":
-        users.extend(user.resellers)
-        users.extend(user.sub_resellers)
+        users += user.resellers
+        users += user.sub_resellers
         users_ids = [user.id for user in users]
-        accounts = Account.query.filter(Account.reseller_id.in_(users_ids)).filter(Account.deleted == False) # noqa E712
         accounts = Account.query.filter(Account.reseller_id.in_(users_ids)).filter(Account.deleted == False) # noqa E712
         return accounts
     elif user.role.name == "reseller":
-        users.extend(user.sub_resellers)
+        users += user.sub_resellers
         users_ids = [user.id for user in users]
         accounts = Account.query.filter(Account.reseller_id.in_(users_ids)).filter(Account.deleted == False) # noqa E712
         return accounts
