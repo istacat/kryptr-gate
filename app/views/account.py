@@ -6,7 +6,7 @@ from sqlalchemy import or_
 from flask import render_template, Blueprint, jsonify, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 from app.models import Account, User, Subscription
-from app.forms import AccountForm, DeviceForm
+from app.forms import AccountAddForm, DeviceForm, AccountEditForm, SubscriptionForm
 from app.logger import log
 from app.controllers import create_qrcode, generate_password, MDM, role_required
 from app.controllers.ldap import LDAP
@@ -25,7 +25,7 @@ def index():
 @account_blueprint.route("/add_account", methods=["GET", "POST"])
 @login_required
 def add_account():
-    form = AccountForm(user=current_user)
+    form = AccountAddForm(user=current_user)
     if request.method == "GET":
         ecc_id = Account.gen_ecc_id()
         ad_login = Account.gen_ad_login()
@@ -66,7 +66,7 @@ def add_account():
                 flash("Could not add user.", "danger")
                 return render_template(
                     "base_add_edit.html",
-                    include_header="components/_account-edit.html",
+                    include_header="components/_account-add.html",
                     form=form,
                     description_header=("Add account"),
                     cancel_link=url_for("account.index"),
@@ -78,7 +78,7 @@ def add_account():
                 flash(error_message, "danger")
                 return render_template(
                     "base_add_edit.html",
-                    include_header="components/_account-edit.html",
+                    include_header="components/_account-add.html",
                     form=form,
                     description_header=("Add account"),
                     cancel_link=url_for("account.index"),
@@ -95,7 +95,7 @@ def add_account():
         log(log.ERROR, "Submit failed: %s", form.errors)
     return render_template(
         "base_add_edit.html",
-        include_header="components/_account-edit.html",
+        include_header="components/_account-add.html",
         form=form,
         description_header=("Add account"),
         cancel_link=url_for("account.index"),
@@ -106,7 +106,8 @@ def add_account():
 @account_blueprint.route("/edit_account/<int:account_id>", methods=["GET", "POST"])
 @login_required
 def edit_account(account_id):
-    form = AccountForm(user=current_user)
+    form = AccountEditForm(user=current_user)
+    sub_form = SubscriptionForm()
     acc = Account.query.get(account_id)
     if acc not in current_user.accounts:
         log(
@@ -135,31 +136,71 @@ def edit_account(account_id):
             acc.comment = form.comment.data
             acc.reseller_id = reseller.id
             acc.save()
-            if form.sub_duration.data:
-                Subscription(
-                    account_id=acc.id,
-                    months=form.sub_duration.data,
-                    activation_date=form.sub_activate_date.data,
-                    type="ext",
-                ).save()
             log(log.INFO, "Account data changed for account id [%s]", acc.id)
             return redirect(url_for("account.index"))
         elif form.is_submitted():
             log(log.ERROR, "Submit failed: %s", form.errors)
         subscription = acc.subscriptions[-1]
-        experation_date = subscription.activation_date + relativedelta(
+        expiration_date = subscription.activation_date + relativedelta(
             months=+subscription.months
         )
         return render_template(
             "base_add_edit.html",
             include_header="components/_account-edit.html",
             form=form,
+            sub_form=sub_form,
             description_header=("Edit account"),
             cancel_link=url_for("account.index"),
-            action_url=url_for("account.edit_account", account_id=account_id),
             account_id=account_id,
-            experation_date=f'Expiration Date: {experation_date.strftime("%m/%d/%Y, %H:%M:%S")}',
+            expiration_date=f'Expiration Date: {expiration_date.strftime("%d/%m/%Y, %H:%M:%S")}',
         )
+
+
+@account_blueprint.route("/edit_account/<int:account_id>/subscription", methods=["POST"])
+@login_required
+def extend_sub(account_id):
+    form = SubscriptionForm()
+    acc = Account.query.get(account_id)
+    if acc not in current_user.accounts:
+        log(
+            log.ERROR,
+            "User [%s] do not have permissions for acc [%s]",
+            current_user,
+            acc.id,
+        )
+        flash(f"<Access denied to account {account_id}>", "danger")
+        return redirect(url_for("account.index"))
+    if acc:
+        if form.validate_on_submit():
+            expiration_date = acc.subscriptions[-1].activation_date + relativedelta(
+                months=+acc.subscriptions[-1].months
+            )
+            wipe_date = expiration_date + relativedelta(days=+15)
+            if expiration_date > form.sub_activate_date.data:
+                Subscription(
+                    account_id=acc.id,
+                    months=form.sub_duration.data,
+                    activation_date=expiration_date,
+                    type="ext",
+                ).save()
+            elif expiration_date < form.sub_activate_date < wipe_date:
+                Subscription(
+                    account_id=acc.id,
+                    months=form.sub_duration.data,
+                    activation_date=form.sub_activate_date.data,
+                    type="ext",
+                ).save()
+            if wipe_date < form.sub_activate_date.data:
+                flash('Invalid activation date', "danger")
+                log(log.WARNING, "Set invalid activation date")
+                return redirect(url_for("account.edit_account", account_id=account_id))
+            log(log.INFO, "Account data changed for account id [%s]", acc.id)
+            flash("Subscription has been updated.", "info")
+            return redirect(url_for("account.index"))
+        elif form.is_submitted():
+            log(log.ERROR, "Submit failed: %s", form.errors)
+            flash('Submit failed', "danger")
+            return redirect(url_for("account.edit", account_id=account_id))
 
 
 @account_blueprint.route("/delete_account/<int:account_id>", methods=["GET"])

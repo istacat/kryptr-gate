@@ -1,7 +1,7 @@
-<form class="edit__form" action="{{ action_url }}" method="POST">
+<form class="edit__form" action="{{ url_for('account.edit_account', account_id=account_id) }}" method="POST">
   <div class="edit__container">
     {{ form.hidden_tag() }}
-    {% if current_user.role.value == 'admin' or current_user.role.value == 'support' %}
+    {% if current_user.role.name == 'admin' or current_user.role.name == 'support' %}
     <div class="edit__group">
       <div class="input__wrapper">
         <label class="edit__label"> EСС </label>
@@ -104,30 +104,6 @@
 
     <div class="edit__group">
       <div class="input__wrapper">
-        <label class="edit__label"> Subscription Duration </label>
-        {{ form.sub_duration(class="edit__input")}}
-      </div>
-      <div class="edit__feedback">
-        {% for error in form.sub_duration.errors %}
-        <span>{{ error }}</span>
-        {% endfor %}
-      </div>
-    </div>
-
-    <div class="edit__group">
-      <div class="input__wrapper">
-        <label class="edit__label"> Subscription Activation Date </label>
-        {{ form.sub_activate_date(class="edit__input", type="date")}}
-      </div>
-      <div class="edit__feedback">
-        {% for error in form.sub_activate_date.errors %}
-        <span>{{ error }}</span>
-        {% endfor %}
-      </div>
-    </div>
-
-    <div class="edit__group">
-      <div class="input__wrapper">
         <label class="edit__label"> Comments </label>
         {{ form.comment(class="edit__input", placeholder="Comments")}}
       </div>
@@ -135,24 +111,6 @@
         {% for error in form.comment.errors %}
         <span>{{ error }}</span>
         {% endfor %}
-      </div>
-    </div>
-
-    {% if description_header == 'Add account' %}
-    <div class="edit__group">
-      <div class="edit__submit-btn reload-button">
-        <a
-          type="button"
-          href="javascript:window.location.reload()"
-          class="edit__submit"
-          >Regenerate</a
-        >
-      </div>
-    </div>
-    {% else %}
-    <div class="edit__group">
-      <div class="input__wrapper">
-        <label class="edit__label"> {{ experation_date }}</label>
       </div>
     </div>
 
@@ -166,6 +124,7 @@
         >
       </div>
     </div>
+
     <div class="edit__group btn-container">
       <div class="edit__submit-btn reload-button">
         <a
@@ -176,7 +135,7 @@
         >
       </div>
     </div>
-    {% endif %}
+
     <div>
       <img src="{{ url_for('static', filename='images/loading-11.gif') }} " id="gif">
     </div>
@@ -185,3 +144,48 @@
     </div>
   </div>
 </form>
+
+<form class="edit__form" action="{{ url_for('account.extend_sub', account_id=account_id) }}" method="POST">
+  <div class="edit__container">
+    {{ sub_form.hidden_tag() }}
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> Subscription Duration </label>
+        {{ sub_form.sub_duration(class="edit__input")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.sub_duration.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> Subscription Activation Date </label>
+        {{ sub_form.sub_activate_date(class="edit__input", type="date")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.sub_activate_date.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> {{ expiration_date }}</label>
+      </div>
+    </div>
+
+    <div>
+      <img src="{{ url_for('static', filename='images/loading-11.gif') }} " id="gif">
+    </div>
+    <div class="edit__group btn-container">
+      <div class="edit__submit-btn reload-button">{{ sub_form.submit(class="edit__submit")}}</div>
+    </div>
+
+  </div>
+</form>
+
+

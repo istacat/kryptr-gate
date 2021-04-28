@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Length, Email
 from app.models import User
 
 
-class AccountForm(FlaskForm):
+class AccountAddForm(FlaskForm):
     def __init__(self, user=None):
         super().__init__()
         if user:
@@ -30,11 +30,10 @@ class AccountForm(FlaskForm):
     reseller = SelectField("Reseller", choices=[])
     comment = TextAreaField("Comments")
     sub_duration = SelectField("Subscription", choices=[
-        ('', ''),
         (1, '1 Month'),
         (3, '3 Months'),
         (6, '6 Months'),
         (12, '12 Months')
-    ], default='')
+    ], default=1)
     sub_activate_date = DateField("Activation Date")
     submit = SubmitField()

@@ -1,6 +1,7 @@
 import secrets
 import string
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import relationship
 
 from app import db
@@ -36,15 +37,13 @@ class Account(db.Model, ModelMixin):
         return {
             "id": self.id,
             "ecc_id": self.ecc_id,
-            "ad_password": self.ad_password,
-            "license_key": self.license_key,
-            "email": self.email,
-            "reseller_id": self.reseller_id,
-            "reseller": self.reseller.username,
-            # "subscriptions": self.subscriptions,
-            "sim": self.sim,
-            "created_at": self.created_at,
-            "comment": self.comment
+            "activation_date": self.subscriptions[-1].activation_date.strftime(
+                "%m/%d/%Y"
+            ),
+            "expiration_date": (
+                self.subscriptions[-1].activation_date
+                + relativedelta(months=+self.subscriptions[-1].months)
+            ).strftime("%m/%d/%Y"),
         }
 
     @staticmethod
@@ -63,9 +62,11 @@ class Account(db.Model, ModelMixin):
 
 
 def ecc_sample_gen() -> str:
-    ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"+string.digits
+    ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ" + string.digits
     while True:
-        password = ''.join(secrets.choice(ALPHABET) for i in range(7))
-        if (sum(c.isalpha() for c in password) >= 3
-                and sum(c.isdigit() for c in password) >= 3):
+        password = "".join(secrets.choice(ALPHABET) for i in range(7))
+        if (
+            sum(c.isalpha() for c in password) >= 3
+            and sum(c.isdigit() for c in password) >= 3
+        ):
             return password
