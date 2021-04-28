@@ -310,7 +310,7 @@ def device(account_id):
         if not device_id:
             for device in conn.devices:
                 if device.user:
-                    if account.ecc_id == device.user.name:
+                    if account.ad_login == device.user.name:
                         account.mdm_device_id = device.device_id
                         account.save()
                         flash("Account device has been updated", "info")
