@@ -17,6 +17,6 @@ def generate_password():
 
 def create_qrcode(acc):
     """Encode ecc_id and password for chat"""
-    encoded_jwt = jwt.encode({'login': acc.ad_login, 'password': acc.ad_password}, conf.SECRET_KEY, algorithm="HS256")
+    encoded_jwt = jwt.encode({'login': acc.ecc_id, 'password': acc.ecc_password}, conf.SECRET_KEY, algorithm="HS256")
     img = qrcode.make(encoded_jwt)
     return img

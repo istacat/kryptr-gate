@@ -21,7 +21,7 @@ class AccountEditForm(FlaskForm):
                 users = User.query.filter(User.deleted == False) # noqa E712
                 self.reseller.choices = [sub.username for sub in users]
 
-    email = StringField("Email", [DataRequired(), Email(3, 45)])
+    email = StringField("Email", [DataRequired(), Email(5, 45)])
     ad_login = StringField("Login", [DataRequired()])
     ad_password = StringField("AD Password", [DataRequired()])
     ecc_id = StringField("Ecc ID", [DataRequired(), Length(min=7, max=7)])
@@ -30,11 +30,10 @@ class AccountEditForm(FlaskForm):
     reseller = SelectField("Reseller", choices=[])
     comment = TextAreaField("Comments")
     sub_duration = SelectField("Subscription", choices=[
-        ('', ''),
         (1, '1 Month'),
         (3, '3 Months'),
         (6, '6 Months'),
         (12, '12 Months')
-    ], default='')
+    ], default=1)
     sub_activate_date = DateField("Activation Date")
     submit = SubmitField()
