@@ -284,20 +284,28 @@ if (document.getElementById("accounts-table")) {
     layout: "fitColumns",
     ajaxURL: window.location.origin + "/api/account_list",
     ajaxFiltering: true,
-    headerSort: false,
+    ajaxSorting:true,
     paginationSize: 20, //optional parameter to request a certain number of rows per page
-
+    headerSort: true,
     columns: [
-      { title: "Id", field: "id" },
+      { title: "Id", field: "id"},
       { title: "Ecc id", field: "ecc_id", widthGrow: 2},
-      { title: "Activation date", field: "activation_date", widthGrow: 5 },
-      { title: "Expiration date", field: "expiration_date", widthGrow: 5 },
+      {
+        title: "Activation date",
+        field: "activation_date",
+        widthGrow: 5
+      },
+      {
+        title: "Expiration date",
+        field: "expiration_date",
+        widthGrow: 5
+      },
       {
         field: "actions",
         formatter: printIconView,
         widthGrow: 1,
-        headerSort: false,
         hozAlign: "center",
+        headerSort: false,
         cellClick: function (e, cell) {
           e.stopPropagation();
           window.location.href =
@@ -308,8 +316,8 @@ if (document.getElementById("accounts-table")) {
         field: "actions",
         formatter: printIcon,
         widthGrow: 1,
-        hozAlign: "center",
         headerSort: false,
+        hozAlign: "center",
         cellClick: function (e, cell) {
           e.stopPropagation();
           if (

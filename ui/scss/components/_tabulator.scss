@@ -6,12 +6,6 @@
     background-color: $accent;
     color: white;
    }
-
- .tabulator-headers div:nth-child(3) {
-    .tabulator-arrow{
-        display: none !important;
-    }
-}
 .tabulator-col-content{
     background-color: $accent;
 }

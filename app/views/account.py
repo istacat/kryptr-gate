@@ -8,7 +8,7 @@ from flask_login import login_required, current_user
 from app.models import Account, User, Subscription
 from app.forms import AccountAddForm, DeviceForm, AccountEditForm, SubscriptionForm
 from app.logger import log
-from app.controllers import create_qrcode, generate_password, MDM, role_required
+from app.controllers import account, create_qrcode, generate_password, MDM, role_required
 from app.controllers.ldap import LDAP
 from app.controllers.ssh_ps import RemoteMatrix
 from config import BaseConfig as config
@@ -238,8 +238,32 @@ def get_account_list():
     accounts = current_user.accounts
     page = int(request.args.get("page", config.STARTING_PAGE))
     size = int(request.args.get("size", config.ITEMS_PER_PAGE))
+    sort_field = request.args.get('sorters[0][field]', None)
+    desc = request.args.get('sorters[0][dir]', None)
     search_value = request.args.get("filters[0][value]", None)
     paginated_accs = accounts.order_by(Account.id.desc()).paginate(page, size, False)
+    if sort_field:
+        if sort_field == 'id':
+            if desc == 'desc':
+                account.order_by(Account.id.desc())
+            else:
+                account.order_by(Account.id.asc())
+        elif sort_field == 'ecc_id':
+            if desc == 'desc':
+                account.order_by(Account.ecc_id.desc())
+            else:
+                account.order_by(Account.ecc_id.asc())
+        elif sort_field == 'activation_date':
+            if desc == 'desc':
+                account.order_by(Account.ecc_id.desc())
+            else:
+                account.order_by(Account.ecc_id.asc())
+        elif sort_field == 'expiration_date':
+            if desc == 'desc':
+                account.order_by(Account.ecc_id.desc())
+            else:
+                account.order_by(Account.ecc_id.asc())
+
     if search_value:
         paginated_accs = (
             accounts.filter(
