@@ -83,6 +83,7 @@ def fill_test_data():
         ad_login='acc1',
         ad_password='123',
         email='testing@gmail.com',
-        reseller_id=subres1.id
+        reseller_id=subres1.id,
+        ecc_password='TST123'
     )
     acc1.save()

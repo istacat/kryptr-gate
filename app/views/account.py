@@ -131,7 +131,7 @@ def edit_account(account_id):
         if form.validate_on_submit():
             reseller = User.query.filter(User.username == form.reseller.data).first()
             acc.ecc_id = form.ecc_id.data
-            acc.ecc_id = form.ecc_password.data
+            acc.ecc_password = form.ecc_password.data
             acc.sim = form.sim.data
             acc.comment = form.comment.data
             acc.reseller_id = reseller.id
