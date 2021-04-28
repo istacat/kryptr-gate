@@ -15,7 +15,7 @@ class Account(db.Model, ModelMixin):
     id = db.Column(db.Integer, primary_key=True)
     # ECC
     ecc_id = db.Column(db.String(32), nullable=False, unique=True)
-    ecc_password = db.Column(db.String(32), nullable=False)
+    ecc_password = db.Column(db.String(32), default=secrets.token_urlsafe(7))
     # AD
     ad_login = db.Column(db.String(32), nullable=False)
     ad_password = db.Column(db.String(32), nullable=False)
