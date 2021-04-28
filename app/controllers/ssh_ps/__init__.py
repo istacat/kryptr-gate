@@ -86,7 +86,7 @@ class RemoteMatrix(SshShell):
         )
 
     def add_user(self, acc):
-        result = self.send_command(f'bin/add-matrix-user {acc.ecc_id} {acc.ad_password}')
+        result = self.send_command(f'bin/add-matrix-user {acc.ecc_id} {acc.ecc_password}')
         if 'Success' in result:
             log(log.INFO, 'User [%s] has been added to Matrix', acc.ecc_id)
             return True

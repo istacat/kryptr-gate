@@ -1,7 +1,8 @@
 import pytest
+from datetime import datetime
 
 from app import db, create_app
-from app.models import Account, User
+from app.models import Account, User, Subscription
 from tests.utils import register, login, logout
 from config import BaseConfig as config
 from app.controllers.ldap import LDAP
@@ -45,7 +46,7 @@ def test_add_delete_account(client):
     response = client.get("/add_account")
     assert response.status_code == 200
     reseller = User.query.first()
-    ECC_ID = "TES3453"
+    ECC_ID = "TES1478"
 
     response = client.post(
         "/add_account",
@@ -54,9 +55,10 @@ def test_add_delete_account(client):
             license_key="lis_key_value",
             sim="12345678901",
             imei="",
-            ad_login=f"{ECC_ID}@kryptr.li",
+            ad_login=ECC_ID,
             email=f"{ECC_ID}@kryptr.li",
             ecc_id=ECC_ID,
+            ecc_password="Testing321",
             comment="",
             reseller=reseller.username,
         ),
@@ -92,20 +94,27 @@ def test_edit_account(client):
     assert reseller
     acc = Account(
         ecc_id=TEST_USER_NAME,
-        ad_login=TEST_EMAIL,
+        ecc_password=TEST_PASS,
+        ad_login=TEST_USER_NAME,
         ad_password=TEST_PASS,
         license_key="",
         email=TEST_EMAIL,
         reseller=reseller,
     )
     acc.save()
+    Subscription(
+        activation_date=datetime.now(),
+        type='new',
+        months=6,
+        account_id=acc.id
+    ).save()
     ACC_ID = acc.id
     response = client.get(f"/edit_account/{ACC_ID}")
     assert response.status_code == 200
 
     # send post request for change password
-    # NEW_PASS = "XSW@cde3"
-    NEW_PASS = TEST_PASS
+    NEW_PASS = "XSW@cde3"
+    # NEW_PASS = TEST_PASS
     data = {
         "id": ACC_ID,
         "ecc_id": acc.ecc_id,
@@ -115,8 +124,9 @@ def test_edit_account(client):
         "sim": acc.sim,
         "comment": acc.comment,
         "reseller": reseller.username,
+        "ecc_password": NEW_PASS
     }
     response = client.post(f"/edit_account/{ACC_ID}", data=data)
     assert response.status_code == 302
     acc = Account.query.get(ACC_ID)
-    assert acc.ad_password == NEW_PASS
+    assert acc.ecc_password == NEW_PASS
