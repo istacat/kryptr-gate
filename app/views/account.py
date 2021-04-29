@@ -35,6 +35,7 @@ def add_account():
         form.ad_login.data = ad_login
         form.ad_password.data = generate_password()
         form.ecc_password.data = generate_password()
+        form.sub_activate_date.data = datetime.date(datetime.now())
     if form.validate_on_submit():
         reseller = User.query.filter(User.username == form.reseller.data).first()
         acc = Account(
@@ -128,6 +129,7 @@ def edit_account(account_id):
             form.ad_login.data = acc.ad_login
             form.ad_password.data = acc.ad_password
             form.email.data = acc.email
+            sub_form.sub_activate_date.data = datetime.date(datetime.now())
         if form.validate_on_submit():
             reseller = User.query.filter(User.username == form.reseller.data).first()
             acc.ecc_id = form.ecc_id.data
@@ -172,8 +174,8 @@ def extend_sub(account_id):
         return redirect(url_for("account.index"))
     if acc:
         if form.validate_on_submit():
-            expiration_date = acc.subscriptions[-1].activation_date + relativedelta(
-                months=+acc.subscriptions[-1].months
+            expiration_date = datetime.date(acc.subscriptions[-1].activation_date + relativedelta(
+                months=+acc.subscriptions[-1].months)
             )
             wipe_date = expiration_date + relativedelta(days=+15)
             if expiration_date > form.sub_activate_date.data:
@@ -183,7 +185,7 @@ def extend_sub(account_id):
                     activation_date=expiration_date,
                     type="ext",
                 ).save()
-            elif expiration_date < form.sub_activate_date < wipe_date:
+            elif expiration_date < form.sub_activate_date.data < wipe_date:
                 Subscription(
                     account_id=acc.id,
                     months=form.sub_duration.data,
