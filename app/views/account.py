@@ -3,10 +3,25 @@ from dateutil.relativedelta import relativedelta
 import base64
 import io
 from sqlalchemy import or_
-from flask import render_template, Blueprint, jsonify, flash, redirect, url_for, request
+from flask import (
+    render_template,
+    Blueprint,
+    jsonify,
+    flash,
+    redirect,
+    url_for,
+    request,
+    session,
+)
 from flask_login import login_required, current_user
 from app.models import Account, User, Subscription
-from app.forms import AccountAddForm, DeviceForm, AccountEditForm, SubscriptionForm
+from app.forms import (
+    AccountAddForm,
+    DeviceForm,
+    AccountEditForm,
+    SubscriptionForm,
+    NewAccountForm,
+)
 from app.logger import log
 from app.controllers import create_qrcode, generate_password, MDM, role_required
 from app.controllers.ldap import LDAP
@@ -27,71 +42,96 @@ def index():
 def add_account():
     form = AccountAddForm(user=current_user)
     if request.method == "GET":
-        ecc_id = Account.gen_ecc_id()
-        ad_login = Account.gen_ad_login()
-        form.ecc_id.data = ecc_id
         form.reseller.data = current_user.username
-        form.email.data = f"{ad_login}@kryptr.li"
-        form.ad_login.data = ad_login
-        form.ad_password.data = generate_password()
-        form.ecc_password.data = generate_password()
         form.sub_activate_date.data = datetime.date(datetime.now())
+        if "accs" not in session:
+            ecc_id = Account.gen_ecc_id()
+            ad_login = Account.gen_ad_login()
+            forms = [NewAccountForm()]
+            forms[0].ecc_id.data = ecc_id
+            forms[0].ecc_password.data = generate_password()
+            forms[0].ad_login.data = ad_login
+            forms[0].ad_password.data = generate_password()
+            forms[0].email.data = f"{ad_login}@kryptr.li"
+        else:
+            forms = []
+            for acc in session["accs"]:
+                if not acc:
+                    sub_form = NewAccountForm()
+                    ecc_id = Account.gen_ecc_id()
+                    ad_login = Account.gen_ad_login()
+                    sub_form.ecc_id.data = ecc_id
+                    sub_form.ecc_password.data = generate_password()
+                    sub_form.ad_login.data = ad_login
+                    sub_form.ad_password.data = generate_password()
+                    sub_form.email.data = f"{ad_login}@kryptr.li"
+                    sub_form.append(form)
+                sub_form = NewAccountForm()
+                sub_form.ecc_id = acc["ecc_id"]
+                sub_form.ecc_password = acc["ecc_password"]
+                sub_form.ad_login = acc["ad_login"]
+                sub_form.ad_password = acc["ad_password"]
+                sub_form.email = acc["email"]
+                sub_form.sim = acc["sim"]
+                sub_form.comment = acc["comment"]
+                forms.append(sub_form)
+        return render_template(
+            "base_add_edit.html",
+            include_header="components/_account-add.html",
+            form=form,
+            forms=forms,
+            description_header=("Add accounts"),
+            cancel_link=url_for("account.index"),
+            action_url=url_for("account.add_account"),
+        )
     if form.validate_on_submit():
         reseller = User.query.filter(User.username == form.reseller.data).first()
-        acc = Account(
-            ecc_id=form.ecc_id.data,
-            ecc_password=form.ecc_password.data,
-            email=form.email.data,
-            ad_login=form.ad_login.data,
-            ad_password=form.ad_password.data,
-            sim=form.sim.data,
-            reseller_id=reseller.id,
-            comment=form.comment.data,
-        ).save()
-        Subscription(
-            account_id=acc.id,
-            months=form.sub_duration.data,
-            activation_date=form.sub_activate_date.data,
-        ).save()
-        log(
-            log.INFO,
-            "Generated ecc_id is. [%s] for account id [%s]",
-            acc.ecc_id,
-            acc.id,
-        )
-        if config.LDAP_SERVER:
-            conn = LDAP()
-            user = conn.add_user(acc.ad_login)
-            if not user:
-                log(log.WARNING, "Could not add user")
-                flash("Could not add user.", "danger")
-                return render_template(
-                    "base_add_edit.html",
-                    include_header="components/_account-add.html",
-                    form=form,
-                    description_header=("Add account"),
-                    cancel_link=url_for("account.index"),
-                    action_url=url_for("account.add_account"),
+        if "save":
+            for account in session["accs"]:
+                acc = Account(
+                    ecc_id=account["ecc_id"],
+                    ecc_password=account["ecc_password"],
+                    email=account["email"],
+                    ad_login=account["ad_login"],
+                    ad_password=account["ad_password"],
+                    sim=account["sim"],
+                    reseller_id=reseller.id,
+                    comment=account["comment"],
+                ).save()
+                Subscription(
+                    account_id=acc.id,
+                    months=form.sub_duration.data,
+                    activation_date=form.sub_activate_date.data,
+                ).save()
+                log(
+                    log.INFO,
+                    "Generated ecc_id is. [%s] for account id [%s]",
+                    acc.ecc_id,
+                    acc.id,
                 )
-            error_message = user.reset_password(acc.ad_password)
-            if error_message:
-                log(log.ERROR, "%s", error_message)
-                flash(error_message, "danger")
-                return render_template(
-                    "base_add_edit.html",
-                    include_header="components/_account-add.html",
-                    form=form,
-                    description_header=("Add account"),
-                    cancel_link=url_for("account.index"),
-                    action_url=url_for("account.add_account"),
-                )
-            MDM().sync()
-        if config.MATRIX_SERVER_HOST_NAME:
-            matrix = RemoteMatrix()
-            matrix.add_user(acc)
-        log(log.INFO, "Account creation successful. [%s]", acc)
-        flash("Account creation successful.", "success")
-        return redirect(url_for("account.show_qrcode", account_id=acc.id))
+                if config.LDAP_SERVER:
+                    conn = LDAP()
+                    user = conn.add_user(acc.ad_login)
+                    if not user:
+                        log(log.WARNING, "Could not add user")
+                        flash("Could not add user.", "danger")
+                        return redirect("account.add_account")
+                    error_message = user.reset_password(acc.ad_password)
+                    if error_message:
+                        log(log.ERROR, "%s", error_message)
+                        flash(error_message, "danger")
+                        return redirect("account.add_account")
+                    MDM().sync()
+                if config.MATRIX_SERVER_HOST_NAME:
+                    matrix = RemoteMatrix()
+                    matrix.add_user(acc)
+            log(log.INFO, "Account creation successful. [%s]", acc)
+            flash("Account creation successful.", "success")
+            return redirect(url_for("account.show_qrcode", account_id=acc.id))
+        elif "plus":
+            acc = {}
+            session['accs'].append(acc)
+            return redirect("account.add_account")
     elif form.is_submitted():
         log(log.ERROR, "Submit failed: %s", form.errors)
     return render_template(
@@ -102,6 +142,43 @@ def add_account():
         cancel_link=url_for("account.index"),
         action_url=url_for("account.add_account"),
     )
+
+
+@account_blueprint.route("/add_account/multiply/<int:acc_id>", methods=["POST"])
+@login_required
+def multiply_account(acc_id):
+    form = NewAccountForm()
+    if form.validate_on_submit():
+        if "accs" not in session:
+            session["accs"] = []
+            acc = {}
+            session["accs"].append(acc)
+            acc_id = 0
+        acc = session["accs"][acc_id]
+        acc["ecc_id"] = form.ecc_id.data
+        acc["ecc_password"] = form.ecc_password.data
+        acc["ad_login"] = form.ad_login.data
+        acc["ad_password"] = form.ad_password.data
+        acc["email"] = form.email.data
+        acc["sim"] = form.sim.data
+        acc["comment"] = form.comment.data
+        return redirect(url_for("account.add_account"))
+
+
+@account_blueprint.route("/add_account/regenerate/<int:acc_id>", methods=["GET"])
+@login_required
+def regenerate(acc_id):
+    acc = session['accs'][acc_id]
+    ecc_id = Account.gen_ecc_id()
+    ad_login = Account.gen_ad_login()
+    acc["ecc_id"] = ecc_id
+    acc["ecc_password"] = generate_password()
+    acc["ad_login"] = ad_login
+    acc["ad_password"] = generate_password()
+    acc["email"] = f"{ad_login}@kryptr.li"
+    acc["sim"] = ''
+    acc["comment"] = ''
+    return redirect(url_for("account.add_account"))
 
 
 @account_blueprint.route("/edit_account/<int:account_id>", methods=["GET", "POST"])
@@ -158,7 +235,9 @@ def edit_account(account_id):
         )
 
 
-@account_blueprint.route("/edit_account/<int:account_id>/subscription", methods=["POST"])
+@account_blueprint.route(
+    "/edit_account/<int:account_id>/subscription", methods=["POST"]
+)
 @login_required
 def extend_sub(account_id):
     form = SubscriptionForm()
@@ -174,8 +253,9 @@ def extend_sub(account_id):
         return redirect(url_for("account.index"))
     if acc:
         if form.validate_on_submit():
-            expiration_date = datetime.date(acc.subscriptions[-1].activation_date + relativedelta(
-                months=+acc.subscriptions[-1].months)
+            expiration_date = datetime.date(
+                acc.subscriptions[-1].activation_date
+                + relativedelta(months=+acc.subscriptions[-1].months)
             )
             wipe_date = expiration_date + relativedelta(days=+15)
             if expiration_date > form.sub_activate_date.data:
@@ -193,7 +273,7 @@ def extend_sub(account_id):
                     type="ext",
                 ).save()
             if wipe_date < form.sub_activate_date.data:
-                flash('Invalid activation date', "danger")
+                flash("Invalid activation date", "danger")
                 log(log.WARNING, "Set invalid activation date")
                 return redirect(url_for("account.edit_account", account_id=account_id))
             log(log.INFO, "Account data changed for account id [%s]", acc.id)
@@ -201,7 +281,7 @@ def extend_sub(account_id):
             return redirect(url_for("account.index"))
         elif form.is_submitted():
             log(log.ERROR, "Submit failed: %s", form.errors)
-            flash('Submit failed', "danger")
+            flash("Submit failed", "danger")
             return redirect(url_for("account.edit", account_id=account_id))
 
 
