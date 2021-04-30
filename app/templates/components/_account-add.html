@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <div class="edit__group ghost">
+      <div class="edit__group ghost-submit">
         <div class="input__wrapper">
           <label class="edit__label"> Reseller </label>
           {{ form.reseller(class="edit__input", form="main")}}
@@ -58,145 +58,152 @@
       </div>
 
       <div class="edit__label line"></div>
-
-      {% for sub_form in forms %}
-      <form class="edit__form" action="{{ url_for('account.multiply_account', acc_id=forms.index(sub_form)) }}" method="POST" id="sub_form">
-        <div class="edit__container">
-          {{ sub_form.hidden_tag() }}
-
-          {% if current_user.role.name == 'admin' or current_user.role.name == 'support' %}
-          <div class="edit__group">
-            <div class="input__wrapper">
-              <label class="edit__label"> EСС </label>
-              {{ sub_form.ecc_id(class="edit__input edit__spec", type="text", form="sub_form")}}
-            </div>
-            <div class="edit__feedback">
-              {% for error in sub_form.ecc_id.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-          </div>
-          {% else %}
-          <div class="edit__group">
-            <div class="input__wrapper">
-              <label class="edit__label"> EСС </label>
-              {{ sub_form.ecc_id(class="edit__input disabled", type="text", readonly="true", form="sub_form")}}
-            </div>
-            <div class="edit__feedback">
-              {% for error in sub_form.ecc_id.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-          </div>
-          {% endif %}
-
-          <div class="edit__group">
-            <div class="input__wrapper">
-              <label class="edit__label"> EСС Password </label>
-              {{ sub_form.ecc_password(class="edit__input edit__spec", type="text", form="sub_form")}}
-            </div>
-            <div class="edit__feedback">
-              {% for error in sub_form.ecc_password.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-          </div>
-
-          <div class="edit__group">
-            <div class="input__wrapper">
-              <label class="edit__label"> AD Login </label>
-              {{ sub_form.ad_login(class="edit__input disabled", type="text",
-              placeholder="Login", readonly="true", form="sub_form")}}
-            </div>
-            <div class="edit__feedback">
-              {% for error in sub_form.ad_login.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-          </div>
-
-          <div class="edit__group">
-            <div class="input__wrapper">
-              <label class="edit__label"> AD Password </label>
-              {{ sub_form.ad_password(class="edit__input disabled", type="text",
-              placeholder="Login", readonly="true", form="sub_form")}}
-            </div>
-            <div class="edit__feedback">
-              {% for error in sub_form.ad_password.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-          </div>
-
-          <div class="edit__group">
-            <div class="input__wrapper">
-              <label class="edit__label"> Email </label>
-              {{ sub_form.email(class="edit__input disabled", type="email",
-              readonly="true", form="sub_form")}}
-            </div>
-            <div class="edit__feedback">
-              {% for error in sub_form.email.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-          </div>
-
-          <div class="edit__group">
-            <div class="input__wrapper">
-              <label class="edit__label"> Sim </label>
-              {{ sub_form.sim(class="edit__input", type="text", form="sub_form")}}
-            </div>
-            <div class="edit__feedback">
-              {% for error in sub_form.sim.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-          </div>
-
-          <div class="edit__group">
-            <div class="input__wrapper">
-              <label class="edit__label"> Comments </label>
-              {{ sub_form.comment(class="edit__input", placeholder="Comments", form="sub_form")}}
-            </div>
-            <div class="edit__feedback">
-              {% for error in sub_form.comment.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-          </div>
-
-          <div class="edit__group">
-            <div class="edit__submit-btn reload-button">
-              <a
-                type="button"
-                href="{{ url_for('account.regenerate', acc_id=forms.index(sub_form)) }}"
-                class="edit__submit"
-                >Regenerate</a
-              >
-            </div>
-          </div>
-
-          <div>
-            <img src="{{ url_for('static', filename='images/loading-11.gif') }}" id="gif">
-          </div>
-          <div class="edit__group btn-container">
-            <div class="edit__submit-btn reload-button">{{ sub_form.submit(class="edit__submit", form="sub_form")}}</div>
-          </div>
-          <div class="edit__label line">
-          </div>
-        </div>
-      </form>
-      {% endfor %}
-
-      <div class="edit__group btn-container">
-        <div class="edit__submit-btn reload-button">{{ form.plus(class="edit__submit", form="main")}}</div>
-      </div>
-
-      <div>
-        <img src="{{ url_for('static', filename='images/loading-11.gif') }} " id="gif">
-      </div>
-      <div class="edit__group btn-container">
-        <div class="edit__submit-btn reload-button">{{ form.submit(class="edit__submit", form="main")}}</div>
-      </div>
     </div>
 </form>
+
+{% for i, sub_form in forms %}
+<!-- before open form -->
+<form class="edit__form" action="{{ url_for('account.multiply_account', acc_index=i )}}" method="POST" id="sub_form_{{i}}">
+<!-- after open form -->
+  <div class="edit__container">
+    {{ sub_form.hidden_tag() }}
+
+    {% if current_user.role.name == 'admin' or current_user.role.name == 'support' %}
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> EСС </label>
+        {{ sub_form.ecc_id(class="edit__input edit__spec field_{}".format(i), type="text")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.ecc_id.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> EСС </label>
+        {{ sub_form.ecc_id(class="edit__input disabled field_{}".format(i), type="text", readonly="true")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.ecc_id.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> EСС Password </label>
+        {{ sub_form.ecc_password(class="edit__input edit__spec field_{}".format(i), type="text")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.ecc_password.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> AD Login </label>
+        {{ sub_form.ad_login(class="edit__input disabled field_{}".format(i), type="text",
+        placeholder="Login", readonly="true")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.ad_login.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> AD Password </label>
+        {{ sub_form.ad_password(class="edit__input disabled field_{}".format(i), type="text",
+        placeholder="Login", readonly="true")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.ad_password.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> Email </label>
+        {{ sub_form.email(class="edit__input disabled field_{}".format(i), type="email",
+        readonly="true")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.email.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> Sim </label>
+        {{ sub_form.sim(class="edit__input field_{}".format(i), type="text")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.sim.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="input__wrapper">
+        <label class="edit__label"> Comments </label>
+        {{ sub_form.comment(class="edit__input field_{}".format(i), placeholder="Comments")}}
+      </div>
+      <div class="edit__feedback">
+        {% for error in sub_form.comment.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="edit__group">
+      <div class="edit__submit-btn reload-button">
+        <a
+          type="button"
+          href="{{ url_for('account.regenerate', acc_index=i) }}"
+          class="edit__submit"
+          >Regenerate</a
+        >
+      </div>
+    </div>
+
+    <div>
+      <img src="{{ url_for('static', filename='images/loading-11.gif') }}" id="gif">
+    </div>
+    <div class="edit__group btn-container ghost-submit">
+      <div class="edit__submit-btn reload-button">{{ sub_form.submit(class="edit__submit ghost-submit", id="submit_{}".format(i))}}</div>
+    </div>
+    <div class="edit__label line">
+    </div>
+
+  </div>
+  <!-- before close form -->
+</form>
+<!-- after close form -->
+{% endfor %}
+
+{% if count < 5 %}
+<div class="edit__group btn-container">
+  <div class="edit__submit-btn reload-button">
+    <a
+      type="button"
+      href="{{ url_for('account.add_template') }}"
+      class="edit__submit"
+      >+</a
+    >
+  </div>
+</div>
+{% endif %}
