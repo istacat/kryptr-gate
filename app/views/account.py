@@ -2,7 +2,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import base64
 import io
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from flask import (
     render_template,
     Blueprint,
@@ -326,9 +326,9 @@ def get_account_list():
         paginated_accs = (
             accounts.filter(
                 or_(
-                    Account.ecc_id.contains(search_value),
-                    Account.sim.contains(search_value),
-                    Account.ad_login.contains(search_value),
+                    func.lower(Account.ecc_id).contains(func.lower(search_value)),
+                    func.lower(Account.sim).contains(func.lower(search_value)),
+                    func.lower(Account.ad_login).contains(func.lower(search_value)),
                 )
             )
             .order_by(Account.id.desc())

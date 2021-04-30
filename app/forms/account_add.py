@@ -29,8 +29,8 @@ class AccountAddForm(FlaskForm):
         (12, '12 Months')
     ], default=1)
     sub_activate_date = DateField("Activation Date")
-    plus = SubmitField(label="plus")
-    submit = SubmitField(label="save")
+    plus = SubmitField(label="+")
+    submit = SubmitField(label="Save")
 
 
 class NewAccountForm(FlaskForm):

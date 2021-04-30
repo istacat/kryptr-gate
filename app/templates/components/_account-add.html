@@ -1,11 +1,11 @@
-<form class="edit__form" action="{{ action_url }}" method="POST">
+<form class="edit__form" action="{{ action_url }}" method="POST" id="main">
     <div class="edit__container">
       {{ form.hidden_tag() }}
 
       <div class="edit__group">
         <div class="input__wrapper">
           <label class="edit__label"> Reseller </label>
-          {{ form.reseller(class="edit__input")}}
+          {{ form.reseller(class="edit__input", form="main")}}
         </div>
         <div class="edit__feedback">
           {% for error in form.reseller.errors %}
@@ -17,7 +17,7 @@
       <div class="edit__group ghost">
         <div class="input__wrapper">
           <label class="edit__label"> Reseller </label>
-          {{ form.reseller(class="edit__input")}}
+          {{ form.reseller(class="edit__input", form="main")}}
         </div>
         <div class="edit__feedback">
           {% for error in form.reseller.errors %}
@@ -29,7 +29,7 @@
       <div class="edit__group">
         <div class="input__wrapper">
           <label class="edit__label"> Subscribtion Activation Date </label>
-          {{ form.sub_activate_date(class="edit__input", type="date")}}
+          {{ form.sub_activate_date(class="edit__input", type="date", form="main")}}
         </div>
         <div class="edit__feedback">
           {% for error in form.sub_activate_date.errors %}
@@ -41,7 +41,7 @@
       <div class="edit__group">
         <div class="input__wrapper">
           <label class="edit__label"> Renew Subscribtion </label>
-          {{ form.sub_duration(class="edit__input")}}
+          {{ form.sub_duration(class="edit__input", form="main")}}
         </div>
         <div class="edit__feedback">
           {% for error in form.sub_duration.errors %}
@@ -54,13 +54,13 @@
         <img src="{{ url_for('static', filename='images/loading-11.gif') }} " id="gif">
       </div>
       <div class="edit__group btn-container">
-        <div class="edit__submit-btn reload-button">{{ form.submit(class="edit__submit")}}</div>
+        <div class="edit__submit-btn reload-button">{{ form.submit(class="edit__submit", form="main")}}</div>
       </div>
 
       <div class="edit__label line"></div>
 
       {% for sub_form in forms %}
-      <form class="edit__form" action="{{ url_for('account.multiply_account', acc_id=forms.index(sub_form)) }}" method="POST">
+      <form class="edit__form" action="{{ url_for('account.multiply_account', acc_id=forms.index(sub_form)) }}" method="POST" id="sub_form">
         <div class="edit__container">
           {{ sub_form.hidden_tag() }}
 
@@ -68,7 +68,7 @@
           <div class="edit__group">
             <div class="input__wrapper">
               <label class="edit__label"> EСС </label>
-              {{ sub_form.ecc_id(class="edit__input edit__spec", type="text")}}
+              {{ sub_form.ecc_id(class="edit__input edit__spec", type="text", form="sub_form")}}
             </div>
             <div class="edit__feedback">
               {% for error in sub_form.ecc_id.errors %}
@@ -80,7 +80,7 @@
           <div class="edit__group">
             <div class="input__wrapper">
               <label class="edit__label"> EСС </label>
-              {{ sub_form.ecc_id(class="edit__input disabled", type="text", readonly="true")}}
+              {{ sub_form.ecc_id(class="edit__input disabled", type="text", readonly="true", form="sub_form")}}
             </div>
             <div class="edit__feedback">
               {% for error in sub_form.ecc_id.errors %}
@@ -93,7 +93,7 @@
           <div class="edit__group">
             <div class="input__wrapper">
               <label class="edit__label"> EСС Password </label>
-              {{ sub_form.ecc_password(class="edit__input edit__spec", type="text")}}
+              {{ sub_form.ecc_password(class="edit__input edit__spec", type="text", form="sub_form")}}
             </div>
             <div class="edit__feedback">
               {% for error in sub_form.ecc_password.errors %}
@@ -106,7 +106,7 @@
             <div class="input__wrapper">
               <label class="edit__label"> AD Login </label>
               {{ sub_form.ad_login(class="edit__input disabled", type="text",
-              placeholder="Login", readonly="true")}}
+              placeholder="Login", readonly="true", form="sub_form")}}
             </div>
             <div class="edit__feedback">
               {% for error in sub_form.ad_login.errors %}
@@ -119,7 +119,7 @@
             <div class="input__wrapper">
               <label class="edit__label"> AD Password </label>
               {{ sub_form.ad_password(class="edit__input disabled", type="text",
-              placeholder="Login", readonly="true")}}
+              placeholder="Login", readonly="true", form="sub_form")}}
             </div>
             <div class="edit__feedback">
               {% for error in sub_form.ad_password.errors %}
@@ -132,7 +132,7 @@
             <div class="input__wrapper">
               <label class="edit__label"> Email </label>
               {{ sub_form.email(class="edit__input disabled", type="email",
-              readonly="true")}}
+              readonly="true", form="sub_form")}}
             </div>
             <div class="edit__feedback">
               {% for error in sub_form.email.errors %}
@@ -144,7 +144,7 @@
           <div class="edit__group">
             <div class="input__wrapper">
               <label class="edit__label"> Sim </label>
-              {{ sub_form.sim(class="edit__input", type="text", )}}
+              {{ sub_form.sim(class="edit__input", type="text", form="sub_form")}}
             </div>
             <div class="edit__feedback">
               {% for error in sub_form.sim.errors %}
@@ -156,7 +156,7 @@
           <div class="edit__group">
             <div class="input__wrapper">
               <label class="edit__label"> Comments </label>
-              {{ sub_form.comment(class="edit__input", placeholder="Comments")}}
+              {{ sub_form.comment(class="edit__input", placeholder="Comments", form="sub_form")}}
             </div>
             <div class="edit__feedback">
               {% for error in sub_form.comment.errors %}
@@ -180,7 +180,7 @@
             <img src="{{ url_for('static', filename='images/loading-11.gif') }}" id="gif">
           </div>
           <div class="edit__group btn-container">
-            <div class="edit__submit-btn reload-button">{{ sub_form.submit(class="edit__submit")}}</div>
+            <div class="edit__submit-btn reload-button">{{ sub_form.submit(class="edit__submit", form="sub_form")}}</div>
           </div>
           <div class="edit__label line">
           </div>
@@ -189,21 +189,14 @@
       {% endfor %}
 
       <div class="edit__group btn-container">
-        <div class="edit__submit-btn reload-button">{{ form.plus(class="edit__submit", text="+")}}</div>
+        <div class="edit__submit-btn reload-button">{{ form.plus(class="edit__submit", form="main")}}</div>
       </div>
 
       <div>
         <img src="{{ url_for('static', filename='images/loading-11.gif') }} " id="gif">
       </div>
       <div class="edit__group btn-container">
-        <div class="edit__submit-btn reload-button">{{ form.submit(class="edit__submit")}}</div>
+        <div class="edit__submit-btn reload-button">{{ form.submit(class="edit__submit", form="main")}}</div>
       </div>
     </div>
 </form>
-
-<script>
-
-</script>
-
-
-
