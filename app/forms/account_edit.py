@@ -1,7 +1,7 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
-from wtforms.fields.core import DateField, SelectField
+from wtforms.fields.core import SelectField
 from wtforms.validators import DataRequired, Length, Email
 from app.models import User
 
@@ -29,11 +29,4 @@ class AccountEditForm(FlaskForm):
     sim = StringField("Sim")
     reseller = SelectField("Reseller", choices=[])
     comment = TextAreaField("Comments")
-    sub_duration = SelectField("Subscription", choices=[
-        (1, '1 Month'),
-        (3, '3 Months'),
-        (6, '6 Months'),
-        (12, '12 Months')
-    ], default=1)
-    sub_activate_date = DateField("Activation Date")
     submit = SubmitField()

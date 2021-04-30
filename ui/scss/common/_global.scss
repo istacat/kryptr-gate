@@ -211,3 +211,17 @@ button.close {
 .qrcode-icon {
   width: 25px;
 }
+
+.line {
+  border-bottom: 2px solid;
+  width: 95%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.ghost-submit {
+  visibility: hidden;
+  max-height: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+}
