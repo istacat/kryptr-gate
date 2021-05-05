@@ -5,7 +5,7 @@ from config import BaseConfig as conf
 
 
 class SimPro:
-    def __init__(self) -> None:
+    def __init__(self):
         self.base_url = conf.SIMPRO_BASE_URL
         self.basic_auth = HTTPBasicAuth(conf.SIMPRO_USERNAME, conf.SIMPRO_PASSWORD)
         self.headers = {"User-Agent": "Mozilla/5.0"}
