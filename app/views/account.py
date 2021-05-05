@@ -107,8 +107,8 @@ def add_account():
     if form.validate_on_submit():
         reseller = User.query.filter(User.username == form.reseller.data).first()
         for account in session["accounts"]:
-            account_check = Account.query.filter(Account.sim == account["sim"])
-            if account_check:
+            account_check = Account.query.filter(Account.sim == account["sim"]).first()
+            if account_check and account["sim"]:
                 log(log.WARNING, "Sim already has been used. Account - %s", account['ecc_id'])
                 flash(f"Sim already has been used. Account {account['ecc_id']}", "danger")
                 return redirect(url_for("account.add_account"))
@@ -135,11 +135,11 @@ def add_account():
             )
             if config.SIMPRO_BASE_URL:
                 conn = SimPro()
-                if not conn.check_sim(acc.sim):
+                if not conn.check_sim(acc.sim) and acc.sim:
                     log(log.WARNING, "Sim is not valid, or activated for account %s", acc.ecc_id)
                     flash(f"Sim is not valid, or not activated for account {acc.ecc_id}", "danger")
-                    acc.delete()
                     sub.delete()
+                    acc.delete()
                     return redirect(url_for("account.add_account"))
             if config.LDAP_SERVER:
                 conn = LDAP()
