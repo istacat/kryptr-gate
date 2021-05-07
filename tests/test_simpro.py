@@ -29,7 +29,16 @@ def client():
 @pytest.mark.skipif(not conf.SIMPRO_BASE_URL, reason="SimPro URL not configured")
 def test_simpro(client):
     conn = SimPro()
+    assert conn
+    sim_details = conn.sim_info(TEST_SIM_ICCID)
+    assert sim_details
+    solutions = conn.customer_solutions
+    assert solutions
     sims = conn.sims
     assert sims
-    conn.check_sim(TEST_SIM_ICCID)
-    assert conn
+    sim = conn.check_sim(TEST_SIM_ICCID)
+    assert sim
+    activate_sim = conn.activate_sim(TEST_SIM_ICCID)
+    assert activate_sim
+    bar_sim = conn.bar_sim(TEST_SIM_ICCID)
+    assert bar_sim
