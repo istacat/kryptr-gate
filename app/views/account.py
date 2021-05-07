@@ -106,6 +106,7 @@ def add_account():
         )
     if form.validate_on_submit():
         reseller = User.query.filter(User.username == form.reseller.data).first()
+        instructions = []
         for account in session["accounts"]:
             acc = Account(
                 ecc_id=account["ecc_id"],
@@ -134,20 +135,35 @@ def add_account():
                 if not user:
                     log(log.WARNING, "Could not add user")
                     flash("Could not add user.", "danger")
-                    return redirect("account.add_account")
+                    return redirect(url_for("account.add_account"))
                 error_message = user.reset_password(acc.ad_password)
                 if error_message:
                     log(log.ERROR, "%s", error_message)
                     flash(error_message, "danger")
-                    return redirect("account.add_account")
+                    return redirect(url_for("account.add_account"))
                 MDM().sync()
             if config.MATRIX_SERVER_HOST_NAME:
                 matrix = RemoteMatrix()
                 matrix.add_user(acc)
+            account_data = {}
+            account_data['acc'] = acc
+            qrcode = create_qrcode(acc)
+            data = io.BytesIO()
+            qrcode.save(data, "JPEG")
+            encoded_img_data = base64.b64encode(data.getvalue())
+            img = encoded_img_data.decode("utf-8")
+            account_data['img'] = img
+            instructions.append(account_data)
         log(log.INFO, "Account(s) creation successful.")
         flash("Account(s) creation successful.", "success")
         session.pop('accounts')
-        return redirect(url_for("account.index"))
+        return render_template(
+            "base_add_edit.html",
+            include_header="components/_account-instructions.html",
+            description_header=("Accounts Info"),
+            cancel_link=url_for("account.index"),
+            instructions=instructions
+        )
 
     elif form.is_submitted():
         log(log.ERROR, "Submit failed: %s", form.errors)
