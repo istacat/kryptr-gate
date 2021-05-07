@@ -36,6 +36,10 @@ class BaseConfig(object):
     STARTING_PAGE = os.environ.get('STARTING_PAGE', 1)
     ITEMS_PER_PAGE = os.environ.get('ITEMS_PER_PAGE', 20)
 
+    SIMPRO_BASE_URL = os.environ.get('SIMPRO_BASE_URL', None)
+    SIMPRO_USERNAME = os.environ.get('SIMPRO_USERNAME', None)
+    SIMPRO_PASSWORD = os.environ.get('SIMPRO_PASSWORD', None)
+
     @staticmethod
     def configure(app):
         # Implement this method to do further configuration on your app.

@@ -23,7 +23,7 @@ from app.forms import (
     NewAccountForm,
 )
 from app.logger import log
-from app.controllers import create_qrcode, generate_password, MDM, role_required
+from app.controllers import create_qrcode, generate_password, MDM, role_required, SimPro
 from app.controllers.ldap import LDAP
 from app.controllers.ssh_ps import RemoteMatrix
 from config import BaseConfig as config
@@ -107,6 +107,11 @@ def add_account():
     if form.validate_on_submit():
         reseller = User.query.filter(User.username == form.reseller.data).first()
         for account in session["accounts"]:
+            account_check = Account.query.filter(Account.sim == account["sim"]).first()
+            if account_check and account["sim"]:
+                log(log.WARNING, "Sim already has been used. Account - %s", account['ecc_id'])
+                flash(f"Sim already has been used. Account {account['ecc_id']}", "danger")
+                return redirect(url_for("account.add_account"))
             acc = Account(
                 ecc_id=account["ecc_id"],
                 ecc_password=account["ecc_password"],
@@ -117,7 +122,7 @@ def add_account():
                 reseller_id=reseller.id,
                 comment=account["comment"],
             ).save()
-            Subscription(
+            sub = Subscription(
                 account_id=acc.id,
                 months=form.sub_duration.data,
                 activation_date=form.sub_activate_date.data,
@@ -128,18 +133,26 @@ def add_account():
                 acc.ecc_id,
                 acc.id,
             )
+            if config.SIMPRO_BASE_URL:
+                conn = SimPro()
+                if not conn.check_sim(acc.sim) and acc.sim:
+                    log(log.WARNING, "Sim is not valid, or activated for account %s", acc.ecc_id)
+                    flash(f"Sim is not valid, or not activated for account {acc.ecc_id}", "danger")
+                    sub.delete()
+                    acc.delete()
+                    return redirect(url_for("account.add_account"))
             if config.LDAP_SERVER:
                 conn = LDAP()
                 user = conn.add_user(acc.ad_login)
                 if not user:
                     log(log.WARNING, "Could not add user")
                     flash("Could not add user.", "danger")
-                    return redirect("account.add_account")
+                    return redirect(url_for("account.add_account"))
                 error_message = user.reset_password(acc.ad_password)
                 if error_message:
                     log(log.ERROR, "%s", error_message)
                     flash(error_message, "danger")
-                    return redirect("account.add_account")
+                    return redirect(url_for("account.add_account"))
                 MDM().sync()
             if config.MATRIX_SERVER_HOST_NAME:
                 matrix = RemoteMatrix()
