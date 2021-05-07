@@ -1,0 +1,39 @@
+{% for account in instructions %}
+<div class=edit__container>
+    <div class="edit__container edit__rows">
+        <div class="qrcode-container edit__label">Account {{ account['acc'].ecc_id }} Activated</div>
+    </div>
+    <div class="edit__instruction">
+        <div class="edit__rows">
+            <div class="edit__label">Reseller: {{ account['acc'].reseller }}</div>
+        </div>
+        <div class="edit__rows">
+            <div class="edit__label">ECC ID: {{ account['acc'].ecc_id }}</div>
+        </div>
+        <div class="edit__rows">
+            <div class="edit__label">AD Login: {{ account['acc'].ad_login }}</div>
+        </div>
+        <div class="edit__rows">
+            <div class="edit__label">AD Password: {{ account['acc'].ad_password }}</div>
+        </div>
+    </div>
+    <div class="edit__group">
+        <div class="edit__container qr-small">
+            <img class="" src="data:image/jpeg;base64,{{ account['img'] }}">
+        </div>
+    </div>
+    <div class="edit__label line">
+    </div>
+</div>
+{% endfor %}
+
+<div class="btn-container">
+    <div class="edit__submit-btn reload-button">
+        <a
+        type="button"
+        href="{{ cancel_link }}"
+        class="edit__submit"
+        >Exit</a
+        >
+    </div>
+</div>
